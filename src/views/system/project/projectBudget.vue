@@ -126,7 +126,7 @@
         </el-form-item>
         <div class="clearfix">
             <el-form-item label="项目预算收入" prop="budgetSr" style="width:50%;float:left">
-              <el-input v-model="form.budgetSr" placeholder="请输入项目预算收入" />
+              <el-input v-model="form.budgetSr" placeholder="请输入项目预算收入" @change="budgetNetProfits"/>
               <span style="position:absolute;right:-20px;top:0px">元</span>
             </el-form-item>
             <el-form-item label="预警来源" prop="budgetSrFrom" style="width:50%;float:left">
@@ -135,6 +135,14 @@
                   <el-checkbox label="0">总包合同</el-checkbox>
                   <el-checkbox label="1">项目收款单</el-checkbox>
                </el-checkbox-group>
+               <!-- <el-select v-model="form.budgetSrFrom" multiple placeholder="请输入来源" style="width:100%">
+                    <el-option
+                      v-for="dict in perationOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    ></el-option>
+                  </el-select> -->
             </el-form-item>
         </div>
         <el-form-item label="设置预算毛利率" prop="budgetRate" style="width:50%;">
@@ -149,72 +157,104 @@
           <el-input v-model="form.budgetXxRate" placeholder="请输入销项税率" />
           <span style="position:absolute;right:-20px;top:0px">%</span>
         </el-form-item>
-        <el-form-item label="税金" prop="budgetTaxes" style="width:50%;" >
-          <el-input v-model="form.budgetTaxes" placeholder="请输入税金" class="specialcolor"/>
+        <el-form-item label="税金" prop="budgetTaxes" style="width:50%;" @change="budgetNetProfits">
+          <el-input v-model="form.budgetTaxes" placeholder="请输入税金" class="specialcolor" @change="budgetNetProfits"/>
           <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
-        <el-form-item label="预算成本" prop="budgetCost" style="width:50%;">
-          <el-input v-model="form.budgetCost" placeholder="请输入预算成本" class="specialcolor"/>
+        <el-form-item label="预算成本" prop="budgetCost" style="width:50%;" >
+          <el-input v-model="form.budgetCost" placeholder="请输入预算成本" class="specialcolor" @change="budgetNetProfits" :disabled="true"/>
           <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <el-form-item label="纯利润" prop="budgetNetProfit" style="width:50%;">
-          <el-input v-model="form.budgetNetProfit" placeholder="请输入纯利润" class="specialcolor"/>
+          <el-input v-model="form.budgetNetProfit" placeholder="请输入纯利润" class="specialcolor" :disabled="true"/>
           <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <el-form-item label="成本预算" prop="costBudget" style="width:80%;">
-          <el-input v-model="form.costBudget" placeholder="请输入成本预算" class="specialcolor"/>
+          <el-input v-model="form.costBudget" placeholder="请输入成本预算" class="specialcolor" @change="zong" :disabled="true"/>
           <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <div class="clearfix">
           <el-form-item label="劳务预算" prop="labourBudget" style="width:50%;float:left">
-            <el-input v-model="form.labourBudget" placeholder="请输入劳务类预算" />
+            <el-input v-model="form.labourBudget" placeholder="请输入劳务类预算" @change="chengben"/>
             <span style="position:absolute;right:-20px;top:0px">元</span>
           </el-form-item>
           <el-form-item label="预算来源" prop="labourBudgetFrom" style="width:50%;float:left">
             <!-- <el-input v-model="form.labourBudgetFrom" placeholder="请输入劳务类预算来源" />
             <span style="position:absolute;right:-20px">元</span> -->
               <el-checkbox-group v-model="form.labourBudgetFrom">
-                    <el-checkbox label="分包合同"></el-checkbox>
-                    <el-checkbox label="劳务付款单"></el-checkbox>
+                    <el-checkbox label="0">分包合同</el-checkbox>
+                    <el-checkbox label="1">劳务付款单</el-checkbox>
                 </el-checkbox-group>
+                 <!-- <el-select v-model="form.labourBudgetFrom" multiple placeholder="请输入来源" style="width:100%">
+                    <el-option
+                      v-for="dict in labourBudgetFromOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    ></el-option>
+                  </el-select> -->
           </el-form-item>
         </div>
         <div class="clearfix">
           <el-form-item label="材料预算" prop="materialBudget" style="width:50%;float:left">
-            <el-input v-model="form.materialBudget" placeholder="请输入材料预算" />
+            <el-input v-model="form.materialBudget" placeholder="请输入材料预算" @change="chengben"/>
             <span style="position:absolute;right:-20px;top:0px">元</span>
           </el-form-item>
           <el-form-item label="预算来源" prop="materialBudgetFrom" style="width:50%;float:left">
             <!-- <el-input v-model="form.materialBudgetFrom" placeholder="请输入材料预算来源" /> -->
               <el-checkbox-group v-model="form.materialBudgetFrom">
-                    <el-checkbox label="材料合同"></el-checkbox>
-                    <el-checkbox label="材料付款单"></el-checkbox>
+                    <el-checkbox label="0">材料合同</el-checkbox>
+                    <el-checkbox label="1">材料付款单</el-checkbox>
                 </el-checkbox-group>
+                   <!-- <el-select v-model="form.materialBudgetFrom" multiple placeholder="请输入来源" style="width:100%">
+                    <el-option
+                      v-for="dict in materialBudgetFromOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    ></el-option>
+                  </el-select> -->
           </el-form-item>
         </div>
         <div class="clearfix">
           <el-form-item label="其他预算" prop="outherBudget" style="width:50%;float:left">
-            <el-input v-model="form.outherBudget" placeholder="请输入其他类预算" />
+            <el-input v-model="form.outherBudget" placeholder="请输入其他类预算" @change="chengben"/>
               <span style="position:absolute;right:-20px;top:0px">元</span>
           </el-form-item>
           <el-form-item label="预算来源" prop="outherBudgetFrom" style="width:50%;float:left">
             <!-- <el-input v-model="form.outherBudgetFrom" placeholder="请输入其他类预算来源" /> -->
                 <el-checkbox-group v-model="form.outherBudgetFrom">
-                    <el-checkbox label="其他合同"></el-checkbox>
-                    <el-checkbox label="其他付款单"></el-checkbox>
+                    <el-checkbox label="0">其他合同</el-checkbox>
+                    <el-checkbox label="1">其他付款单</el-checkbox>
                 </el-checkbox-group>      
+                  <!-- <el-select v-model="form.outherBudgetFrom" multiple placeholder="请输入来源" style="width:100%">
+                    <el-option
+                      v-for="dict in outherBudgetFromOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    ></el-option>
+                  </el-select> -->
           </el-form-item>
         </div>
         <div class="clearfix">
             <el-form-item label="间接费用预算" prop="indirectBudget" style="width:50%;float:left">
-              <el-input v-model="form.indirectBudget" placeholder="请输入间接类预算" />
+              <el-input v-model="form.indirectBudget" placeholder="请输入间接类预算"  @change="zong" />
               <span style="position:absolute;right:-20px;top:0px">元</span>
             </el-form-item>
             <el-form-item label="预算来源" prop="indirectBudgetFrom" style="width:50%;float:left">
               <!-- <el-input v-model="form.indirectBudgetFrom" placeholder="请输入间接类预算来源" /> -->
               <el-checkbox-group v-model="form.indirectBudgetFrom">
-                    <el-checkbox label="项目费用报销单"></el-checkbox>
+                    <el-checkbox label="0">项目费用报销单</el-checkbox>
                 </el-checkbox-group> 
+                <!-- <el-select v-model="form.indirectBudgetFrom" multiple placeholder="请输入来源" style="width:100%">
+                    <el-option
+                      v-for="dict in indirectBudgetFromOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    ></el-option>
+                  </el-select> -->
             </el-form-item>
         </div>
     </el-form>
@@ -242,6 +282,16 @@ export default {
   },
   data() {
     return {
+      // 项目收入预警来源
+      perationOptions: [],
+      // 劳务预警来源
+      labourBudgetFromOptions:[],
+       // 材料预警来源
+      materialBudgetFromOptions:[],
+       // 其他预警来源
+      outherBudgetFromOptions:[],
+      // 间接费用预算
+      indirectBudgetFromOptions:[],
       selectProjectDialog:false,
       // 遮罩层
       loading: true,
@@ -291,8 +341,8 @@ export default {
       // 表单校验
       rules: {
               
-             budgetProfit : [ 
-              { required: true, message: "项目预算毛利不能为空", trigger: "blur" }
+             budgetSr : [ 
+              { required: true, message: "项目名称不能为空", trigger: "blur" }
           ],
               budgetTaxes : [ 
               { required: true, message: "税金不能为空", trigger: "blur" }
@@ -311,8 +361,60 @@ export default {
   },
   created() {
     this.getList();
+     this.getDicts("budgetSrFrom").then((response) => {
+      // console.log(response)
+      this.perationOptions = response.data;
+     });
+     this.getDicts("labourBudgetFroms").then((response) => {
+       //console.log(response)
+      this.labourBudgetFromOptions = response.data;
+     });
+    
+      this.getDicts("materialBudgetFroms").then((response) => {
+       //console.log(response)
+      this.materialBudgetFromOptions = response.data;
+     });
+      this.getDicts("outherBudgetFroms").then((response) => {
+       //console.log(response)
+      this.outherBudgetFromOptions = response.data;
+     });
+    this.getDicts("indirectBudgetFroms").then((response) => {
+       //console.log(response)
+      this.indirectBudgetFromOptions = response.data;
+     });
   },
   methods: {
+    // 计算纯利润
+    budgetNetProfits(){
+      //alert("1")
+      // console.log(this.form.budgetSr)
+      //  console.log(this.form.budgetCost)
+      //   console.log(this.form.budgetTaxes)
+      if(this.form.budgetSr!=undefined&&this.form.budgetCost!=undefined&&this.form.budgetTaxes!=undefined){
+        //alert("1")
+             this.form.budgetNetProfit=Number(this.form.budgetSr)-Number(this.form.budgetCost)-Number(this.form.budgetTaxes)
+      }
+    },
+    // 计算项目预算总成本
+     zong(){
+       if(this.form.costBudget!=undefined&&this.form.indirectBudget!=undefined){
+        //alert("1")
+             this.form.budgetCost=Number(this.form.costBudget)+Number(this.form.indirectBudget)
+               this.budgetNetProfits()
+      }
+     },
+     //计算成本
+      chengben(){
+ 
+         this.form.costBudget=Number(this.form.labourBudget)+Number(this.form.materialBudget)+Number(this.form.outherBudget)
+      
+       this.zong()
+       this.budgetNetProfits()
+        console.log(this.form.labourBudget)
+        console.log(this.form.materialBudget)
+        console.log(this.form.outherBudget)
+       
+     },
     /** 选择项目列表 */
     projectSelect() {
   
@@ -347,23 +449,23 @@ export default {
     reset() {
       this.form = {
         id: undefined,
-        budgetSr: undefined,
+        budgetSr: '',
         budgetSrFrom:['0','1'],
         budgetRate: undefined,
         budgetProfit: undefined,
         budgetXxRate: undefined,
-        budgetTaxes: undefined,
-        budgetCost: undefined,
+        budgetTaxes: '',
+        budgetCost: '',
         budgetNetProfit: undefined,
-        costBudget: undefined,
-        labourBudget: undefined,
-        labourBudgetFrom: ['分包合同','劳务付款单'],
-        materialBudget: undefined,
-        materialBudgetFrom: ['材料合同','材料付款单'],
-        outherBudget: undefined,
-        outherBudgetFrom: ['其他合同','其他付款单'],
-        indirectBudget: undefined,
-        indirectBudgetFrom: ['项目费用报销单'],
+        costBudget: '',
+        labourBudget: '',
+        labourBudgetFrom: ['0','1'],
+        materialBudget: '',
+        materialBudgetFrom: ['0','1'],
+        outherBudget: '',
+        outherBudgetFrom: ['0','1'],
+        indirectBudget: '',
+        indirectBudgetFrom: ['0'],
         createBy: undefined,
         createTime: undefined,
         updateBy: undefined,
@@ -403,6 +505,11 @@ export default {
       const id = row.id || this.ids
       getBudgetInfo(id).then(response => {
         this.form = response.data;
+      this.form.budgetSrFrom=JSON.parse(this.form.budgetSrFrom)
+      this.form.labourBudgetFrom=JSON.parse(this.form.labourBudgetFrom)
+      this.form.materialBudgetFrom=JSON.parse(this.form.materialBudgetFrom)
+      this.form.outherBudgetFrom=JSON.parse(this.form.outherBudgetFrom)
+      this.form.indirectBudgetFrom=JSON.parse(this.form.indirectBudgetFrom)
         this.open = true;
         this.title = "修改项目预算";
       });
@@ -410,7 +517,11 @@ export default {
     /** 提交按钮 */
     submitForm: function() {
       this.form.budgetSrFrom=JSON.stringify(this.form.budgetSrFrom)
-      this.$refs["form"].validate(valid => {
+      this.form.labourBudgetFrom=JSON.stringify(this.form.labourBudgetFrom)
+      this.form.materialBudgetFrom=JSON.stringify(this.form.materialBudgetFrom)
+      this.form.outherBudgetFrom=JSON.stringify(this.form.outherBudgetFrom)
+      this.form.indirectBudgetFrom=JSON.stringify(this.form.indirectBudgetFrom)
+     this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != undefined) {
             
