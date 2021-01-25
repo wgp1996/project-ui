@@ -9,6 +9,41 @@ export function listProjectInfo(query) {
   })
 }
 
+// 查询项目人员明细列表
+export function listProjectChild(projectCode) {
+  return request({
+    url: '/system/projectUser/list?projectCode='+projectCode,
+    method: 'get',
+    params: query
+  })
+}
+
+// 删除人员明细
+export function delProjectUserInfo(id) {
+  return request({
+    url: '/system/projectUser/' + id,
+    method: 'delete'
+  })
+}
+
+// 查询附件明细列表
+export function systemFileList(projectCode) {
+  return request({
+    url: '/system/systemFile/list?code='+projectCode,
+    method: 'get',
+    params: query
+  })
+}
+
+// 删除附件明细
+export function delFileInfo(id) {
+  return request({
+    url: '/system/systemFile/' + id,
+    method: 'delete'
+  })
+}
+
+
 // 查询项目建档详细
 export function getProjectInfo(id) {
   return request({
