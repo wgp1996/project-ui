@@ -95,7 +95,7 @@
       row-key="id"
       @selection-change="handleSelectionChange"
     >
-    <el-table-column type="selection" width="55" align="center" />
+      <el-table-column type="selection" width="55" align="center" />
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-table
@@ -167,8 +167,8 @@
       @pagination="getList"
     />
     <!-- 添加或修改项目分类对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px">
-      <el-tabs v-model="activeName">
+    <el-dialog :title="title" :visible.sync="open" width="900px">
+      <el-tabs v-model="activeName" @tab-click="tabClick">
         <el-tab-pane label="基础信息" name="first">
           <el-form ref="form" :model="form" :rules="rules" label-width="120px">
             <el-form-item label="项目编码" prop="projectCode">
@@ -255,7 +255,13 @@
         <el-tab-pane label="人员信息" name="second">
           <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
-              <el-button type="primary" icon="el-icon-plus" size="mini" @click="goodsSelect">新增人员</el-button>
+              <el-button
+                type="primary"
+                icon="el-icon-plus"
+                size="mini"
+                @click="goodsSelect"
+                >新增人员</el-button
+              >
             </el-col>
           </el-row>
 
@@ -264,93 +270,103 @@
             class="tb-edit"
             style="width: 100%"
             highlight-current-row
-           >
-           
-             <el-table-column prop="userName" label="人员名称" width="120">
+            :header-cell-class-name="starAdd"
+          >
+            <el-table-column prop="userName" label="人员名称" width="150">
               <template scope="scope">
-               <!-- <el-select v-model="scope.row.goodsDw" placeholder="请输入单位信息" style="width:100%">
-                    <el-option
-                      v-for="dict in dwOptions"
-                      :key="dict.dictValue"
-                      :label="dict.dictLabel"
-                      :value="dict.dictValue"
-                    ></el-option>
-                  </el-select> -->
-                 
                 <el-input
                   size="small"
+                   :disabled="true"
                   v-model="scope.row.userName"
                   placeholder="请输入人员名称"
-                  
                   @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
-              
-             
               </template>
             </el-table-column>
-      
-         
-            <el-table-column label="人员编码" width="120">
+
+            <el-table-column label="人员编码" width="150">
               <template scope="scope">
                 <el-input
                   size="small"
+                   :disabled="true"
                   v-model="scope.row.userCode"
                   placeholder="请输入人员编码"
-                
-                   @change="handleEdit(scope.$index, scope.row)"
-                ></el-input>
-                <span>{{scope.row.goodsNum}}</span>
-              </template>
-            </el-table-column>
-            <!-- :onkeyup="scope.row.goodsPrice=scope.row.goodsPrice.replace(/[^\d.]/g,'')" -->
-            <el-table-column label="岗位名称" width="120">
-              <!-- <template scope="scope"> -->
-                <!-- <el-input
-                  size="small"
-                  v-model="scope.row.projectPostName"
-                  placeholder="请输入岗位名称"
-                  
                   @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
-                <span>{{scope.row.goodsPrice}}</span> -->
-                 
-              <!-- </template> -->
-               <!-- <treeselect v-model="form.projectPostName" :options="projectTypeOptions" :normalizer="normalizer" placeholder="请选择项目分类父级" /> -->
-           <div>
-              <treeselect
-                v-model="form.projectPostName"
-                :options="projectTypeOptions"
-                :normalizer="normalizer"
-                placeholder="请选择项目类型"
-              />
-            </div>
-            </el-table-column>
-              <el-table-column label="岗位编码" width="120">
-              <template scope="scope">
-                <el-input
-                 size="small"
-                  v-model="scope.row.projectPost"
-                  placeholder="请输入岗位编码"
-                ></el-input>
-                <span>{{scope.row.goodsMoney}}</span>
               </template>
             </el-table-column>
-      
+            <el-table-column label="岗位名称" width="150">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  :disabled="true"
+                  v-model="scope.row.projectPostName"
+                  @click="openGw(scope.$index, scope.row)"
+                  placeholder="请输入岗位名称"
+                ></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="岗位编码" width="150">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  :disabled="true"
+                  v-model="scope.row.projectPost"
+                  @click="openGw(scope.$index, scope.row)"
+                  placeholder="请输入岗位编码"
+                ></el-input>
+              </template>
+            </el-table-column>
+
+             <el-table-column label="备注" width="150">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.remark"
+                  placeholder="请输入备注"
+                ></el-input>
+              </template>
+            </el-table-column>
+
             <el-table-column label="操作">
               <template scope="scope">
                 <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-edit"
+                  @click="openGw(scope.$index, scope.row)"
+                  >选择岗位</el-button
+                >
+                <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-delete"
+                  @click="handleChildDelete(scope.$index, scope.row)"
+                  >删除</el-button
+                >
+              </template>
+              <!-- 
+              <template scope="scope">
+                  <el-button
+                  size="small"
+                  type="danger"
+                  @click="openGw(scope.$index, scope.row)"
+                >选择岗位</el-button>
+              </template>
+              <template scope="scope">
+                 <el-button
                   size="small"
                   type="danger"
                   @click="handleChildDelete(scope.$index, scope.row)"
                 >删除</el-button>
-              </template>
+              </template> -->
             </el-table-column>
           </el-table>
         </el-tab-pane>
         <el-tab-pane label="附件信息" name="three">
           <el-row :gutter="15" class="mb8">
             <el-col :span="1.5">
-                <el-upload
+              <el-upload
                 class="upload-demo"
                 ref="upload"
                 :file-list="fileList"
@@ -358,9 +374,18 @@
                 :headers="upload.headers"
                 :on-success="handleSuccess"
                 :on-remove="handleRemove"
-                :auto-upload="false">
-                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+                :auto-upload="false"
+              >
+                <el-button slot="trigger" size="small" type="primary"
+                  >选取文件</el-button
+                >
+                <el-button
+                  style="margin-left: 10px"
+                  size="small"
+                  type="success"
+                  @click="submitUpload"
+                  >上传到服务器</el-button
+                >
               </el-upload>
             </el-col>
           </el-row>
@@ -371,12 +396,30 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
- <goods-select v-if="selectGoodsDialog" ref="selectGoods" @selectData="selectData"  ></goods-select> 
- <!-- @selectDataMore="selectDataMore" -->
+    <el-dialog title="选择岗位" :visible.sync="openPost" width="400px">
+      <treeselect
+        v-model="projectPost"
+        :defaultExpandLevel="3"
+        :options="projectTypePostOptions"
+        :normalizer="normalizer"
+        placeholder="请选择岗位"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="selectPost">确 定</el-button>
+        <el-button @click="cancelPost">取 消</el-button>
+      </div>
+    </el-dialog>
+    <goods-select
+      v-if="selectGoodsDialog"
+      ref="selectGoods"
+      @selectData="selectData"
+    ></goods-select>
+    <!-- @selectDataMore="selectDataMore" -->
   </div>
 </template>
 
 <script>
+let _that;
 import {
   listProjectInfo,
   getProjectInfo,
@@ -385,21 +428,27 @@ import {
   updateProjectInfo,
   systemFileList,
   delFileInfo,
+  delProjectUserInfo,
+  listProjectChild,
   exportProjectInfo,
 } from "@/api/system/projectInfo";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { listProjectType } from "@/api/system/projectType";
+import { listProjectTypePost } from "@/api/system/projectTypePost";
 import { listUser } from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import goodsSelect from "./goodsSelect";
 
 export default {
   name: "ProjectType",
-  components: { Treeselect ,  goodsSelect},
+  components: { Treeselect, goodsSelect },
   data() {
     return {
-      activeName:"first",
+      postIndex:-1,
+      projectPost:0,
+      openPost: false,
+      activeName: "first",
       fileList: [],
       upload: {
         // 是否显示弹出层（用户导入）
@@ -418,13 +467,16 @@ export default {
       // 遮罩层
       loading: true,
       // 数据
-      tableData:[],
+      tableData: [],
       // 弹出框遮罩层
       selectGoodsDialog: false,
       // 主单数据
       projectTypeList: [],
       // 项目分类树选项
       projectTypeOptions: [],
+      // 项目岗位树选项
+      projectTypePostOptions: [],
+      projectTypePostList:[],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -463,12 +515,50 @@ export default {
     };
   },
   created() {
+    _that=this;
     this.getList();
+    this.getTreeselect();
+    this.getPostTreeselect();
   },
   methods: {
+    //追加子表必填样式
+    starAdd(obj) {
+      if (
+        obj.columnIndex === 0 ||
+        obj.columnIndex === 2
+      ) {
+        return "star";
+      }
+    },
+    openGw(index, row) {    
+      this.getPostTreeselect();
+      this.postIndex=index;
+      this.openPost = true;
+    },
+    selectPost(){
+      this.openPost = false;
+        if(this.projectPost!=0){
+            //根据编码查找名称
+            let projectPostName="";
+            for(let i=0;i<this.projectTypePostList.length;i++){
+              if(this.projectTypePostList[i].projectTypeId==this.projectPost){
+                  projectPostName=this.projectTypePostList[i].projectTypeName;
+                  break
+              }
+            }
+            this.tableData.forEach(info => {             
+                // 修改list中的数据        
+                info.projectPost = _that.projectPost;
+                info.projectPostName=projectPostName;
+                this.$set(this.tableData, this.postIndex, info)          
+            })
+        }
+       this.projectPost=0;
+        //alert(this.projectPostCode)
+    },
     handleSuccess(res, file, fileList) {
-      this.fileList=fileList;
-         // 上传成功
+      this.fileList = fileList;
+      // 上传成功
       console.log(res);
       console.log(fileList);
       //保存到文件表中
@@ -478,37 +568,27 @@ export default {
       // this.fileList.push(info);
     },
     handleRemove(file, fileList) {
-      console.log("删除:"+file.id);
-      if(file.id!=null&&file.id!=""&&file.id!=undefined){
+      console.log("删除:" + file.id);
+      if (file.id != null && file.id != "" && file.id != undefined) {
         delFileInfo(file.id);
       }
-      this.fileList=fileList;
+      this.fileList = fileList;
       console.log(fileList);
     },
     submitUpload() {
-        this.$refs.upload.submit();
+      this.$refs.upload.submit();
     },
-      /** 操作 */
+    /** 操作 */
     goodsSelect() {
-    
-        this.selectGoodsDialog = true;
-        this.$nextTick(() => {
+      this.selectGoodsDialog = true;
+      this.$nextTick(() => {
         this.$refs.selectGoods.visible = true;
       });
     },
     // 批量选择
     selectData(row) {
- 
       this.$nextTick(() => {
-        //检查是否存在重复数据
-        // for (let i = 0; i < this.tableData.length; i++) {
-        //   if (row.goodsCode == this.tableData[i].goodsCode) {
-        //     this.msgError("信息重复!");
-        //     return;
-        //   }
-        // }
-   
-      let goodsInfo = new Object();
+        let goodsInfo = new Object();
         goodsInfo.userName = row.nickName;
         goodsInfo.userCode = row.userName;
         this.tableData.push(goodsInfo);
@@ -544,7 +624,6 @@ export default {
     /** 查询部门下拉树结构 */
     getTreeselect() {
       listProjectType().then((response) => {
-        console.log(response);
         this.projectTypeOptions = [];
         const data = {
           projectTypeId: 0,
@@ -559,15 +638,33 @@ export default {
         this.projectTypeOptions.push(data);
       });
     },
+     /** 查询部门下拉树结构 */
+    getPostTreeselect() {
+      listProjectTypePost().then((response) => {
+        this.projectTypePostOptions = [];
+        this.projectTypePostList=response.data;
+        const data = {
+          projectTypeId: 0,
+          projectTypeName: "顶级节点",
+          children: [],
+        };
+        data.children = this.handleTree(
+          response.data,
+          "projectTypeId",
+          "projectTypePid"
+        );
+        this.projectTypePostOptions.push(data);
+      });
+    },
     selectStore(data) {
       //根据仓库编码查找仓库名称
-      console.log(data) //admin
+      console.log(data); //admin
       for (let i = 0; i < this.people.length; i++) {
-          //  console.log(this.people[i])
-          // console.log(this.people[i].nickName)
+        //  console.log(this.people[i])
+        // console.log(this.people[i].nickName)
         if (this.people[i].nickName == data) {
-          console.log(this.people[i].nickName)
-          
+          console.log(this.people[i].nickName);
+
           this.form.projectManagerCode = this.people[i].userName;
           break;
         }
@@ -578,6 +675,9 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+    },
+     cancelPost() {
+      this.openPost=false;
     },
     // 表单重置
     reset() {
@@ -604,6 +704,7 @@ export default {
         projectManagerCode: undefined,
       };
       this.resetForm("form");
+      this.tableData=[];
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -618,7 +719,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.getTreeselect();
+      //this.getTreeselect();
       this.open = true;
       this.title = "项目建档";
     },
@@ -631,23 +732,18 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      this.getTreeselect();
+      //this.getTreeselect();
       if (row != undefined) {
         this.form.projectTypePid = row.projectTypeId;
       }
       const id = row.id || this.ids;
       getProjectInfo(id).then((response) => {
         this.form = response.data;
-         systemFileList(this.form.projectCode).then((response) => {
-          //  for(let i=0;i<response.data.length;i++){
-          //     let info = new Object();
-          //     info.id = response.data[i].response.id;
-          //     info.name = response.data[i].response.name;
-          //     info.url = response.data[i].response.url;
-          //     this.fileList.push(info);
-          // }
-          console.log(this.fileList)
+        systemFileList(this.form.projectCode).then((response) => {
           this.fileList = response.rows;
+        });
+        listProjectChild(this.form.projectCode).then((response) => {
+          this.tableData = response.rows;
         });
         this.open = true;
         this.title = "修改项目信息";
@@ -657,19 +753,33 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          let fileList=[];
+          for (let i = 0; i < this.tableData.length; i++) {
+          if (
+              this.tableData[i].userCode == "" ||
+              this.tableData[i].projectPost == ""
+            ) {
+              this.msgError("检查明细必填项!");
+              return;
+            }
+          }
+          let fileList = [];
           console.log(this.fileList);
-          for(let i=0;i<this.fileList.length;i++){
-              if(this.fileList[i].id!=""&&this.fileList[i].id!=null&&this.fileList[i].id!=undefined){
-                continue
-              }
-              let info = new Object();
-              info.name = this.fileList[i].response.name;
-              info.url = this.fileList[i].response.url;
-              fileList.push(info);
+          for (let i = 0; i < this.fileList.length; i++) {
+            if (
+              this.fileList[i].id != "" &&
+              this.fileList[i].id != null &&
+              this.fileList[i].id != undefined
+            ) {
+              continue;
+            }
+            let info = new Object();
+            info.name = this.fileList[i].response.name;
+            info.url = this.fileList[i].response.url;
+            fileList.push(info);
           }
           this.form.fileRows = JSON.stringify(fileList);
-          console.log(this.form)
+          this.form.rows = JSON.stringify(this.tableData);
+          console.log(this.form);
           if (this.form.id != undefined) {
             updateProjectInfo(this.form).then((response) => {
               if (response.code === 200) {
@@ -694,18 +804,23 @@ export default {
         }
       });
     },
+     handleChildDelete(index, row) {
+      if (row.id != "" && row.id != undefined && row.id != null) {
+          delProjectUserInfo(row.id);
+          this.tableData.splice(index, 1);
+      } else {
+        this.tableData.splice(index, 1);
+      }
+      console.log(index, row);
+    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$confirm(
-        '是否确认删除选中的项目?',
-        "警告",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }
-      )
+      this.$confirm("是否确认删除选中的项目?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
         .then(function () {
           return delProjectInfo(ids);
         })
@@ -719,8 +834,39 @@ export default {
 };
 </script>
 <style>
-.el-table .cell{
-  overflow: visible;
+.cell .el-select + span {
+  display: none;
 }
-
+.cell .el-input + span {
+  display: none;
+}
+.el-table__expanded-cell {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.tb-edit .el-input {
+  display: block !important;
+}
+.tb-edit .current-row .el-input {
+  display: block;
+}
+.tb-edit .current-row .el-input + span {
+  display: none;
+}
+.tb-edit .current-row .el-select {
+  display: block;
+}
+.tb-edit .current-row .el-select + span {
+  display: none;
+}
+table th.star div::after {
+  content: "*";
+  color: red;
+}
+.el-input.is-disabled .el-input__inner {
+  color: #606266;
+}
+.changeBlue .el-form-item__label {
+  color: #1890ff;
+}
 </style>

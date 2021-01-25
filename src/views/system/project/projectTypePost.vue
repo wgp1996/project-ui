@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import { listProjectType, getProjectType, delProjectType, addProjectType, updateProjectType, exportProjectType } from "@/api/system/projectTypePost";
+import { listProjectTypePost, getProjectType, delProjectType, addProjectType, updateProjectType, exportProjectType } from "@/api/system/projectTypePost";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import projectSelectAll from "./projectSelectAll";
@@ -168,7 +168,7 @@ export default {
     /** 查询项目分类列表 */
     getList() {
       this.loading = true;
-      listProjectType(this.queryParams).then(response => {
+      listProjectTypePost(this.queryParams).then(response => {
         this.projectTypeList = this.handleTree(response.data, "projectTypeId", "projectTypePid");
         this.loading = false;
       });
@@ -186,7 +186,7 @@ export default {
     },
 	/** 查询部门下拉树结构 */
     getTreeselect() {
-      listProjectType().then(response => {
+      listProjectTypePost().then(response => {
         this.projectTypeOptions = [];
         const data = { projectTypeId: 0, projectTypeName: '顶级节点', children: [] };
         data.children = this.handleTree(response.data, "projectTypeId", "projectTypePid");

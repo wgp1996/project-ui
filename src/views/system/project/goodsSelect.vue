@@ -31,7 +31,7 @@
       <el-form-item label="人员名称" prop="userName">
         <el-input style="width:200px"
           v-model="queryParams.userName"
-          placeholder="请输入商品名称"
+          placeholder="请输入人员名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -40,7 +40,7 @@
       <el-form-item label="人员编码" prop="nickName">
         <el-input style="width:200px"
           v-model="queryParams.nickName"
-          placeholder="请输入摊位编码"
+          placeholder="请输入人员编码"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -113,7 +113,7 @@ export default {
       // 市场摊位信息表格数据
       stallList: [],
       // 弹出层标题
-      title: "选择商品信息",
+      title: "选择人员信息",
       // 是否显示弹出层
       open: false,
       // 所属非类市场
