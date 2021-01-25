@@ -122,12 +122,12 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="项目名称" prop="budgetSr" style="width:80%;position:relative">
           <el-input v-model="form.projectName" :disabled="true" placeholder="请选择项目" />
-            <el-button icon="el-icon-plus" type="primary" style="position:absolute;right:-50px" @click="projectSelect"></el-button>
+            <el-button icon="el-icon-plus" type="primary" style="position:absolute;right:-50px;top:0px" @click="projectSelect"></el-button>
         </el-form-item>
         <div class="clearfix">
             <el-form-item label="项目预算收入" prop="budgetSr" style="width:50%;float:left">
               <el-input v-model="form.budgetSr" placeholder="请输入项目预算收入" />
-              <span style="position:absolute;right:-20px">元</span>
+              <span style="position:absolute;right:-20px;top:0px">元</span>
             </el-form-item>
             <el-form-item label="预警来源" prop="budgetSrFrom" style="width:50%;float:left">
               <!-- <el-input v-model="form.budgetSrFrom" placeholder="请输入来源" /> -->
@@ -139,36 +139,36 @@
         </div>
         <el-form-item label="设置预算毛利率" prop="budgetRate" style="width:50%;">
           <el-input v-model="form.budgetRate" placeholder="请输入设置预算毛利率" />
-          <span style="position:absolute;right:-20px">%</span>
+          <span style="position:absolute;right:-20px;top:0px">%</span>
         </el-form-item>
         <el-form-item label="项目预算毛利" prop="budgetProfit" style="width:50%;">
           <el-input v-model="form.budgetProfit" placeholder="请输入项目预算毛利" class="specialcolor"/>
-          <span style="position:absolute;right:-20px">元</span>
+          <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <el-form-item label="销项税率" prop="budgetXxRate" style="width:50%;">
           <el-input v-model="form.budgetXxRate" placeholder="请输入销项税率" />
-          <span style="position:absolute;right:-20px">%</span>
+          <span style="position:absolute;right:-20px;top:0px">%</span>
         </el-form-item>
         <el-form-item label="税金" prop="budgetTaxes" style="width:50%;" >
           <el-input v-model="form.budgetTaxes" placeholder="请输入税金" class="specialcolor"/>
-          <span style="position:absolute;right:-20px">元</span>
+          <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <el-form-item label="预算成本" prop="budgetCost" style="width:50%;">
           <el-input v-model="form.budgetCost" placeholder="请输入预算成本" class="specialcolor"/>
-          <span style="position:absolute;right:-20px">元</span>
+          <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <el-form-item label="纯利润" prop="budgetNetProfit" style="width:50%;">
           <el-input v-model="form.budgetNetProfit" placeholder="请输入纯利润" class="specialcolor"/>
-          <span style="position:absolute;right:-20px">元</span>
+          <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <el-form-item label="成本预算" prop="costBudget" style="width:80%;">
           <el-input v-model="form.costBudget" placeholder="请输入成本预算" class="specialcolor"/>
-          <span style="position:absolute;right:-20px">元</span>
+          <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <div class="clearfix">
           <el-form-item label="劳务预算" prop="labourBudget" style="width:50%;float:left">
             <el-input v-model="form.labourBudget" placeholder="请输入劳务类预算" />
-            <span style="position:absolute;right:-20px">元</span>
+            <span style="position:absolute;right:-20px;top:0px">元</span>
           </el-form-item>
           <el-form-item label="预算来源" prop="labourBudgetFrom" style="width:50%;float:left">
             <!-- <el-input v-model="form.labourBudgetFrom" placeholder="请输入劳务类预算来源" />
@@ -182,7 +182,7 @@
         <div class="clearfix">
           <el-form-item label="材料预算" prop="materialBudget" style="width:50%;float:left">
             <el-input v-model="form.materialBudget" placeholder="请输入材料预算" />
-            <span style="position:absolute;right:-20px">元</span>
+            <span style="position:absolute;right:-20px;top:0px">元</span>
           </el-form-item>
           <el-form-item label="预算来源" prop="materialBudgetFrom" style="width:50%;float:left">
             <!-- <el-input v-model="form.materialBudgetFrom" placeholder="请输入材料预算来源" /> -->
@@ -195,7 +195,7 @@
         <div class="clearfix">
           <el-form-item label="其他预算" prop="outherBudget" style="width:50%;float:left">
             <el-input v-model="form.outherBudget" placeholder="请输入其他类预算" />
-              <span style="position:absolute;right:-20px">元</span>
+              <span style="position:absolute;right:-20px;top:0px">元</span>
           </el-form-item>
           <el-form-item label="预算来源" prop="outherBudgetFrom" style="width:50%;float:left">
             <!-- <el-input v-model="form.outherBudgetFrom" placeholder="请输入其他类预算来源" /> -->
@@ -208,7 +208,7 @@
         <div class="clearfix">
             <el-form-item label="间接费用预算" prop="indirectBudget" style="width:50%;float:left">
               <el-input v-model="form.indirectBudget" placeholder="请输入间接类预算" />
-              <span style="position:absolute;right:-20px">元</span>
+              <span style="position:absolute;right:-20px;top:0px">元</span>
             </el-form-item>
             <el-form-item label="预算来源" prop="indirectBudgetFrom" style="width:50%;float:left">
               <!-- <el-input v-model="form.indirectBudgetFrom" placeholder="请输入间接类预算来源" /> -->
