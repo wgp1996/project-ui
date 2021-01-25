@@ -46,6 +46,7 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column label="项目岗位名称" align="center" prop="projectTypeName" />
+      <el-table-column label="项目名称" align="center" prop="projectName" />
       <el-table-column label="显示顺序" align="center" prop="orderNum" />
       <el-table-column label="创建日期" align="center" prop="createTime" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">

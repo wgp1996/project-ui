@@ -14,7 +14,6 @@ export function listProjectChild(projectCode) {
   return request({
     url: '/system/projectUser/list?projectCode='+projectCode,
     method: 'get',
-    params: query
   })
 }
 
@@ -31,7 +30,6 @@ export function systemFileList(projectCode) {
   return request({
     url: '/system/systemFile/list?code='+projectCode,
     method: 'get',
-    params: query
   })
 }
 
