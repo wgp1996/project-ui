@@ -128,12 +128,12 @@
         align="center"
         prop="projectStartTime"
       />
-      <el-table-column label="完工日期" align="center" prop="projectEndTime" />
+      <!-- <el-table-column label="完工日期" align="center" prop="projectEndTime" /> -->
       <el-table-column label="启用预算" align="center" prop="ysStatus" />
       <el-table-column label="创建人" align="center" prop="createBy" />
       <el-table-column label="创建日期" align="center" prop="createTime" />
 
-      <el-table-column label="备注" align="center" prop="remark" />
+      <!-- <el-table-column label="备注" align="center" prop="remark" /> -->
       <el-table-column
         label="操作"
         align="center"
@@ -208,9 +208,9 @@
               >
                 <el-option
                   v-for="item in people"
-                  :key="item.userName"
-                  :label="item.nickName"
-                  :value="item.userName"
+                  :key="item.nickName"
+                  :label="item.userName"
+                  :value="item.nickName"
                 >
                   <span style="width: 100%">{{ item.nickName }}</span>
                 </el-option>
@@ -252,7 +252,101 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="人员信息" name="second"> </el-tab-pane>
+        <el-tab-pane label="人员信息" name="second">
+          <el-row :gutter="10" class="mb8">
+            <el-col :span="1.5">
+              <el-button type="primary" icon="el-icon-plus" size="mini" @click="goodsSelect">新增人员</el-button>
+            </el-col>
+          </el-row>
+
+          <el-table
+            :data="tableData"
+            class="tb-edit"
+            style="width: 100%"
+            highlight-current-row
+           >
+           
+             <el-table-column prop="userName" label="人员名称" width="120">
+              <template scope="scope">
+               <!-- <el-select v-model="scope.row.goodsDw" placeholder="请输入单位信息" style="width:100%">
+                    <el-option
+                      v-for="dict in dwOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    ></el-option>
+                  </el-select> -->
+                 
+                <el-input
+                  size="small"
+                  v-model="scope.row.userName"
+                  placeholder="请输入人员名称"
+                  
+                  @change="handleEdit(scope.$index, scope.row)"
+                ></el-input>
+              
+             
+              </template>
+            </el-table-column>
+      
+         
+            <el-table-column label="人员编码" width="120">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.userCode"
+                  placeholder="请输入人员编码"
+                
+                   @change="handleEdit(scope.$index, scope.row)"
+                ></el-input>
+                <span>{{scope.row.goodsNum}}</span>
+              </template>
+            </el-table-column>
+            <!-- :onkeyup="scope.row.goodsPrice=scope.row.goodsPrice.replace(/[^\d.]/g,'')" -->
+            <el-table-column label="岗位名称" width="120">
+              <!-- <template scope="scope"> -->
+                <!-- <el-input
+                  size="small"
+                  v-model="scope.row.projectPostName"
+                  placeholder="请输入岗位名称"
+                  
+                  @change="handleEdit(scope.$index, scope.row)"
+                ></el-input>
+                <span>{{scope.row.goodsPrice}}</span> -->
+                 
+              <!-- </template> -->
+               <!-- <treeselect v-model="form.projectPostName" :options="projectTypeOptions" :normalizer="normalizer" placeholder="请选择项目分类父级" /> -->
+           <div>
+              <treeselect
+                v-model="form.projectPostName"
+                :options="projectTypeOptions"
+                :normalizer="normalizer"
+                placeholder="请选择项目类型"
+              />
+            </div>
+            </el-table-column>
+              <el-table-column label="岗位编码" width="120">
+              <template scope="scope">
+                <el-input
+                 size="small"
+                  v-model="scope.row.projectPost"
+                  placeholder="请输入岗位编码"
+                ></el-input>
+                <span>{{scope.row.goodsMoney}}</span>
+              </template>
+            </el-table-column>
+      
+            <el-table-column label="操作">
+              <template scope="scope">
+                <el-button
+                  size="small"
+                  type="danger"
+                  @click="handleChildDelete(scope.$index, scope.row)"
+                >删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
         <el-tab-pane label="附件信息" name="three">
           <el-row :gutter="15" class="mb8">
             <el-col :span="1.5">
@@ -277,6 +371,8 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+ <goods-select v-if="selectGoodsDialog" ref="selectGoods" @selectData="selectData"  ></goods-select> 
+ <!-- @selectDataMore="selectDataMore" -->
   </div>
 </template>
 
@@ -296,9 +392,11 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { listProjectType } from "@/api/system/projectType";
 import { listUser } from "@/api/system/user";
 import { getToken } from "@/utils/auth";
+import goodsSelect from "./goodsSelect";
+
 export default {
   name: "ProjectType",
-  components: { Treeselect },
+  components: { Treeselect ,  goodsSelect},
   data() {
     return {
       activeName:"first",
@@ -319,6 +417,10 @@ export default {
       },
       // 遮罩层
       loading: true,
+      // 数据
+      tableData:[],
+      // 弹出框遮罩层
+      selectGoodsDialog: false,
       // 主单数据
       projectTypeList: [],
       // 项目分类树选项
@@ -386,6 +488,33 @@ export default {
     submitUpload() {
         this.$refs.upload.submit();
     },
+      /** 操作 */
+    goodsSelect() {
+    
+        this.selectGoodsDialog = true;
+        this.$nextTick(() => {
+        this.$refs.selectGoods.visible = true;
+      });
+    },
+    // 批量选择
+    selectData(row) {
+ 
+      this.$nextTick(() => {
+        //检查是否存在重复数据
+        // for (let i = 0; i < this.tableData.length; i++) {
+        //   if (row.goodsCode == this.tableData[i].goodsCode) {
+        //     this.msgError("信息重复!");
+        //     return;
+        //   }
+        // }
+   
+      let goodsInfo = new Object();
+        goodsInfo.userName = row.nickName;
+        goodsInfo.userCode = row.userName;
+        this.tableData.push(goodsInfo);
+        this.$refs.selectGoods.visible = false;
+      });
+    },
     /** 查询项目分类列表 */
     getList() {
       this.loading = true;
@@ -432,8 +561,13 @@ export default {
     },
     selectStore(data) {
       //根据仓库编码查找仓库名称
+      console.log(data) //admin
       for (let i = 0; i < this.people.length; i++) {
+          //  console.log(this.people[i])
+          // console.log(this.people[i].nickName)
         if (this.people[i].nickName == data) {
+          console.log(this.people[i].nickName)
+          
           this.form.projectManagerCode = this.people[i].userName;
           break;
         }
@@ -497,10 +631,10 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      //this.getTreeselect();
-      // if (row != undefined) {
-      //   this.form.projectTypePid = row.projectTypeId;
-      // }
+      this.getTreeselect();
+      if (row != undefined) {
+        this.form.projectTypePid = row.projectTypeId;
+      }
       const id = row.id || this.ids;
       getProjectInfo(id).then((response) => {
         this.form = response.data;
@@ -584,3 +718,9 @@ export default {
   },
 };
 </script>
+<style>
+.el-table .cell{
+  overflow: visible;
+}
+
+</style>
