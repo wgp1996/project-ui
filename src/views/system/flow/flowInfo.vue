@@ -405,13 +405,13 @@ export default {
     selecter(index,row){
   
        for (let i = 0; i < this.roleList.length; i++) {
-           console.log(row.prId)
-            console.log(this.tableData)
-           console.log(this.roleList[i])
+          //  console.log(row.prId)
+          //   console.log(this.tableData)
+          //  console.log(this.roleList[i])
         if (this.roleList[i].roleId == row.prId) {
          
-           for(var j=0;j<this.tableData.length-1;j++){
-               if(this.tableData[j].prId==row.prId){
+           for(var j=0;j<this.tableData.length;j++){
+               if(this.tableData[j].prId==row.prId&&index!=j){
                     this.msgError("角色或选择人员名称不能重复!");
                       row.prId=''
                     return
@@ -427,10 +427,15 @@ export default {
     // 选择人员
     selectStore(index,row) {
       for (let i = 0; i < this.people.length; i++) {
-            console.log(this.tableData)
+            //console.log(this.tableData)
         if (this.people[i].nickName == row.prId) {
-            for(var j=0;j<this.tableData.length-1;j++){
-               if(this.tableData[j].prId==row.prId){
+            for(var j=0;j<this.tableData.length;j++){
+              // console.log(this.tableData[j].prId)
+              // console.log(row)
+            //   console.log(index)
+            //  console.log(j)
+               if(this.tableData[j].prId==row.prId&&index!=j){
+                    console.log(j)
                     this.msgError("角色或选择人员名称不能重复!");
                       row.prId=''
                     return
