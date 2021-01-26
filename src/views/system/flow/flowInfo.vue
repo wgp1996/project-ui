@@ -645,9 +645,41 @@ export default {
   }
 };
 </script>
+
 <style>
+.cell .el-select + span {
+  display: none;
+}
+.cell .el-input + span {
+  display: none;
+}
+.el-table__expanded-cell {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.tb-edit .el-input {
+  display: block !important;
+}
+.tb-edit .current-row .el-input {
+  display: block;
+}
+.tb-edit .current-row .el-input + span {
+  display: none;
+}
+.tb-edit .current-row .el-select {
+  display: block;
+}
+.tb-edit .current-row .el-select + span {
+  display: none;
+}
 table th.star div::after {
   content: "*";
   color: red;
 }
-</style>>
+.el-input.is-disabled .el-input__inner {
+  color: #606266;
+}
+.changeBlue .el-form-item__label {
+  color: #1890ff;
+}
+</style>
