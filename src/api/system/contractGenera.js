@@ -9,6 +9,15 @@ export function listContractGenera(query) {
   })
 }
 
+// 查询总包合同审核列表
+export function shListContractGenera(query) {
+  return request({
+    url: '/system/contractGenera/shList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询总包合同详细
 export function getContractGenera(id) {
   return request({
@@ -39,6 +48,20 @@ export function updateContractGenera(data) {
 export function delContractGenera(id) {
   return request({
     url: '/system/contractGenera/' + id,
+    method: 'delete'
+  })
+}
+// 提交总包合同
+export function effectContractGenera(id) {
+  return request({
+    url: '/system/contractGenera/effect/' + id,
+    method: 'delete'
+  })
+}
+// 取消提交总包合同
+export function cancelContractGenera(id) {
+  return request({
+    url: '/system/contractGenera/cancel/' + id,
     method: 'delete'
   })
 }

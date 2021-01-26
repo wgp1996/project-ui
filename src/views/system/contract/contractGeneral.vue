@@ -4,7 +4,7 @@
       :model="queryParams"
       ref="queryForm"
       :inline="true"
-      label-width="120px"
+      label-width="80px"
     >
       <el-form-item label="单号" prop="djNumber">
         <el-input
@@ -78,7 +78,7 @@
           >修改</el-button
         >
       </el-col>
-      <el-col :span="1.5">
+       <el-col :span="1.5">
         <el-button
           type="danger"
           icon="el-icon-delete"
@@ -87,6 +87,28 @@
           @click="handleDelete"
           v-hasPermi="['system:contractGenera:remove']"
           >删除</el-button
+        >
+      </el-col>
+       <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleEffect"
+          v-hasPermi="['system:contractGenera:effect']"
+          >提交</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleCancel"
+          v-hasPermi="['system:contractGenera:cancel']"
+          >取消提交</el-button
         >
       </el-col>
       <!-- <el-col :span="1.5">
@@ -120,11 +142,11 @@
         align="center"
         prop="projectYpersonName"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="合同丙方"
         align="center"
         prop="projectBpersonName"
-      />
+      /> -->
       <el-table-column label="合同总额" align="center" prop="contractMoney" />
       <el-table-column label="制单人" align="center" prop="createBy" />
       <el-table-column label="制单日期" align="center" prop="createTime" />
@@ -248,6 +270,12 @@
                 placeholder="请输入合同总额"
               />
             </el-form-item>
+             <el-form-item label="启用审批" prop="isSp">
+              <el-radio-group v-model="form.isSp">
+                <el-radio :label="1">启用</el-radio>
+                <el-radio :label="0">不启用</el-radio>
+              </el-radio-group>
+            </el-form-item>
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" placeholder="请输入备注" />
             </el-form-item>
@@ -281,7 +309,7 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="项目信息" name="three">
-          <el-form ref="form" :model="projectForm" label-width="120px">
+          <el-form ref="projectForm" :model="projectForm" label-width="120px">
             <el-form-item label="项目编码" prop="projectCode">
               <el-input
                 v-model="projectForm.projectCode"
@@ -378,6 +406,8 @@ import {
   addContractGenera,
   updateContractGenera,
   exportContractGenera,
+  effectContractGenera,
+  cancelContractGenera
 } from "@/api/system/contractGenera";
 import { systemFileList, delFileInfo,getProjectInfoByCode } from "@/api/system/projectInfo";
 import { getKhList } from "@/api/system/kh";
@@ -459,6 +489,9 @@ export default {
         contractMoney: [
           { required: true, message: "合同总额不能为空", trigger: "blur" },
         ],
+        isSp: [
+          { required: true, message: "请选择是否审批", trigger: "blur" },
+        ]
       },
     };
   },
@@ -663,7 +696,7 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$confirm(
-        '是否确认删除总包合同编号为"' + ids + '"的数据项?',
+        '是否确认删除选择的数据项?',
         "警告",
         {
           confirmButtonText: "确定",
@@ -677,6 +710,48 @@ export default {
         .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
+        })
+        .catch(function () {});
+    },
+    /** 提交按钮操作 */
+    handleEffect(row) {
+      const ids = row.id || this.ids;
+      this.$confirm(
+        '是否确认提交选中的数据项?',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(function () {
+          return effectContractGenera(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("提交成功");
+        })
+        .catch(function () {});
+    },
+    /** 取消提交按钮操作 */
+    handleCancel(row) {
+      const ids = row.id || this.ids;
+      this.$confirm(
+        '是否确认取消选中的数据项?',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(function () {
+          return cancelContractGenera(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("取消成功");
         })
         .catch(function () {});
     },
