@@ -148,7 +148,15 @@
           <el-input v-model="form.flowName" placeholder="请输入流程名称" />
         </el-form-item>
         <el-form-item label="流程编号" prop="flowNo">
-          <el-input v-model="form.flowNo" placeholder="请输入流程编号" />
+          <!-- <el-input v-model="form.flowNo" placeholder="请输入流程编号" /> -->
+            <el-select v-model="form.flowNo" placeholder="请选择流程编号" style="width:100%" >
+                 <el-option
+                      v-for="dict in flowNopptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    ></el-option>
+            </el-select>
         </el-form-item>
         <el-form-item label="备注说明" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注说明" />
@@ -408,10 +416,10 @@ export default {
                       row.prId=''
                     return
                }else{
-                      row.prName = this.roleList[i].roleName;
+                     
                }
            }
-           
+            row.prName = this.roleList[i].roleName;
           break;
         }
       }
@@ -428,11 +436,12 @@ export default {
                     return
                }else{
                       // row.prName = this.roleList[i].roleName;
-                        row.prName = this.people[i].userName;
+                       
                }
            }
           // console.log(this.people[i].nickName)
-          //  row.prName = this.people[i].userName;
+         
+           row.prName = this.people[i].userName;
           break;
         }
       }
