@@ -50,6 +50,14 @@ export function getProjectInfo(id) {
   })
 }
 
+// 查询项目建档详细
+export function getProjectInfoByCode(code) {
+  return request({
+    url: '/system/projectInfo/getInfoByCode/' + code,
+    method: 'get'
+  })
+}
+
 // 新增项目建档
 export function addProjectInfo(data) {
   return request({
