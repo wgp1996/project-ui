@@ -10,14 +10,22 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="流程号" prop="flowNo">
-        <el-input
+      <el-form-item label="流程编号" prop="flowNo">
+        <!-- <el-input
           v-model="queryParams.flowNo"
           placeholder="请输入流程号"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
-        />
+        /> -->
+         <el-select v-model="queryParams.flowNo" placeholder="请选择流程编号" style="width:100%" >
+                 <el-option
+                      v-for="dict in flowNopptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    ></el-option>
+                  </el-select>
       </el-form-item>
       <!-- <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
@@ -138,6 +146,9 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="流程名称" prop="flowName">
           <el-input v-model="form.flowName" placeholder="请输入流程名称" />
+        </el-form-item>
+        <el-form-item label="流程编号" prop="flowNo">
+          <el-input v-model="form.flowNo" placeholder="请输入流程编号" />
         </el-form-item>
         <el-form-item label="备注说明" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注说明" />
@@ -287,6 +298,8 @@ export default {
       // 是否显示弹出层
       open: false,
       activeName: "first",
+      // 流程编号
+      flowNopptions:[],
       one:false,
       two:false,
       //  是否明细
@@ -317,12 +330,12 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        //     isRole: [
-        //   { required: true, message: "是否角色不能为空", trigger: "blur" },
-        // ],
-        //    prId: [
-        //   { required: true, message: "人员或角色不能为空", trigger: "blur" },
-        // ],
+            flowName: [
+          { required: true, message: "流程名称不能为空", trigger: "blur" },
+        ],
+           flowNo: [
+          { required: true, message: "流程编号不能为空", trigger: "blur" },
+        ],
         //   isEnd: [
         //   { required: true, message: "是否允许结束不能为空", trigger: "blur" },
         // ],
@@ -331,6 +344,12 @@ export default {
   },
   created() {
     this.getList();
+      this.getDicts("flowType").then((response) => {
+      // console.log(response)
+      //  console.log("1")
+      this.flowNopptions = response.data;
+
+    });
   },
   methods: {
      //追加子表必填样式
@@ -364,7 +383,6 @@ export default {
            console.log(row)
          console.log(this.dwOptions[i])
         if (this.dwOptions[i].value == row.isRole=="1") {
-     
            row.one = false;
            row.two=true;
        
@@ -377,12 +395,23 @@ export default {
     },
     // 角色
     selecter(index,row){
+  
        for (let i = 0; i < this.roleList.length; i++) {
            console.log(row.prId)
+            console.log(this.tableData)
            console.log(this.roleList[i])
         if (this.roleList[i].roleId == row.prId) {
-     
-           row.prName = this.roleList[i].roleName;
+         
+           for(var j=0;j<this.tableData.length-1;j++){
+               if(this.tableData[j].prId==row.prId){
+                    this.msgError("角色或选择人员名称不能重复!");
+                      row.prId=''
+                    return
+               }else{
+                      row.prName = this.roleList[i].roleName;
+               }
+           }
+           
           break;
         }
       }
@@ -390,9 +419,20 @@ export default {
     // 选择人员
     selectStore(index,row) {
       for (let i = 0; i < this.people.length; i++) {
+            console.log(this.tableData)
         if (this.people[i].nickName == row.prId) {
-          console.log(this.people[i].nickName)
-           row.prName = this.people[i].userName;
+            for(var j=0;j<this.tableData.length-1;j++){
+               if(this.tableData[j].prId==row.prId){
+                    this.msgError("角色或选择人员名称不能重复!");
+                      row.prId=''
+                    return
+               }else{
+                      // row.prName = this.roleList[i].roleName;
+                        row.prName = this.people[i].userName;
+               }
+           }
+          // console.log(this.people[i].nickName)
+          //  row.prName = this.people[i].userName;
           break;
         }
       }
@@ -486,12 +526,12 @@ export default {
             this.tableData[i].isRole=this.tableData[i].isRole+"";
             this.tableData[i].isEnd=this.tableData[i].isEnd+"";
             if(this.tableData[i].isRole==1){
-               this.tableData[i].one=true;
-               this.tableData[i].two=false;
+               this.tableData[i].one=false;
+               this.tableData[i].two=true;
                
             }else{
-              this.tableData[i].one=false;
-              this.tableData[i].two=true;
+              this.tableData[i].one=true;
+              this.tableData[i].two=false;
               console.log(this.tableData)
             }
 
@@ -512,8 +552,10 @@ export default {
               this.msgError("检查明细信息必填项!");
               return;
            }
+       
          }
-             this.form.rows = JSON.stringify(this.tableData);
+       
+            this.form.rows = JSON.stringify(this.tableData);
             this.$refs["form"].validate(valid => {
               if (valid) {
                 if (this.form.id != undefined) {
