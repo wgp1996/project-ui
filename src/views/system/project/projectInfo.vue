@@ -436,7 +436,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { listProjectType } from "@/api/system/projectType";
 import { listProjectTypePost } from "@/api/system/projectTypePost";
-import { listUser } from "@/api/system/user";
+import { getAllUser } from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import goodsSelect from "./goodsSelect";
 
@@ -605,7 +605,8 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-      listUser(this.queryParams).then((response) => {
+      let queryParams={};
+      getAllUser(queryParams).then((response) => {
         console.log(response);
         this.people = response.rows;
       });

@@ -9,6 +9,15 @@ export function listFlowInfo(query) {
   })
 }
 
+// 查询单据流程环节列表
+export function djFlowList(djId) {
+  return request({
+    url: '/system/flowInfo/flowList?djId='+djId,
+    method: 'get'
+  })
+}
+
+
 //查询审批节点
 export function listNode(flow_no) {
   return request({

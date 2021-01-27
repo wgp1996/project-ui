@@ -44,6 +44,24 @@ export function updateContractGenera(data) {
   })
 }
 
+// 总包合同审核
+export function examineContractGenera(data) {
+  return request({
+    url: '/system/contractGenera/examine',
+    method: 'put',
+    data: data
+  })
+}
+
+// 总包合同取消审核
+export function cancelAuditContractGenera(id,nodeNo) {
+  return request({
+    url: '/system/contractGenera/cancelAudit/' + id+"/"+nodeNo,
+    method: 'delete'
+  })
+}
+
+
 // 删除总包合同
 export function delContractGenera(id) {
   return request({

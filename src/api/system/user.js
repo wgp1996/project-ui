@@ -9,6 +9,22 @@ export function listUser(query) {
     params: query
   })
 }
+// 查询下拉用户列表
+export function getAllUser(query) {
+  return request({
+    url: '/system/user/getAll',
+    method: 'get',
+    params: query
+  })
+}
+// 查询用户列表
+export function allListUser(query) {
+  return request({
+    url: '/system/user/allList',
+    method: 'get',
+    params: query
+  })
+}
 
 // 查询用户详细
 export function getUser(userId) {

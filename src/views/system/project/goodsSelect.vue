@@ -88,7 +88,7 @@
 // import { leaseStallList } from "@/api/system/stall";
 // import { listOwnerGoods, getGoods, delGoods, addGoods, updateGoods, exportGoods } from "@/api/system/ownerGoods";
 // import { goodsTypeTree,listGoodsType} from "@/api/system/goodsType";
-import { listUser } from "@/api/system/user";
+import { allListUser } from "@/api/system/user";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
@@ -181,7 +181,7 @@ export default {
       //   this.goodsTypeList = response.data;
       // });
      //  this.getTreeselect();
-      listUser(this.queryParams).then(response => {
+      allListUser(this.queryParams).then(response => {
         this.goodsList = response.rows;
         console.log( this.goodsList )
         this.total = response.total;
