@@ -684,7 +684,7 @@ export default {
       stepsData: [],
       activeName: "first",
       fileList: [],
-      show:false,
+      show:true,
       upload: {
         // 是否显示弹出层（用户导入）
         open: false,
@@ -826,10 +826,11 @@ export default {
         // 单选按钮
     control(val){
        if(val==true){
-         this.show=true
-         this.form.projectBpersonCode=''
+         this.show=false
+     
        }else{
-          this.show=false
+          this.show=true
+          this.form.projectBpersonCode=''
        }
     },
     //选择甲方
