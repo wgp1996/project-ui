@@ -76,6 +76,14 @@ export function effectFlowInfo(id) {
   })
 }
 
+// 停用流程表
+export function cancelFlowInfo(id) {
+  return request({
+    url: '/system/flowInfo/cancel/' + id,
+    method: 'delete'
+  })
+}
+
 
 
 // 导出流程表

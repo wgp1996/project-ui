@@ -276,7 +276,7 @@
               <template scope="scope">
                 <el-input
                   size="small"
-                   :disabled="true"
+                  :disabled="true"
                   v-model="scope.row.userName"
                   placeholder="请输入人员名称"
                   @change="handleEdit(scope.$index, scope.row)"
@@ -288,7 +288,7 @@
               <template scope="scope">
                 <el-input
                   size="small"
-                   :disabled="true"
+                  :disabled="true"
                   v-model="scope.row.userCode"
                   placeholder="请输入人员编码"
                   @change="handleEdit(scope.$index, scope.row)"
@@ -318,7 +318,7 @@
               </template>
             </el-table-column>
 
-             <el-table-column label="备注" width="150">
+            <el-table-column label="备注" width="150">
               <template scope="scope">
                 <el-input
                   size="small"
@@ -445,8 +445,8 @@ export default {
   components: { Treeselect, goodsSelect },
   data() {
     return {
-      postIndex:-1,
-      projectPost:0,
+      postIndex: -1,
+      projectPost: 0,
       openPost: false,
       activeName: "first",
       fileList: [],
@@ -476,7 +476,7 @@ export default {
       projectTypeOptions: [],
       // 项目岗位树选项
       projectTypePostOptions: [],
-      projectTypePostList:[],
+      projectTypePostList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -515,7 +515,7 @@ export default {
     };
   },
   created() {
-    _that=this;
+    _that = this;
     this.getList();
     this.getTreeselect();
     this.getPostTreeselect();
@@ -523,38 +523,35 @@ export default {
   methods: {
     //追加子表必填样式
     starAdd(obj) {
-      if (
-        obj.columnIndex === 0 ||
-        obj.columnIndex === 2
-      ) {
+      if (obj.columnIndex === 0 || obj.columnIndex === 2) {
         return "star";
       }
     },
-    openGw(index, row) {    
+    openGw(index, row) {
       this.getPostTreeselect();
-      this.postIndex=index;
+      this.postIndex = index;
       this.openPost = true;
     },
-    selectPost(){
+    selectPost() {
       this.openPost = false;
-        if(this.projectPost!=0){
-            //根据编码查找名称
-            let projectPostName="";
-            for(let i=0;i<this.projectTypePostList.length;i++){
-              if(this.projectTypePostList[i].projectTypeId==this.projectPost){
-                  projectPostName=this.projectTypePostList[i].projectTypeName;
-                  break
-              }
-            }
-            this.tableData.forEach(info => {             
-                // 修改list中的数据        
-                info.projectPost = _that.projectPost;
-                info.projectPostName=projectPostName;
-                this.$set(this.tableData, this.postIndex, info)          
-            })
+      if (this.projectPost != 0) {
+        //根据编码查找名称
+        let projectPostName = "";
+        for (let i = 0; i < this.projectTypePostList.length; i++) {
+          if (this.projectTypePostList[i].projectTypeId == this.projectPost) {
+            projectPostName = this.projectTypePostList[i].projectTypeName;
+            break;
+          }
         }
-       this.projectPost=0;
-        //alert(this.projectPostCode)
+        this.tableData.forEach((info) => {
+          // 修改list中的数据
+          info.projectPost = _that.projectPost;
+          info.projectPostName = projectPostName;
+          this.$set(this.tableData, this.postIndex, info);
+        });
+      }
+      this.projectPost = 0;
+      //alert(this.projectPostCode)
     },
     handleSuccess(res, file, fileList) {
       this.fileList = fileList;
@@ -605,7 +602,7 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-      let queryParams={};
+      let queryParams = {};
       getAllUser(queryParams).then((response) => {
         console.log(response);
         this.people = response.rows;
@@ -639,11 +636,11 @@ export default {
         this.projectTypeOptions.push(data);
       });
     },
-     /** 查询部门下拉树结构 */
+    /** 查询部门下拉树结构 */
     getPostTreeselect() {
       listProjectTypePost().then((response) => {
         this.projectTypePostOptions = [];
-        this.projectTypePostList=response.data;
+        this.projectTypePostList = response.data;
         const data = {
           projectTypeId: 0,
           projectTypeName: "顶级节点",
@@ -677,8 +674,8 @@ export default {
       this.open = false;
       this.reset();
     },
-     cancelPost() {
-      this.openPost=false;
+    cancelPost() {
+      this.openPost = false;
     },
     // 表单重置
     reset() {
@@ -705,7 +702,7 @@ export default {
         projectManagerCode: undefined,
       };
       this.resetForm("form");
-      this.tableData=[];
+      this.tableData = [];
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -755,7 +752,7 @@ export default {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           for (let i = 0; i < this.tableData.length; i++) {
-          if (
+            if (
               this.tableData[i].userCode == "" ||
               this.tableData[i].projectPost == ""
             ) {
@@ -805,10 +802,10 @@ export default {
         }
       });
     },
-     handleChildDelete(index, row) {
+    handleChildDelete(index, row) {
       if (row.id != "" && row.id != undefined && row.id != null) {
-          delProjectUserInfo(row.id);
-          this.tableData.splice(index, 1);
+        delProjectUserInfo(row.id);
+        this.tableData.splice(index, 1);
       } else {
         this.tableData.splice(index, 1);
       }
