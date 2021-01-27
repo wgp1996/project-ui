@@ -234,7 +234,8 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="合同乙方" prop="projectYpersonCode">
+            <div>
+            <el-form-item label="合同乙方" prop="projectYpersonCode" style="width:80%;float:left">
               <el-select
                 v-model="form.projectYpersonCode"
                 placeholder="请选择合同乙方"
@@ -253,6 +254,10 @@
                 </el-option>
               </el-select>
             </el-form-item>
+             <el-form-item style="width:20%;float:left">
+               <el-checkbox v-model="radio"  @change="control" style="position: relative;left: -100px">多方合同</el-checkbox>
+            </el-form-item>
+            </div>
             <el-form-item label="合同丙方" prop="projectBpersonCode">
               <el-select
                 v-model="form.projectBpersonCode"
@@ -260,6 +265,7 @@
                 filterable
                 style="width: 100%"
                 @change="selectPersonB"
+                 :disabled="show"
               >
                 <el-option
                   v-for="item in personList"
@@ -276,6 +282,7 @@
               <el-input
                 v-model="form.contractMoney"
                 placeholder="请输入合同总额"
+                 @change="savetwo"
               />
             </el-form-item>
             <el-form-item label="启用审批" prop="isSp">
@@ -392,6 +399,231 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
+             <!-- 第四个 -->
+          <el-tab-pane label="预算执行比对" name="forth">
+          <el-form ref="projectForm" :model="projectForm" label-width="140px">
+            <el-form-item label="项目预算收入" prop="projectCode" style="width:47%;float:left">
+              <el-input
+            
+                :readonly="true"
+                placeholder="请输入项目预算收入"
+              />
+              <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="项目动态收入" prop="projectName" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+            
+                placeholder="请输入项目动态收入"
+              />
+               <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="设定预算毛利率" prop="projectNameJc" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+      
+                placeholder="设定预算毛利率"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">%</span>
+            </el-form-item>
+            <el-form-item label="动态毛利率" prop="projectType" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+          
+                placeholder="动态毛利率"
+              />
+              <span style="position:absolute;right:-20px;top:0px">%</span>
+            </el-form-item>
+            <el-form-item label="项目预算毛利" prop="projectManagerName" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+              
+                placeholder="项目经理"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="项目动态毛利" prop="projectStartTime" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+             
+                placeholder="项目经理"
+              />
+                   <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="销项税率" prop="projectEndTime" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+              
+                placeholder="请输入销项税率"
+              />
+                   <span style="position:absolute;right:-20px;top:0px">%</span>
+            </el-form-item>
+            <el-form-item label="销项税率" style="width:47%;float:left">
+               <el-input
+                :readonly="true"
+          
+                placeholder="请输入销项税率"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">%</span>
+            </el-form-item>
+             <el-form-item label="项目预算税金" style="width:47%;float:left">
+               <el-input
+                :readonly="true"
+             
+                placeholder="请输入项目预算税金"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="项目动态税金" style="width:47%;float:left">
+               <el-input
+                :readonly="true"
+           
+                placeholder="请输入项目预算税金"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="项目预算总成本" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+              
+                :rows="2"
+          
+                placeholder="请输入项目预算总成本"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="项目动态总成本" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+            
+                :rows="2"
+           
+                placeholder="请输入项目动态总成本"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="项目预算纯利" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+            
+                :rows="2"
+       
+                placeholder="请输入项目预算纯利"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="项目动态纯利" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+        
+                :rows="2"
+        
+                placeholder="请输入项目动态纯利"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="成本类预算" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+              
+                :rows="2"
+          
+                placeholder="请输入成本类预算"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="成本类总计" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+      
+                :rows="2"
+     
+                placeholder="请输入成本类总计"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="劳务预算" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+      
+                :rows="2"
+           
+                placeholder="请输入劳务预算"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="劳务成本" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+          
+                :rows="2"
+      
+                placeholder="请输入劳务成本"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="材料预算" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+            
+                :rows="2"
+         
+                placeholder="请输入材料预算"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+             <el-form-item label="材料成本" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+           
+                :rows="2"
+          
+                placeholder="请输入材料成本"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="其他预算" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+       
+                :rows="2"
+          
+                placeholder="请输入其他预算"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="其他成本" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+          
+                :rows="2"
+           
+                placeholder="请输入其他成本"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="间接费用类预算" style="width:47%;float:left">
+              <el-input
+                :readonly="true"
+       
+                :rows="2"
+           
+                placeholder="请输入间接费用类预算"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+            <el-form-item label="间接费用动态合计" style="width:47%;float:left;margin-left:1%">
+              <el-input
+                :readonly="true"
+       
+                :rows="2"
+               
+                placeholder="请输入间接费用动态合计"
+              />
+                    <span style="position:absolute;right:-20px;top:0px">元</span>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
       </el-tabs>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -452,6 +684,7 @@ export default {
       stepsData: [],
       activeName: "first",
       fileList: [],
+      show:false,
       upload: {
         // 是否显示弹出层（用户导入）
         open: false,
@@ -469,6 +702,7 @@ export default {
       selectProjectDialog: false,
       // 遮罩层
       loading: true,
+       radio:false,
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -585,6 +819,18 @@ export default {
           this.projectForm = response.data;
         });
       });
+    },
+    savetwo(val){
+        this.form.contractMoney=Number(val).toFixed(2)
+    },
+        // 单选按钮
+    control(val){
+       if(val==true){
+         this.show=true
+         this.form.projectBpersonCode=''
+       }else{
+          this.show=false
+       }
     },
     //选择甲方
     selectPerson(data) {
