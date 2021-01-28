@@ -1,16 +1,26 @@
 <template>
   <div class="login">
-        <canvas
-        id='myCanvas'
-        :width='width'
-        :height='height'
-      >
-      </canvas>
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
+    <canvas class="cavs" @mousemove="mousemove" @mouseleave="mouseleave">
+    </canvas>
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="loginRules"
+      class="login-form"
+    >
       <h3 class="title">项目管理平台</h3>
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
-          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
+        <el-input
+          v-model="loginForm.username"
+          type="text"
+          auto-complete="off"
+          placeholder="账号"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="user"
+            class="el-input__icon input-icon"
+          />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -21,7 +31,11 @@
           placeholder="密码"
           @keyup.enter.native="handleLogin"
         >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
+          <svg-icon
+            slot="prefix"
+            icon-class="password"
+            class="el-input__icon input-icon"
+          />
         </el-input>
       </el-form-item>
       <el-form-item prop="code">
@@ -32,19 +46,27 @@
           style="width: 63%"
           @keyup.enter.native="handleLogin"
         >
-          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
+          <svg-icon
+            slot="prefix"
+            icon-class="validCode"
+            class="el-input__icon input-icon"
+          />
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" />
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
-      <el-form-item style="width:100%;">
+      <el-checkbox
+        v-model="loginForm.rememberMe"
+        style="margin: 0px 0px 25px 0px"
+        >记住密码</el-checkbox
+      >
+      <el-form-item style="width: 100%">
         <el-button
           :loading="loading"
           size="medium"
           type="primary"
-          style="width:100%;"
+          style="width: 100%"
           @click.native.prevent="handleLogin"
         >
           <span v-if="!loading">登 录</span>
@@ -54,17 +76,17 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2021 qdzq.net All Rights Reserved.</span>
+      <span>Copyright © 2018-2019 ruoyi.vip All Rights Reserved.</span>
     </div>
   </div>
 </template>
 
 <script>
-
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 
-import { encrypt, decrypt } from '@/utils/jsencrypt'
+import { encrypt, decrypt } from "@/utils/jsencrypt";
+import $ from "jquery";
 
 export default {
   name: "Login",
@@ -77,182 +99,61 @@ export default {
         password: "",
         rememberMe: false,
         code: "",
-        uuid: ""
+        uuid: "",
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", message: "用户名不能为空" }
+          { required: true, trigger: "blur", message: "用户名不能为空" },
         ],
         password: [
-          { required: true, trigger: "blur", message: "密码不能为空" }
+          { required: true, trigger: "blur", message: "密码不能为空" },
         ],
-        code: [{ required: true, trigger: "change", message: "验证码不能为空" }]
+        code: [
+          { required: true, trigger: "change", message: "验证码不能为空" },
+        ],
       },
       loading: false,
       redirect: undefined,
       // 新加的
-       canvas: null,
+      canvas: { width: undefined, height: undefined },
       context: null,
-      stars: [], //星星数组
-      shadowColorList: [
-        "#39f",
-        "#ec5707",
-        "#b031d4",
-        "#22e6c7",
-        "#92d819",
-        "#14d7f1",
-        "#e23c66"
-      ], //阴影颜色列表
-      directionList: ["leftTop", "leftBottom", "rightTop", "rightBottom"], //星星运行方向
-      speed: 50, //星星运行速度
-      last_star_created_time: new Date(), //上次重绘星星时间
-      Ball: class Ball {
-        constructor(radius) {
-          this.x = 0;
-          this.y = 0;
-          this.radius = radius;
-          this.color = "";
-          this.shadowColor = "";
-          this.direction = "";
-        }
+      ctx: null,
+      x: undefined,
+      y: undefined,
+      vx: undefined,
+      vy: undefined,
+      radius: undefined,
+      color: undefined,
+      r: undefined,
+      g: undefined,
+      b: undefined,
+      style: undefined,
 
-        draw(context) {
-          context.save();
-          context.translate(this.x, this.y);
-          context.lineWidth = this.lineWidth;
-          var my_gradient = context.createLinearGradient(0, 0, 0, 8);
-          my_gradient.addColorStop(0, this.color);
-          my_gradient.addColorStop(1, this.shadowColor);
-          context.fillStyle = my_gradient;
-          context.beginPath();
-          context.arc(0, 0, this.radius, 0, Math.PI * 2, true);
-          context.closePath();
-
-          context.shadowColor = this.shadowColor;
-          context.shadowOffsetX = 0;
-          context.shadowOffsetY = 0;
-          context.shadowBlur = 10;
-
-          context.fill();
-          context.restore();
-        }
-      }, //工厂模式定义Ball类
-      width: window.innerWidth,
-      height: window.innerHeight,
+      dots: { nb: 250, distance: 100, d_radius: 150, array: [] },
+      mousePosition: {
+        x: (30 * window.innerWidth) / 100,
+        y: (30 * window.innerHeight) / 100,
+      },
     };
   },
-  beforeCreate(){
-    localStorage.setItem('user',"");
+  beforeCreate() {
+    localStorage.setItem("user", "");
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect;
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   created() {
-    // colorValue(),
-  //  createColorStyle(),
-  //  mixComponents(), 
-  //   averageColorStyles(),
-  //    Color(),
-  //     Dot(),
-  //    createDots(),
-  //     moveDots(), 
-  //     connectDots(),
-  //      drawDots(),
-  //       animateDots(),
     this.getCode();
     this.getCookie();
   },
   methods: {
-       //重复动画
-    drawFrame() {
-      let animation = requestAnimationFrame(this.drawFrame);
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.createStar(false);
-      this.stars.forEach(this.moveStar);
-    },
-        //展示所有的星星
-    createStar(params) {
-      let now = new Date();
-      if (params) {
-        //初始化星星
-        for (var i = 0; i <80; i++) {
-          const radius = Math.random() * 1 + 1.5;
-          let star = new this.Ball(radius);
-          star.x = Math.random() * this.canvas.width + 1;
-          star.y = Math.random() * this.canvas.height + 1;
-          star.color = "#ffffff";
-          star.shadowColor = this.shadowColorList[
-            Math.floor(Math.random() * this.shadowColorList.length)
-          ];
-          star.direction = this.directionList[
-            Math.floor(Math.random() * this.directionList.length)
-          ];
-          this.stars.push(star);
-        }
-      } else if (!params && now - this.last_star_created_time > 3000) {
-        //每隔3秒重绘修改颜色其中30个球阴影颜色
-        for (var i = 0; i < 30; i++) {
-          this.stars[i].shadowColor = this.shadowColorList[
-            Math.floor(Math.random() * this.shadowColorList.length)
-          ];
-        }
-        this.last_star_created_time = now;
-      }
-    },
-        //移动
-    moveStar(star, index) {
-      if (star.y - this.canvas.height > 0) {
-        //触底
-        if (Math.floor(Math.random() * 2) === 1) {
-          star.direction = "leftTop";
-        } else {
-          star.direction = "rightTop";
-        }
-      } else if (star.y < 2) {
-        //触顶
-        if (Math.floor(Math.random() * 2) === 1) {
-          star.direction = "rightBottom";
-        } else {
-          star.direction = "leftBottom";
-        }
-      } else if (star.x < 2) {
-        //左边
-        if (Math.floor(Math.random() * 2) === 1) {
-          star.direction = "rightTop";
-        } else {
-          star.direction = "rightBottom";
-        }
-      } else if (star.x - this.canvas.width > 0) {
-        //右边
-        if (Math.floor(Math.random() * 2) === 1) {
-          star.direction = "leftBottom";
-        } else {
-          star.direction = "leftTop";
-        }
-      }
-      if (star.direction === "leftTop") {
-        star.y -= star.radius / this.speed;
-        star.x -= star.radius / this.speed;
-      } else if (star.direction === "rightBottom") {
-        star.y += star.radius / this.speed;
-        star.x += star.radius / this.speed;
-      } else if (star.direction === "leftBottom") {
-        star.y += star.radius / this.speed;
-        star.x -= star.radius / this.speed;
-      } else if (star.direction === "rightTop") {
-        star.y -= star.radius / this.speed;
-        star.x += star.radius / this.speed;
-      }
-      star.draw(this.context);
-    },
-  
     getCode() {
-      getCodeImg().then(res => {
+      getCodeImg().then((res) => {
         this.codeUrl = "data:image/gif;base64," + res.img;
         this.loginForm.uuid = res.uuid;
       });
@@ -260,31 +161,36 @@ export default {
     getCookie() {
       const username = Cookies.get("username");
       const password = Cookies.get("password");
-      const rememberMe = Cookies.get('rememberMe')
+      const rememberMe = Cookies.get("rememberMe");
       this.loginForm = {
         username: username === undefined ? this.loginForm.username : username,
-        password: password === undefined ? this.loginForm.password : decrypt(password),
-        rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
+        password:
+          password === undefined ? this.loginForm.password : decrypt(password),
+        rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
       };
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true;
           if (this.loginForm.rememberMe) {
             Cookies.set("username", this.loginForm.username, { expires: 30 });
-            Cookies.set("password", encrypt(this.loginForm.password), { expires: 30 });
-            Cookies.set('rememberMe', this.loginForm.rememberMe, { expires: 30 });
+            Cookies.set("password", encrypt(this.loginForm.password), {
+              expires: 30,
+            });
+            Cookies.set("rememberMe", this.loginForm.rememberMe, {
+              expires: 30,
+            });
           } else {
             Cookies.remove("username");
             Cookies.remove("password");
-            Cookies.remove('rememberMe');
+            Cookies.remove("rememberMe");
           }
           this.$store
             .dispatch("Login", this.loginForm)
             .then(() => {
-              localStorage.setItem('user',this.loginForm.username);
-              this.$router.push({ path:"/index" });
+              localStorage.setItem("user", this.loginForm.username);
+              this.$router.push({ path: "/index" });
             })
             .catch(() => {
               this.loading = false;
@@ -292,15 +198,146 @@ export default {
             });
         }
       });
-    }
-  },
-    mounted() {
-    this.canvas = document.getElementById("myCanvas");
-    this.context = this.canvas.getContext("2d");
+    },
+    colorValue(min) {
+      return Math.floor(Math.random() * 255 + min);
+    },
 
-    this.createStar(true);
-    this.drawFrame();
-  }
+    Color(min, _this) {
+      min = min || 0;
+      // console.log(this)
+
+      this.r = _this.colorValue(min);
+      this.g = _this.colorValue(min);
+      this.b = _this.colorValue(min);
+      this.style = _this.createColorStyle(this.r, this.g, this.b);
+    },
+    createColorStyle(r, g, b) {
+      return "rgba(" + r + "," + g + "," + b + ", 0.8)";
+    },
+    createDots() {
+      // console.log(this)
+      var that = this;
+      for (var i = 0; i < this.dots.nb; i++) {
+        this.dots.array.push(new this.Dot(that));
+      }
+    },
+    Dot(that) {
+      //  console.log(this)
+      //  console.log(that)
+      this.x = Math.random() * that.canvas.width;
+      this.y = Math.random() * that.canvas.height;
+
+      this.vx = -0.5 + Math.random();
+      this.vy = -0.5 + Math.random();
+
+      this.radius = Math.random() * 2;
+
+      this.color = new that.Color("", that);
+      var _this_ = this;
+      // console.log(this.color)
+      this.prototype = {
+        draw: function () {
+          // console.log(this)
+          that.ctx.beginPath();
+          that.ctx.fillStyle = _this_.color.style;
+          that.ctx.arc(_this_.x, _this_.y, _this_.radius, 0, Math.PI, false);
+          that.ctx.fill();
+        },
+      };
+    },
+    moveDots() {
+      for (var i = 0; i < this.dots.nb; i++) {
+        var dot = this.dots.array[i];
+
+        if (dot.y < 0 || dot.y > this.canvas.height) {
+          dot.vx = dot.vx;
+          dot.vy = -dot.vy;
+        } else if (dot.x < 0 || dot.x > this.canvas.width) {
+          dot.vx = -dot.vx;
+          dot.vy = dot.vy;
+        }
+        dot.x += dot.vx;
+        dot.y += dot.vy;
+      }
+    },
+    connectDots() {
+      for (var i = 0; i < this.dots.nb; i++) {
+        for (var j = 0; j < this.dots.nb; j++) {
+          var i_dot = this.dots.array[i];
+          var j_dot = this.dots.array[j];
+
+          if (
+            i_dot.x - j_dot.x < this.dots.distance &&
+            i_dot.y - j_dot.y < this.dots.distance &&
+            i_dot.x - j_dot.x > -this.dots.distance &&
+            i_dot.y - j_dot.y > -this.dots.distance
+          ) {
+            if (
+              i_dot.x - this.mousePosition.x < this.dots.d_radius &&
+              i_dot.y - this.mousePosition.y < this.dots.d_radius &&
+              i_dot.x - this.mousePosition.x > -this.dots.d_radius &&
+              i_dot.y - this.mousePosition.y > -this.dots.d_radius
+            ) {
+              this.ctx.beginPath();
+              this.ctx.strokeStyle = this.averageColorStyles(i_dot, j_dot);
+              this.ctx.moveTo(i_dot.x, i_dot.y);
+              this.ctx.lineTo(j_dot.x, j_dot.y);
+              this.ctx.stroke();
+              this.ctx.closePath();
+            }
+          }
+        }
+      }
+    },
+    mixComponents(comp1, weight1, comp2, weight2) {
+      return (comp1 * weight1 + comp2 * weight2) / (weight1 + weight2);
+    },
+    averageColorStyles(dot1, dot2) {
+      var color1 = dot1.color,
+        color2 = dot2.color;
+
+      var r = this.mixComponents(color1.r, dot1.radius, color2.r, dot2.radius),
+        g = this.mixComponents(color1.g, dot1.radius, color2.g, dot2.radius),
+        b = this.mixComponents(color1.b, dot1.radius, color2.b, dot2.radius);
+      return this.createColorStyle(Math.floor(r), Math.floor(g), Math.floor(b));
+    },
+    animateDots() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.moveDots();
+      this.connectDots();
+      this.drawDots();
+
+      requestAnimationFrame(this.animateDots);
+    },
+    drawDots() {
+      for (var i = 0; i < this.dots.nb; i++) {
+        var dot = this.dots.array[i];
+        // console.log(dot)
+        dot.prototype.draw();
+      }
+    },
+    mousemove(e) {
+      this.mousePosition.x = e.pageX;
+      this.mousePosition.y = e.pageY;
+    },
+    mouseleave(e) {
+      this.mousePosition.x = e.pageX;
+      this.mousePosition.y = e.pageY;
+    },
+  },
+  mounted() {
+    this.canvas = document.querySelector("canvas");
+    var _this = this;
+    this.ctx = this.canvas.getContext("2d");
+    this.canvas.width = $(window).width();
+    this.canvas.height = $(window).height();
+    this.ctx.lineWidth = 0.3;
+    this.ctx.strokeStyle = new this.Color(150, _this).style;
+
+    this.createDots();
+    requestAnimationFrame(this.animateDots);
+  },
 };
 </script>
 
@@ -312,7 +349,7 @@ export default {
   height: 100%;
   background-image: url("../assets/image/bg1.jpg");
   background-size: cover;
-  background-size: 100% 100%
+  background-size: 100% 100%;
 }
 .title {
   margin: 0px auto 30px auto;
@@ -322,20 +359,20 @@ export default {
 
 .login-form {
   border-radius: 6px;
-  background: rgba(0,0,0,.5);
+  background: rgba(0, 0, 0, 0.5);
   width: 400px;
   padding: 25px 25px 5px 25px;
   width: 540px;
-    height: 400px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-  
-    box-shadow: -15px 15px 15px rgba(6,17,47,.7);
-    z-index: 99999;
+  height: 400px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+
+  box-shadow: -15px 15px 15px rgba(6, 17, 47, 0.7);
+  z-index: 99999;
   .el-input {
     height: 38px;
     input {
@@ -375,11 +412,85 @@ export default {
   letter-spacing: 1px;
 }
 .cavs {
-    z-index: 9999;
-    position: fixed;
-    width: 95%;
-    margin-left: 20px;
-    margin-right: 20px;
+  z-index: 9999;
+  position: fixed;
+  width: 95%;
+  margin-left: 20px;
+  margin-right: 20px;
 }
-.login-title{color:#d3d7f7;height:60px;font-size:20px;text-align:center;margin-top:-20px}.login-con{height:208px;position:absolute;left:0;width:80%;margin:0 10%}.login-user{position:relative}.icon{position:absolute;z-index:1;left:36px;top:8px;opacity:1}.login-con input{width:calc(100% - 130px);margin-top:-2px;background:transparent;left:0;padding:10px 65px;border-top:2px solid transparent;border-bottom:2px solid transparent;border-right:none;border-left:none;outline:none;font-family:gudea,sans-serif;box-shadow:none;color:#61bfff!important}.login-pwd,.login-yan{position:relative}.login-btn{width:80%;margin:0 auto;position:relative}.login-btn input{border-radius:3px;background:0 0;border:2px solid #4fa1d9;color:#4fa1d9;text-transform:uppercase;font-size:11px;cursor:pointer;position:absolute;top:50px;left:0;right:0;margin:auto;width:80%;transition-property:background,color;-webkit-transition-duration:.2s;transition-duration:.2s}.login-btn input:hover{color:#fff!important;background:#4fa1d9;cursor:pointer;-webkit-transition-property:background,color;transition-property:background,color;-webkit-transition-duration:.2s;transition-duration:.2s}
+.login-title {
+  color: #d3d7f7;
+  height: 60px;
+  font-size: 20px;
+  text-align: center;
+  margin-top: -20px;
+}
+.login-con {
+  height: 208px;
+  position: absolute;
+  left: 0;
+  width: 80%;
+  margin: 0 10%;
+}
+.login-user {
+  position: relative;
+}
+.icon {
+  position: absolute;
+  z-index: 1;
+  left: 36px;
+  top: 8px;
+  opacity: 1;
+}
+.login-con input {
+  width: calc(100% - 130px);
+  margin-top: -2px;
+  background: transparent;
+  left: 0;
+  padding: 10px 65px;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  border-right: none;
+  border-left: none;
+  outline: none;
+  font-family: gudea, sans-serif;
+  box-shadow: none;
+  color: #61bfff !important;
+}
+.login-pwd,
+.login-yan {
+  position: relative;
+}
+.login-btn {
+  width: 80%;
+  margin: 0 auto;
+  position: relative;
+}
+.login-btn input {
+  border-radius: 3px;
+  background: 0 0;
+  border: 2px solid #4fa1d9;
+  color: #4fa1d9;
+  text-transform: uppercase;
+  font-size: 11px;
+  cursor: pointer;
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 80%;
+  transition-property: background, color;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+.login-btn input:hover {
+  color: #fff !important;
+  background: #4fa1d9;
+  cursor: pointer;
+  -webkit-transition-property: background, color;
+  transition-property: background, color;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
 </style>
