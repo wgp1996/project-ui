@@ -10,9 +10,9 @@ export function listFlowInfo(query) {
 }
 
 // 查询单据流程环节列表
-export function djFlowList(djId) {
+export function djFlowList(djId,flowStatus) {
   return request({
-    url: '/system/flowInfo/flowList?djId='+djId,
+    url: '/system/flowInfo/flowList?djId='+djId+'&flowStatus='+flowStatus,
     method: 'get'
   })
 }
