@@ -54,7 +54,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2019 ruoyi.vip All Rights Reserved.</span>
+      <span>Copyright © 2018-2021 qdzq.net All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -104,7 +104,7 @@ export default {
         "#e23c66"
       ], //阴影颜色列表
       directionList: ["leftTop", "leftBottom", "rightTop", "rightBottom"], //星星运行方向
-      speed: 30, //星星运行速度
+      speed: 50, //星星运行速度
       last_star_created_time: new Date(), //上次重绘星星时间
       Ball: class Ball {
         constructor(radius) {
@@ -180,7 +180,7 @@ export default {
       let now = new Date();
       if (params) {
         //初始化星星
-        for (var i = 0; i <70; i++) {
+        for (var i = 0; i <80; i++) {
           const radius = Math.random() * 1 + 1.5;
           let star = new this.Ball(radius);
           star.x = Math.random() * this.canvas.width + 1;
