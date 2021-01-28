@@ -234,7 +234,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <div>
+            <div class="clearfix">
             <el-form-item label="合同乙方" prop="projectYpersonCode" style="width:80%;float:left">
               <el-select
                 v-model="form.projectYpersonCode"
@@ -630,17 +630,36 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="审核流程" :visible.sync="openSh" width="400px">
-      <el-steps :space="100" direction="vertical" :active="stepsActive">
-        <el-step
-          :title="
-            item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
-          "
-          :description="item.auditInfo"
-          v-for="(item, index) in stepsData"
-          :key="index"
-        ></el-step>
-      </el-steps>
+    <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
+      <el-tabs type="border-card">
+        <el-tab-pane label="最新审批">
+            <el-steps :space="100" direction="vertical" :active="stepsActive">
+              <el-step
+                :status="item.stepStatus"
+                :title="
+                  item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+                "
+                :description="item.auditInfo"
+                v-for="(item, index) in stepsData"
+                :key="index"
+              ></el-step>
+            </el-steps>
+        </el-tab-pane>
+        <el-tab-pane label="历史审批">
+              <el-steps :space="100" direction="vertical" :active="stepsHistoryActive">
+                <el-step
+                  :status="item.stepStatus"
+                  :title="
+                    item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+                  "
+                  :description="item.auditInfo"
+                  v-for="(item, index) in stepsDataHistory"
+                  :key="index"
+                ></el-step>
+              </el-steps>
+        </el-tab-pane>
+      </el-tabs>
+ 
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel" type="danger">关 闭</el-button>
       </div>
@@ -681,7 +700,9 @@ export default {
   data() {
     return {
       stepsActive: 0,
+      stepsHistoryActive:0,
       stepsData: [],
+      stepsDataHistory:[],
       activeName: "first",
       fileList: [],
       show:true,
@@ -769,7 +790,7 @@ export default {
     //查看审批信息
     handleSelectFlow(row) {
       this.stepsActive = parseInt(row.nodeNo) - 1;
-      djFlowList(row.djNumber).then((response) => {
+      djFlowList(row.djNumber,0).then((response) => {
         this.stepsData = response.rows;
         //判断是否为空
         for (let i = 0; i < this.stepsData.length; i++) {
@@ -779,6 +800,17 @@ export default {
         }
         console.log(this.stepsData);
       });
+      djFlowList(row.djNumber,-1).then((response) => {
+        this.stepsDataHistory = response.rows;
+        this.stepsHistoryActive=this.stepsDataHistory.length;
+        //判断是否为空
+        for (let i = 0; i < this.stepsDataHistory.length; i++) {
+          if (this.stepsDataHistory[i].auditTime == null) {
+            this.stepsDataHistory[i].auditTime == "";
+          }
+        }
+      });
+      
       this.openSh = true;
     },
     handleSuccess(res, file, fileList) {
