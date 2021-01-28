@@ -180,8 +180,8 @@ export default {
       let now = new Date();
       if (params) {
         //初始化星星
-        for (var i = 0; i <80; i++) {
-          const radius = Math.random() * 1 + 2;
+        for (var i = 0; i <70; i++) {
+          const radius = Math.random() * 1 + 1.5;
           let star = new this.Ball(radius);
           star.x = Math.random() * this.canvas.width + 1;
           star.y = Math.random() * this.canvas.height + 1;
@@ -312,6 +312,7 @@ export default {
   height: 100%;
   background-image: url("../assets/image/bg1.jpg");
   background-size: cover;
+  background-size: 100% 100%
 }
 .title {
   margin: 0px auto 30px auto;
