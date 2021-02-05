@@ -24,8 +24,8 @@
         </div>
       </el-col>
     </el-row>
-
-    
+    <!-- <iframe v-clickoutside="handleClose" :src="frameSrc" id="mobsf" v-show="showMessage" scrolling="no" frameborder="0" style="position:fixed;right:0px;bottom:0px;width:330px;height:550px"></iframe>
+    <div v-show="showStatus" @click="changeStatus()" style="position:fixed;right:0px;bottom:0px;width:150px;height:50px;line-height: 55px;background: antiquewhite;border-radius: 5px;"><img src="../assets/logo/logo.png" style="float: left;height: 100%;">我的聊天</div> -->
   </div>
 </template>
 
@@ -35,7 +35,8 @@ import LineChart from './dashboard/LineChart'
 import RaddarChart from './dashboard/RaddarChart'
 import PieChart from './dashboard/PieChart'
 import BarChart from './dashboard/BarChart'
-
+import Clickoutside from "element-ui/src/utils/clickoutside";
+import { getInfo } from "@/api/login";
 const lineChartData = {
   newVisitis: {
     expectedData: [100, 120, 161, 134, 105, 160, 165],
@@ -56,6 +57,7 @@ const lineChartData = {
 }
 
 export default {
+  directives: { Clickoutside },
   name: 'Index',
   components: {
     PanelGroup,
@@ -66,13 +68,34 @@ export default {
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      user:{},
+      frameSrc:"",
+      lineChartData: lineChartData.newVisitis,
+      showMessage:false,
+      showStatus:true
     }
   },
+  created(){
+   
+    // getInfo().then(response => {
+    //     //this.user=response.user;
+    //      this.frameSrc="http://localhost:8080/login?username="+response.user.userName+'&password=123'
+    // });
+  },
   methods: {
+    changeStatus(data){
+        this.showMessage=true;
+        this.showStatus=false;
+    },
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
-    }
+    },
+    handleClose() {
+       //this.frameSrc="http://localhost:8080/login";
+       console.log(this.frameSrc)
+       this.showMessage=false;
+       this.showStatus=true;
+    },
   }
 }
 </script>

@@ -3,12 +3,17 @@
     <canvas class="cavs" @mousemove="mousemove" @mouseleave="mouseleave">
     </canvas>
     <el-form
+      v-show="loginStatus"
       ref="loginForm"
       :model="loginForm"
       :rules="loginRules"
       class="login-form"
     >
-      <h3 class="title">项目管理平台</h3>
+      <!-- <h3 class="title">项目管理平台</h3> -->
+     <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
+        <el-tab-pane label="快速登录" name="first"></el-tab-pane>
+        <el-tab-pane label="快速注册" name="second"></el-tab-pane>
+      </el-tabs>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -74,6 +79,101 @@
         </el-button>
       </el-form-item>
     </el-form>
+
+    <el-form
+      v-show="registerStatus"
+      ref="registerForm"
+      :model="registerForm"
+      :rules="registerRules"
+      class="register-form"
+    >
+      <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
+        <el-tab-pane label="快速登录" name="first"></el-tab-pane>
+        <el-tab-pane label="快速注册" name="second"></el-tab-pane>
+      </el-tabs>
+      <el-form-item prop="nickName">
+        <el-input
+          v-model="registerForm.nickName"
+          type="text"
+          auto-complete="off"
+          placeholder="公司名称"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="form"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="userName">
+        <el-input
+          v-model="registerForm.userName"
+          type="text"
+          auto-complete="off"
+          placeholder="登录账号"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="user"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
+      </el-form-item>
+       <el-form-item prop="password">
+        <el-input
+          v-model="registerForm.password"
+          type="password"
+          auto-complete="off"
+          placeholder="密码"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="password"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
+      </el-form-item>
+       <el-form-item prop="phonenumber">
+        <el-input
+          v-model="registerForm.phonenumber"
+          type="text"
+          auto-complete="off"
+          placeholder="联系方式"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="phone"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
+      </el-form-item>
+       <el-form-item prop="email">
+        <el-input
+          v-model="registerForm.email"
+          type="text"
+          auto-complete="off"
+          placeholder="邮箱"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="email"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
+      </el-form-item>
+      <el-form-item style="width: 100%">
+        <el-button
+          :loading="loading"
+          size="medium"
+          type="primary"
+          style="width: 100%"
+          @click="handleRegister"
+        >
+          <span>注 册</span>
+        </el-button>
+      </el-form-item>
+    </el-form>
+
     <!--  底部  -->
     <div class="el-login-footer">
       <span>Copyright © 2018-2019 ruoyi.vip All Rights Reserved.</span>
@@ -84,7 +184,7 @@
 <script>
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
-
+import { registerUser} from "@/api/system/user";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import $ from "jquery";
 
@@ -92,6 +192,9 @@ export default {
   name: "Login",
   data() {
     return {
+      activeName:"first",
+      registerStatus:false,
+      loginStatus:true,
       codeUrl: "",
       cookiePassword: "",
       loginForm: {
@@ -100,6 +203,21 @@ export default {
         rememberMe: false,
         code: "",
         uuid: "",
+      },
+      registerForm:{},
+      registerRules: {
+        userName: [
+          { required: true, trigger: "blur", message: "登录账号不能为空" },
+        ],
+        password: [
+          { required: true, trigger: "blur", message: "密码不能为空" },
+        ],
+        nickName: [
+          { required: true, trigger: "blur", message: "公司名称不能为空" },
+        ],
+        phonenumber: [
+          { required: true, trigger: "blur", message: "联系电话不能为空" },
+        ],
       },
       loginRules: {
         username: [
@@ -152,6 +270,17 @@ export default {
     this.getCookie();
   },
   methods: {
+    handleClick(tab, event) {
+        console.log(tab.index);
+        if(tab.index==0){
+          this.loginStatus=true;
+          this.registerStatus=false;
+        }else{
+          this.loginStatus=false;
+          this.registerStatus=true;
+         //this.resetForm("registerForm");
+        }
+    },
     getCode() {
       getCodeImg().then((res) => {
         this.codeUrl = "data:image/gif;base64," + res.img;
@@ -195,6 +324,26 @@ export default {
             .catch(() => {
               this.loading = false;
               this.getCode();
+            });
+        }
+      });
+    },
+    /** 提交按钮 */
+    handleRegister: function() {
+      this.loading = true;
+      this.$refs["registerForm"].validate(valid => {
+        if (valid) {
+            registerUser(this.registerForm).then(response => {
+              if (response.code === 200) {
+                this.loading = false;
+                this.msgSuccess("注册成功");
+                this.activeName="first";
+                this.loginStatus=true;
+                this.registerStatus=false;
+                this.resetForm("registerForm");
+              } else {
+                this.msgError(response.msg);
+              }
             });
         }
       });
@@ -358,6 +507,21 @@ export default {
 }
 
 .login-form {
+  .el-tabs__content{
+    padding: 0px !important;
+  }
+  .el-tabs--border-card {
+    background: transparent !important;
+    border: none !important;
+  }
+  .el-tabs--border-card>.el-tabs__header{
+    background-color: transparent !important;
+    margin: 0 0 15px !important;
+  }
+  .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
+    background-color: transparent  !important;
+    border: none  !important;
+  }
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.5);
   width: 400px;
@@ -370,7 +534,13 @@ export default {
   right: 0;
   bottom: 0;
   margin: auto;
-
+  .el-tabs__nav-wrap
+.el-tabs__nav-scroll
+.el-tabs__nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
   box-shadow: -15px 15px 15px rgba(6, 17, 47, 0.7);
   z-index: 99999;
   .el-input {
@@ -378,6 +548,62 @@ export default {
     input {
       height: 38px;
     }
+  }
+  .el-tabs__item{
+    color: white;
+  }
+  .input-icon {
+    height: 39px;
+    width: 14px;
+    margin-left: 2px;
+  }
+}
+
+.register-form {
+  .el-tabs__content{
+    padding: 0px !important;
+  }
+  .el-tabs--border-card {
+    background: transparent !important;
+    border: none !important;
+  }
+  .el-tabs--border-card>.el-tabs__header{
+    background-color: transparent !important;
+    margin: 0 0 15px !important;
+  }
+  .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
+    background-color: transparent  !important;
+    border: none  !important;
+  }
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  width: 400px;
+  padding: 25px 25px 5px 25px;
+  width: 540px;
+  height: 450px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  .el-tabs__nav-wrap
+.el-tabs__nav-scroll
+.el-tabs__nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+  box-shadow: -15px 15px 15px rgba(6, 17, 47, 0.7);
+  z-index: 99999;
+  .el-input {
+    height: 38px;
+    input {
+      height: 38px;
+    }
+  }
+   .el-tabs__item{
+    color: white;
   }
   .input-icon {
     height: 39px;

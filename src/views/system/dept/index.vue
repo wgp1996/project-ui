@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import { listDept, getDept, delDept, addDept, updateDept } from "@/api/system/dept";
+import { listDept, getDept, delDept, addDept, updateDept,allList } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -222,7 +222,7 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeselect() {
-      listDept().then(response => {
+      allList().then(response => {
         this.deptOptions = this.handleTree(response.data, "deptId");
       });
     },

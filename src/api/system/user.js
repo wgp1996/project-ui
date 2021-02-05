@@ -9,6 +9,15 @@ export function listUser(query) {
     params: query
   })
 }
+
+// 查询用户审核列表
+export function listShUser(query) {
+  return request({
+    url: '/system/user/shList',
+    method: 'get',
+    params: query
+  })
+}
 // 查询下拉用户列表
 export function getAllUser(query) {
   return request({
@@ -42,6 +51,15 @@ export function addUser(data) {
     data: data
   })
 }
+// 注册用户
+export function registerUser(data) {
+  return request({
+    url: '/system/user/register',
+    method: 'post',
+    data: data
+  })
+}
+
 
 // 修改用户
 export function updateUser(data) {

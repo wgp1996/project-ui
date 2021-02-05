@@ -8,6 +8,14 @@ export function listDept(query) {
     params: query
   })
 }
+export function allList(query) {
+  return request({
+    url: '/system/dept/allList',
+    method: 'get',
+    params: query
+  })
+}
+
 
 // 查询部门详细
 export function getDept(deptId) {
