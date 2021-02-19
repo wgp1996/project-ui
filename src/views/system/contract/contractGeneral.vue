@@ -69,7 +69,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
@@ -80,7 +80,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
+          type="primary"
           icon="el-icon-delete"
           size="mini"
           :disabled="multiple"
@@ -102,7 +102,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
           :disabled="multiple"
@@ -156,14 +156,14 @@
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
-          <!-- <el-button
+          <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:contractGenera:edit']"
-            >修改</el-button
-          > -->
+            >详情</el-button
+          >
           <el-button
             size="mini"
             type="text"
@@ -172,14 +172,14 @@
             v-hasPermi="['system:contractGenera:edit']"
             >查看审批</el-button
           >
-          <el-button
+          <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:contractGenera:remove']"
             >删除</el-button
-          >
+          > -->
         </template>
       </el-table-column>
     </el-table>
@@ -626,8 +626,8 @@
         </el-tab-pane>
       </el-tabs>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm" v-if="isEdit">确 定</el-button>
+        <el-button @click="cancel">关 闭</el-button>
       </div>
     </el-dialog>
     <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
@@ -699,6 +699,7 @@ export default {
   },
   data() {
     return {
+      isEdit:true,
       stepsActive: 0,
       stepsHistoryActive:0,
       stepsData: [],
@@ -958,6 +959,13 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      if(row.id!=undefined){
+        this.isEdit=false;
+        this.title = "总包合同详情";
+      }else{
+        this.isEdit=true;
+        this.title = "修改总包合同";
+      }
       this.reset();
       const id = row.id || this.ids;
       getContractGenera(id).then((response) => {
@@ -969,7 +977,7 @@ export default {
           this.projectForm = response.data;
         });
         this.open = true;
-        this.title = "修改总包合同";
+       
       });
     },
     /** 提交按钮 */
