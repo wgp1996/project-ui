@@ -146,11 +146,11 @@
             </el-form-item>
         </div>
         <el-form-item label="设置预算毛利率" prop="budgetRate" style="width:50%;">
-          <el-input v-model="form.budgetRate" placeholder="请输入设置预算毛利率" />
+          <el-input v-model="form.budgetRate" placeholder="请输入设置预算毛利率"  @change="budgetNetProfits"/>
           <span style="position:absolute;right:-20px;top:0px">%</span>
         </el-form-item>
         <el-form-item label="项目预算毛利" prop="budgetProfit" style="width:50%;">
-          <el-input v-model="form.budgetProfit" placeholder="请输入项目预算毛利" class="specialcolor"/>
+          <el-input v-model="form.budgetProfit" placeholder="请输入项目预算毛利" class="specialcolor" @change="budgetNetProfits" :disabled="true"/>
           <span style="position:absolute;right:-20px;top:0px">元</span>
         </el-form-item>
         <el-form-item label="销项税率" prop="budgetXxRate" style="width:50%;">
@@ -393,6 +393,10 @@ export default {
       if(this.form.budgetSr!=undefined&&this.form.budgetCost!=undefined&&this.form.budgetTaxes!=undefined){
         //alert("1")
              this.form.budgetNetProfit=Number(this.form.budgetSr)-Number(this.form.budgetCost)-Number(this.form.budgetTaxes)
+      }
+      if(this.form.budgetSr!=''&&this.form.budgetSr!=undefined&&this.form.budgetRate!=''&&this.form.budgetRate!=undefined){
+       
+             this.form.budgetProfit=Number(this.form.budgetSr)*Number(this.form.budgetRate)/100
       }
     },
     // 计算项目预算总成本
