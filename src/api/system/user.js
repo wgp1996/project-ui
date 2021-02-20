@@ -9,7 +9,13 @@ export function listUser(query) {
     params: query
   })
 }
-
+//发送验证码
+export function sendSms(phone) {
+  return request({
+    url: '/api/sendSms/'+phone,
+    method: 'get'
+  })
+}
 // 查询用户审核列表
 export function listShUser(query) {
   return request({
