@@ -78,6 +78,9 @@
           <span v-else>登 录 中...</span>
         </el-button>
       </el-form-item>
+         <el-form-item style="text-align:center;position:relative;top:5px">
+           <img src="../assets/image/weixin.png" style="width:30px;height:30px">
+          </el-form-item>
     </el-form>
 
     <el-form
@@ -91,7 +94,7 @@
         <el-tab-pane label="快速登录" name="first"></el-tab-pane>
         <el-tab-pane label="快速注册" name="second"></el-tab-pane>
       </el-tabs>
-      <el-form-item prop="nickName">
+      <!-- <el-form-item prop="nickName">
         <el-input
           v-model="registerForm.nickName"
           type="text"
@@ -104,8 +107,38 @@
             class="el-input__icon input-icon"
           />
         </el-input>
+      </el-form-item> -->
+        <el-form-item prop="userName">
+        <el-input
+          v-model="registerForm.userName"
+          type="text"
+          auto-complete="off"
+          placeholder="手机号"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="phone"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
       </el-form-item>
-      <el-form-item prop="userName">
+        <el-form-item prop="smsCode" >
+        <el-input
+          v-model="registerForm.smsCode"
+          type="text"
+          auto-complete="off"
+          placeholder="验证码"
+          style="width:350px;float:left"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="phone"
+            class="el-input__icon input-icon"
+          />
+        </el-input>
+        <el-button type="primary" style="float:left;width:130px;height:38px;margin-left:10px" @click="getphoneonecode" :disabled="phonedisabled">{{phonetext}}</el-button>
+      </el-form-item>
+      <!-- <el-form-item prop="userName">
         <el-input
           v-model="registerForm.userName"
           type="text"
@@ -118,7 +151,7 @@
             class="el-input__icon input-icon"
           />
         </el-input>
-      </el-form-item>
+      </el-form-item> -->
        <el-form-item prop="password">
         <el-input
           v-model="registerForm.password"
@@ -133,20 +166,45 @@
           />
         </el-input>
       </el-form-item>
-       <el-form-item prop="phonenumber">
-        <el-input
-          v-model="registerForm.phonenumber"
+      <el-form-item prop="certificatesType">
+            <el-select v-model="registerForm.certificatesType" placeholder="请选择机构类型" style="width:100%" class="specials" @change="selectType">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+         </el-select>  
+      </el-form-item>
+      <el-form-item prop="nickName">
+             <el-input
+          v-model="registerForm.nickName"
           type="text"
           auto-complete="off"
-          placeholder="联系方式"
+          :placeholder="nickName"
         >
           <svg-icon
             slot="prefix"
-            icon-class="phone"
+            icon-class="user"
             class="el-input__icon input-icon"
           />
-        </el-input>
+        </el-input> 
       </el-form-item>
+      <el-form-item prop="certificatesCode">
+             <el-input
+          v-model="registerForm.certificatesCode"
+          type="text"
+          auto-complete="off"
+          :placeholder="certificatesCode"
+        >
+          <svg-icon
+            slot="prefix"
+            icon-class="user"
+            class="el-input__icon input-icon"
+          />
+        </el-input> 
+      </el-form-item>
+       
        <el-form-item prop="email">
         <el-input
           v-model="registerForm.email"
@@ -161,19 +219,30 @@
           />
         </el-input>
       </el-form-item>
+      <el-form-item>
+          <label  style="width:80px;height:10px;display:inline-block;float:left;color:#fff">{{picture}}</label>
+          <label for="file" style="width:100px;height:100px;display:inline-block;position:absolute"></label>
+          <img id="imghead" width=100px height=100px border=0 :src='imageUrl'>
+					<input type="file" @change="changepic" id="file" style="display: none;" />
+      </el-form-item>
+    
       <el-form-item style="width: 100%">
         <el-button
-          :loading="loading"
+          :loading="zhuceloading"
           size="medium"
           type="primary"
           style="width: 100%"
           @click="handleRegister"
         >
-          <span>注 册</span>
+          <span v-if="!zhuceloading">注册</span>
+          <span v-else>注册中...</span>
         </el-button>
       </el-form-item>
+        <el-form-item style="text-align:center;position:relative;top:5px">
+           <img src="../assets/image/weixin.png" style="width:30px;height:30px">
+          </el-form-item>
     </el-form>
-
+  
     <!--  底部  -->
     <div class="el-login-footer">
       <span>Copyright © 2018-2019 ruoyi.vip All Rights Reserved.</span>
@@ -182,12 +251,26 @@
 </template>
 
 <script>
+import { getToken } from "@/utils/auth";
+import { sendSms } from "@/api/system/user";
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { registerUser} from "@/api/system/user";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import $ from "jquery";
-
+     var wait=60;
+     // 手机号验证
+const validatePhone = (rule, value, callback) => {
+  if (value === "") {
+    callback(new Error("请输入手机号"));
+  } else {
+    if (!/^1[3456789]\d{9}$/.test(value)) {
+      callback(new Error("请输入正确的手机号"));
+    } else {
+      callback();
+    }
+  }
+}; 
 export default {
   name: "Login",
   data() {
@@ -204,19 +287,49 @@ export default {
         code: "",
         uuid: "",
       },
-      registerForm:{},
+      nickName:"姓名",
+      certificatesCode:"身份证号",
+      picture:"身份证照片:",
+      imageUrl: 'https://www.lczhuisu.cn:443/zspt/zspt/css/imgs/add.png',
+      phonetext:'获取验证码',
+ 
+      // 验证码禁用
+      phonedisabled:false,
+      registerForm:{
+        userName: "", 
+        password:"",
+         // 验证码
+        phonencode:'',
+        // 机构类型
+        certificatesType:"0",
+        certificatesImg:'',
+        // 密码
+        email:''
+      },
+      // 机构类型选项
+        options: [{
+          value: '0',
+          label: '经营性自然人'
+        }, {
+          value: '1',
+          label: '机构或企业'
+        }],
       registerRules: {
         userName: [
-          { required: true, trigger: "blur", message: "登录账号不能为空" },
+          // { required: true, trigger: "blur", message: "手机号不能为空" },
+             { validator: validatePhone, trigger: "change" }
         ],
         password: [
           { required: true, trigger: "blur", message: "密码不能为空" },
         ],
         nickName: [
-          { required: true, trigger: "blur", message: "公司名称不能为空" },
+          { required: true, trigger: "blur", message: "姓名或公司名称不能为空" },
         ],
-        phonenumber: [
-          { required: true, trigger: "blur", message: "联系电话不能为空" },
+        smsCode: [
+          { required: true, trigger: "blur", message: "验证码不能为空" },
+        ],
+        certificatesCode: [
+          { required: true, trigger: "blur", message: "信用代码或身份证号不能为空" },
         ],
       },
       loginRules: {
@@ -231,6 +344,7 @@ export default {
         ],
       },
       loading: false,
+      zhuceloading:false,
       redirect: undefined,
       // 新加的
       canvas: { width: undefined, height: undefined },
@@ -270,6 +384,92 @@ export default {
     this.getCookie();
   },
   methods: {
+    // 选择机构或自然人
+    selectType(data){
+       //alert(data)
+       if(data==0){
+         this.nickName="姓名"; 
+          this.certificatesCode="身份证号"
+          this.picture="身份证照片:"
+       }else{
+          this.nickName="公司名称"; 
+          this.certificatesCode="信用代码"
+          this.picture="营业执照:"
+       }
+    },
+ changepic(e) {
+        let _this = this;
+		    var reads = new FileReader();
+          console.log(reads)
+        
+					var f =e.target.files[0];
+					console.log(f)
+					
+					reads.readAsDataURL(f);
+					reads.onload = function(e) {
+					    console.log(e)
+					    if(f.size/1024<=1024){
+                _this.imageUrl = this.result;
+                _this.registerForm.certificatesImg=this.result;
+					   }else{
+               alert("2")
+					      let image = new Image()  
+					      image.src = e.target.result
+					      image.onload = function() {  
+					       let canvas = document.createElement('canvas'),
+					        context = canvas.getContext('2d'),
+					        imageWidth = image.width / 4,  
+					        imageHeight = image.height / 4, 
+					        data = ''  
+					        canvas.width = imageWidth  
+					        canvas.height = imageHeight  
+					        context.drawImage(image, 0, 0, imageWidth, imageHeight)
+                   data = canvas.toDataURL('image/jpeg')
+                  console.log(data)
+                   _this.imageUrl = data;
+                  _this.registerForm.certificatesImg=data;
+				
+					      };
+					   }
+					   
+        	   }
+            // 另一种方案
+            // let _this = this;
+            // // console.log(e.target.files[0])
+            // //if (!e || !window.FileReader) return  // 看支持不支持FileReader
+           
+            // let reader = new FileReader()
+            // reader.readAsDataURL(e.target.files[0]) // 这里是最关键的一步，转换就在这里 （参数必须是blob对象）
+            // reader.onloadend = function () {
+            //     _this.imageUrl = this.result
+            // }
+
+				
+      },
+      // 获取验证码
+      getphoneonecode(){
+        sendSms(this.registerForm.userName);
+        this.getphonecode()
+      },
+    getphonecode(){
+      var that=this;
+        if(wait == 0){
+              this.phonedisabled=false;
+              this.phonetext= "获取验证码";
+              wait = 60;
+            }else{
+              // alert("1")
+            
+               wait--;
+                this.phonedisabled=true;
+                this.phonetext= wait + "s";
+                // $(".clock").css({ color: "#000", background: "#f2f2f2" });
+                setTimeout(function(){
+                   that.getphonecode()
+                }, 1000);
+            }
+         
+    },
     handleClick(tab, event) {
         console.log(tab.index);
         if(tab.index==0){
@@ -330,12 +530,13 @@ export default {
     },
     /** 提交按钮 */
     handleRegister: function() {
-      this.loading = true;
+  
       this.$refs["registerForm"].validate(valid => {
         if (valid) {
+              this.zhuceloading = true;
             registerUser(this.registerForm).then(response => {
               if (response.code === 200) {
-                this.loading = false;
+                this.zhuceloading = false;
                 this.msgSuccess("注册成功");
                 this.activeName="first";
                 this.loginStatus=true;
@@ -542,7 +743,7 @@ export default {
     justify-content: space-around;
 }
   box-shadow: -15px 15px 15px rgba(6, 17, 47, 0.7);
-  z-index: 99999;
+  z-index: 2001;
   .el-input {
     height: 38px;
     input {
@@ -580,7 +781,7 @@ export default {
   width: 400px;
   padding: 25px 25px 5px 25px;
   width: 540px;
-  height: 450px;
+  height: 650px;
   position: absolute;
   top: 0;
   left: 0;
@@ -595,7 +796,7 @@ export default {
     justify-content: space-around;
 }
   box-shadow: -15px 15px 15px rgba(6, 17, 47, 0.7);
-  z-index: 99999;
+  z-index: 2001;
   .el-input {
     height: 38px;
     input {
@@ -638,7 +839,7 @@ export default {
   letter-spacing: 1px;
 }
 .cavs {
-  z-index: 9999;
+  z-index: 2000;
   position: fixed;
   width: 95%;
   margin-left: 20px;
@@ -719,4 +920,28 @@ export default {
   -webkit-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
+// 图片
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
