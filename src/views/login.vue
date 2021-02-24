@@ -79,7 +79,7 @@
         </el-button>
       </el-form-item>
          <el-form-item style="text-align:center;position:relative;top:5px">
-           <img src="../assets/image/weixin.png" style="width:30px;height:30px">
+           <img src="../assets/image/weixin.png" style="width:30px;height:30px;cursor: pointer;"  @click="openWx">
           </el-form-item>
     </el-form>
 
@@ -219,12 +219,12 @@
           />
         </el-input>
       </el-form-item>
-      <el-form-item>
+      <!-- <el-form-item>
           <label  style="width:80px;height:10px;display:inline-block;float:left;color:#fff">{{picture}}</label>
           <label for="file" style="width:100px;height:100px;display:inline-block;position:absolute"></label>
           <img id="imghead" width=100px height=100px border=0 :src='imageUrl'>
 					<input type="file" @change="changepic" id="file" style="display: none;" />
-      </el-form-item>
+      </el-form-item> -->
     
       <el-form-item style="width: 100%">
         <el-button
@@ -239,7 +239,7 @@
         </el-button>
       </el-form-item>
         <el-form-item style="text-align:center;position:relative;top:5px">
-           <img src="../assets/image/weixin.png" style="width:30px;height:30px">
+           <img src="../assets/image/weixin.png" style="width:30px;height:30px;cursor: pointer;" @click="openWx">
           </el-form-item>
     </el-form>
   
@@ -247,12 +247,12 @@
     <div class="el-login-footer">
       <span>Copyright © 2018-2019 ruoyi.vip All Rights Reserved.</span>
     </div>
+
   </div>
 </template>
 
 <script>
-import { getToken } from "@/utils/auth";
-import { sendSms } from "@/api/system/user";
+import { sendSms,getOpenId,checkBind } from "@/api/system/user";
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { registerUser} from "@/api/system/user";
@@ -275,6 +275,9 @@ export default {
   name: "Login",
   data() {
     return {
+      wxInfo:{
+          code:"",//微信回调获取的code 换取openID
+      },
       activeName:"first",
       registerStatus:false,
       loginStatus:true,
@@ -292,7 +295,6 @@ export default {
       picture:"身份证照片:",
       imageUrl: 'https://www.lczhuisu.cn:443/zspt/zspt/css/imgs/add.png',
       phonetext:'获取验证码',
- 
       // 验证码禁用
       phonedisabled:false,
       registerForm:{
@@ -384,6 +386,9 @@ export default {
     this.getCookie();
   },
   methods: {
+    openWx(){
+      this.$router.push({ path: "/wx_code" });
+    },
     // 选择机构或自然人
     selectType(data){
        //alert(data)
@@ -684,9 +689,54 @@ export default {
     this.canvas.height = $(window).height();
     this.ctx.lineWidth = 0.3;
     this.ctx.strokeStyle = new this.Color(150, _this).style;
-
     this.createDots();
     requestAnimationFrame(this.animateDots);
+    //回调获取code
+    if (this.$route.query.code) {
+      console.log("微信code:"+this.$route.query.code);
+      this.wxInfo.code = this.$route.query.code
+      getOpenId(this.wxInfo.code).then((res) => {
+        //获取成功
+        if(res.code==200){
+          //判断是否绑定微信
+          checkBind(res.data).then((res) => {
+            //获取成功 判断是否绑定微信
+            if(res.code==200){
+              //跳转首页
+               let loginForm={
+                username: res.data.userName,
+                password: res.data.password,
+               }
+              this.$store
+              .dispatch("WxLogin", loginForm)
+              .then(() => {
+                localStorage.setItem("user", loginForm.username);
+                this.$router.push({ path: "/index" });
+              })
+              .catch(() => {
+                this.loading = false;
+                this.getCode();
+              });
+            }else{
+              //弹窗填写手机号
+
+            }
+          })
+        }
+        // if (res.code === 0) {
+        //   this.$cookie.set('token', res.token)
+        //   this.$router.replace({ name: 'home' })
+        // } else if (res.code === 500) {
+        //   this.dialogVisible4 = true
+        //   this.openId = res.openId
+        // } else {
+        //   this.$message({
+        //     message: res.msg,
+        //     type: 'error'
+        //   })
+        // }
+      })
+    }
   },
 };
 </script>
@@ -781,7 +831,7 @@ export default {
   width: 400px;
   padding: 25px 25px 5px 25px;
   width: 540px;
-  height: 650px;
+  height: 685px;
   position: absolute;
   top: 0;
   left: 0;

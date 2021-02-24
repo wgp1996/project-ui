@@ -15,6 +15,22 @@ export function login(username, password, code, uuid) {
   })
 }
 
+// 微信绑定登录方法
+export function wxLogin(username, password, code, uuid) {
+  const data = {
+    username,
+    password,
+    code,
+    uuid
+  }
+  return request({
+    url: '/wxLogin',
+    method: 'post',
+    params: data
+  })
+}
+
+
 // 获取用户详细信息
 export function getInfo() {
   return request({

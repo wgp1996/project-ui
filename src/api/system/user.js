@@ -16,6 +16,22 @@ export function sendSms(phone) {
     method: 'get'
   })
 }
+//获取openId
+export function getOpenId(code) {
+  return request({
+    url: '/wx/api/getOpenId/'+code,
+    method: 'get'
+  })
+}
+//检测是否绑定微信
+export function checkBind(code) {
+  return request({
+    url: '/api/checkBind/'+code,
+    method: 'get'
+  })
+}
+
+
 // 查询用户审核列表
 export function listShUser(query) {
   return request({
