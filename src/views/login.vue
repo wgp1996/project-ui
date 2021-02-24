@@ -9,6 +9,7 @@
       :rules="loginRules"
       class="login-form"
     >
+    <h4 style="margin:0;padding:0;text-align:center;color:#fff;font-size:18px;letter-spacing:1px">项目管理平台</h4>
       <!-- <h3 class="title">项目管理平台</h3> -->
      <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
         <el-tab-pane label="快速登录" name="first"></el-tab-pane>
@@ -90,6 +91,7 @@
       :rules="registerRules"
       class="register-form"
     >
+    <h4 style="margin:0;padding:0;text-align:center;color:#fff;font-size:18px;letter-spacing:1px">项目管理平台</h4>
       <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
         <el-tab-pane label="快速登录" name="first"></el-tab-pane>
         <el-tab-pane label="快速注册" name="second"></el-tab-pane>
@@ -829,9 +831,9 @@ export default {
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.5);
   width: 400px;
-  padding: 25px 25px 5px 25px;
+  padding: 15px 25px 5px 25px;
   width: 540px;
-  height: 685px;
+  height: 680px;
   position: absolute;
   top: 0;
   left: 0;
@@ -993,5 +995,8 @@ export default {
     width: 178px;
     height: 178px;
     display: block;
+  }
+    .register-form .el-form-item{
+    margin-bottom: 15px;
   }
 </style>
