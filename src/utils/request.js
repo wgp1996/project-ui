@@ -43,10 +43,16 @@ service.interceptors.response.use(res => {
         })
       })
     } else if (code !== 200) {
-      Notification.error({
-        title: res.data.msg
-      })
-      return Promise.reject('error')
+      //如果是接口异常跳过
+      if(code===201){
+        return res.data
+      }else{
+        Notification.error({
+          title: res.data.msg
+        })
+        return Promise.reject('error')
+      }
+
     } else {
       return res.data
     }

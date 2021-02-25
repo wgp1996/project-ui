@@ -9,9 +9,20 @@
       :rules="loginRules"
       class="login-form"
     >
-    <h4 style="margin:0;padding:0;text-align:center;color:#fff;font-size:18px;letter-spacing:1px">项目管理平台</h4>
+      <h4
+        style="
+          margin: 0;
+          padding: 0;
+          text-align: center;
+          color: #fff;
+          font-size: 18px;
+          letter-spacing: 1px;
+        "
+      >
+        项目管理平台
+      </h4>
       <!-- <h3 class="title">项目管理平台</h3> -->
-     <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
+      <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
         <el-tab-pane label="快速登录" name="first"></el-tab-pane>
         <el-tab-pane label="快速注册" name="second"></el-tab-pane>
       </el-tabs>
@@ -79,9 +90,13 @@
           <span v-else>登 录 中...</span>
         </el-button>
       </el-form-item>
-         <el-form-item style="text-align:center;position:relative;top:5px">
-           <img src="../assets/image/weixin.png" style="width:30px;height:30px;cursor: pointer;"  @click="openWx">
-          </el-form-item>
+      <el-form-item style="text-align: center; position: relative; top: 5px">
+        <img
+          src="../assets/image/weixin.png"
+          style="width: 30px; height: 30px; cursor: pointer"
+          @click="openWx"
+        />
+      </el-form-item>
     </el-form>
 
     <el-form
@@ -91,26 +106,23 @@
       :rules="registerRules"
       class="register-form"
     >
-    <h4 style="margin:0;padding:0;text-align:center;color:#fff;font-size:18px;letter-spacing:1px">项目管理平台</h4>
+      <h4
+        style="
+          margin: 0;
+          padding: 0;
+          text-align: center;
+          color: #fff;
+          font-size: 18px;
+          letter-spacing: 1px;
+        "
+      >
+        项目管理平台
+      </h4>
       <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
         <el-tab-pane label="快速登录" name="first"></el-tab-pane>
         <el-tab-pane label="快速注册" name="second"></el-tab-pane>
       </el-tabs>
-      <!-- <el-form-item prop="nickName">
-        <el-input
-          v-model="registerForm.nickName"
-          type="text"
-          auto-complete="off"
-          placeholder="公司名称"
-        >
-          <svg-icon
-            slot="prefix"
-            icon-class="form"
-            class="el-input__icon input-icon"
-          />
-        </el-input>
-      </el-form-item> -->
-        <el-form-item prop="userName">
+      <el-form-item prop="userName">
         <el-input
           v-model="registerForm.userName"
           type="text"
@@ -124,13 +136,13 @@
           />
         </el-input>
       </el-form-item>
-        <el-form-item prop="smsCode" >
+      <el-form-item prop="smsCode">
         <el-input
           v-model="registerForm.smsCode"
           type="text"
           auto-complete="off"
           placeholder="验证码"
-          style="width:350px;float:left"
+          style="width: 350px; float: left"
         >
           <svg-icon
             slot="prefix"
@@ -138,23 +150,15 @@
             class="el-input__icon input-icon"
           />
         </el-input>
-        <el-button type="primary" style="float:left;width:130px;height:38px;margin-left:10px" @click="getphoneonecode" :disabled="phonedisabled">{{phonetext}}</el-button>
-      </el-form-item>
-      <!-- <el-form-item prop="userName">
-        <el-input
-          v-model="registerForm.userName"
-          type="text"
-          auto-complete="off"
-          placeholder="登录账号"
+        <el-button
+          type="primary"
+          style="float: left; width: 130px; height: 38px; margin-left: 10px"
+          @click="getphoneonecode"
+          :disabled="phonedisabled"
+          >{{ phonetext }}</el-button
         >
-          <svg-icon
-            slot="prefix"
-            icon-class="user"
-            class="el-input__icon input-icon"
-          />
-        </el-input>
-      </el-form-item> -->
-       <el-form-item prop="password">
+      </el-form-item>
+      <el-form-item prop="password">
         <el-input
           v-model="registerForm.password"
           type="password"
@@ -169,17 +173,24 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="certificatesType">
-            <el-select v-model="registerForm.certificatesType" placeholder="请选择机构类型" style="width:100%" class="specials" @change="selectType">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-         </el-select>  
+        <el-select
+          v-model="registerForm.certificatesType"
+          placeholder="请选择机构类型"
+          style="width: 100%"
+          class="specials"
+          @change="selectType"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item prop="nickName">
-             <el-input
+        <el-input
           v-model="registerForm.nickName"
           type="text"
           auto-complete="off"
@@ -190,10 +201,10 @@
             icon-class="user"
             class="el-input__icon input-icon"
           />
-        </el-input> 
+        </el-input>
       </el-form-item>
       <el-form-item prop="certificatesCode">
-             <el-input
+        <el-input
           v-model="registerForm.certificatesCode"
           type="text"
           auto-complete="off"
@@ -204,10 +215,10 @@
             icon-class="user"
             class="el-input__icon input-icon"
           />
-        </el-input> 
+        </el-input>
       </el-form-item>
-       
-       <el-form-item prop="email">
+
+      <el-form-item prop="email">
         <el-input
           v-model="registerForm.email"
           type="text"
@@ -227,7 +238,7 @@
           <img id="imghead" width=100px height=100px border=0 :src='imageUrl'>
 					<input type="file" @change="changepic" id="file" style="display: none;" />
       </el-form-item> -->
-    
+
       <el-form-item style="width: 100%">
         <el-button
           :loading="zhuceloading"
@@ -240,28 +251,75 @@
           <span v-else>注册中...</span>
         </el-button>
       </el-form-item>
-        <el-form-item style="text-align:center;position:relative;top:5px">
-           <img src="../assets/image/weixin.png" style="width:30px;height:30px;cursor: pointer;" @click="openWx">
-          </el-form-item>
+      <el-form-item style="text-align: center; position: relative; top: 5px">
+        <img
+          src="../assets/image/weixin.png"
+          style="width: 30px; height: 30px; cursor: pointer"
+          @click="openWx"
+        />
+      </el-form-item>
     </el-form>
-  
+    <el-dialog title="绑定手机号" :visible.sync="open" width="600px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item prop="phnumber">
+          <el-input
+            v-model="wxInfo.phnumber"
+            type="text"
+            auto-complete="off"
+            placeholder="手机号"
+          >
+            <svg-icon
+              slot="prefix"
+              icon-class="phone"
+              class="el-input__icon input-icon"
+            />
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="smsCode">
+          <el-input
+            v-model="wxInfo.smsCode"
+            type="text"
+            auto-complete="off"
+            placeholder="验证码"
+            style="width: 350px; float: left"
+          >
+            <svg-icon
+              slot="prefix"
+              icon-class="phone"
+              class="el-input__icon input-icon"
+            />
+          </el-input>
+          <el-button
+            type="primary"
+            style="float: left; width: 130px; height: 38px; margin-left: 10px"
+            @click="getphoneonecode"
+            :disabled="phonedisabled"
+            >{{ phonetext }}</el-button
+          >
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
     <!--  底部  -->
     <div class="el-login-footer">
       <span>Copyright © 2018-2019 ruoyi.vip All Rights Reserved.</span>
     </div>
-
   </div>
 </template>
 
 <script>
-import { sendSms,getOpenId,checkBind } from "@/api/system/user";
+import { Loading } from 'element-ui';
+import { sendSms, getOpenId, checkBind, wxBind } from "@/api/system/user";
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
-import { registerUser} from "@/api/system/user";
+import { registerUser } from "@/api/system/user";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import $ from "jquery";
-     var wait=60;
-     // 手机号验证
+var wait = 60;
+// 手机号验证
 const validatePhone = (rule, value, callback) => {
   if (value === "") {
     callback(new Error("请输入手机号"));
@@ -272,17 +330,22 @@ const validatePhone = (rule, value, callback) => {
       callback();
     }
   }
-}; 
+};
 export default {
   name: "Login",
   data() {
     return {
-      wxInfo:{
-          code:"",//微信回调获取的code 换取openID
+      open: true,
+      wxInfo: {
+        openId:"",//openId
+        code: "", //微信回调获取的code 换取openID
+        phnumber: "", //手机号
+        smsCode: "", //验证码
       },
-      activeName:"first",
-      registerStatus:false,
-      loginStatus:true,
+      form:{},
+      activeName: "first",
+      registerStatus: false,
+      loginStatus: true,
       codeUrl: "",
       cookiePassword: "",
       loginForm: {
@@ -292,48 +355,63 @@ export default {
         code: "",
         uuid: "",
       },
-      nickName:"姓名",
-      certificatesCode:"身份证号",
-      picture:"身份证照片:",
-      imageUrl: 'https://www.lczhuisu.cn:443/zspt/zspt/css/imgs/add.png',
-      phonetext:'获取验证码',
+      nickName: "姓名",
+      certificatesCode: "身份证号",
+      picture: "身份证照片:",
+      imageUrl: "https://www.lczhuisu.cn:443/zspt/zspt/css/imgs/add.png",
+      phonetext: "获取验证码",
       // 验证码禁用
-      phonedisabled:false,
-      registerForm:{
-        userName: "", 
-        password:"",
-         // 验证码
-        phonencode:'',
+      phonedisabled: false,
+      registerForm: {
+        userName: "",
+        password: "",
+        // 验证码
+        phonencode: "",
         // 机构类型
-        certificatesType:"0",
-        certificatesImg:'',
+        certificatesType: "0",
+        certificatesImg: "",
         // 密码
-        email:''
+        email: "",
       },
       // 机构类型选项
-        options: [{
-          value: '0',
-          label: '经营性自然人'
-        }, {
-          value: '1',
-          label: '机构或企业'
-        }],
+      options: [
+        {
+          value: "0",
+          label: "经营性自然人",
+        },
+        {
+          value: "1",
+          label: "机构或企业",
+        },
+      ],
+      rules: {
+        phnumber: [{ required: true, trigger: "blur", message: "手机号不能为空" }],
+
+      },
       registerRules: {
         userName: [
           // { required: true, trigger: "blur", message: "手机号不能为空" },
-             { validator: validatePhone, trigger: "change" }
+          { validator: validatePhone, trigger: "change" },
         ],
         password: [
           { required: true, trigger: "blur", message: "密码不能为空" },
         ],
         nickName: [
-          { required: true, trigger: "blur", message: "姓名或公司名称不能为空" },
+          {
+            required: true,
+            trigger: "blur",
+            message: "姓名或公司名称不能为空",
+          },
         ],
         smsCode: [
           { required: true, trigger: "blur", message: "验证码不能为空" },
         ],
         certificatesCode: [
-          { required: true, trigger: "blur", message: "信用代码或身份证号不能为空" },
+          {
+            required: true,
+            trigger: "blur",
+            message: "信用代码或身份证号不能为空",
+          },
         ],
       },
       loginRules: {
@@ -348,7 +426,7 @@ export default {
         ],
       },
       loading: false,
-      zhuceloading:false,
+      zhuceloading: false,
       redirect: undefined,
       // 新加的
       canvas: { width: undefined, height: undefined },
@@ -388,105 +466,135 @@ export default {
     this.getCookie();
   },
   methods: {
-    openWx(){
+    openWx() {
       this.$router.push({ path: "/wx_code" });
     },
     // 选择机构或自然人
-    selectType(data){
-       //alert(data)
-       if(data==0){
-         this.nickName="姓名"; 
-          this.certificatesCode="身份证号"
-          this.picture="身份证照片:"
-       }else{
-          this.nickName="公司名称"; 
-          this.certificatesCode="信用代码"
-          this.picture="营业执照:"
-       }
+    selectType(data) {
+      //alert(data)
+      if (data == 0) {
+        this.nickName = "姓名";
+        this.certificatesCode = "身份证号";
+        this.picture = "身份证照片:";
+      } else {
+        this.nickName = "公司名称";
+        this.certificatesCode = "信用代码";
+        this.picture = "营业执照:";
+      }
     },
- changepic(e) {
-        let _this = this;
-		    var reads = new FileReader();
-          console.log(reads)
-        
-					var f =e.target.files[0];
-					console.log(f)
-					
-					reads.readAsDataURL(f);
-					reads.onload = function(e) {
-					    console.log(e)
-					    if(f.size/1024<=1024){
-                _this.imageUrl = this.result;
-                _this.registerForm.certificatesImg=this.result;
-					   }else{
-               alert("2")
-					      let image = new Image()  
-					      image.src = e.target.result
-					      image.onload = function() {  
-					       let canvas = document.createElement('canvas'),
-					        context = canvas.getContext('2d'),
-					        imageWidth = image.width / 4,  
-					        imageHeight = image.height / 4, 
-					        data = ''  
-					        canvas.width = imageWidth  
-					        canvas.height = imageHeight  
-					        context.drawImage(image, 0, 0, imageWidth, imageHeight)
-                   data = canvas.toDataURL('image/jpeg')
-                  console.log(data)
-                   _this.imageUrl = data;
-                  _this.registerForm.certificatesImg=data;
-				
-					      };
-					   }
-					   
-        	   }
-            // 另一种方案
-            // let _this = this;
-            // // console.log(e.target.files[0])
-            // //if (!e || !window.FileReader) return  // 看支持不支持FileReader
-           
-            // let reader = new FileReader()
-            // reader.readAsDataURL(e.target.files[0]) // 这里是最关键的一步，转换就在这里 （参数必须是blob对象）
-            // reader.onloadend = function () {
-            //     _this.imageUrl = this.result
-            // }
+    changepic(e) {
+      let _this = this;
+      var reads = new FileReader();
+      console.log(reads);
 
-				
-      },
-      // 获取验证码
-      getphoneonecode(){
-        sendSms(this.registerForm.userName);
-        this.getphonecode()
-      },
-    getphonecode(){
-      var that=this;
-        if(wait == 0){
-              this.phonedisabled=false;
-              this.phonetext= "获取验证码";
-              wait = 60;
-            }else{
-              // alert("1")
-            
-               wait--;
-                this.phonedisabled=true;
-                this.phonetext= wait + "s";
-                // $(".clock").css({ color: "#000", background: "#f2f2f2" });
-                setTimeout(function(){
-                   that.getphonecode()
-                }, 1000);
-            }
-         
+      var f = e.target.files[0];
+      console.log(f);
+
+      reads.readAsDataURL(f);
+      reads.onload = function (e) {
+        console.log(e);
+        if (f.size / 1024 <= 1024) {
+          _this.imageUrl = this.result;
+          _this.registerForm.certificatesImg = this.result;
+        } else {
+          alert("2");
+          let image = new Image();
+          image.src = e.target.result;
+          image.onload = function () {
+            let canvas = document.createElement("canvas"),
+              context = canvas.getContext("2d"),
+              imageWidth = image.width / 4,
+              imageHeight = image.height / 4,
+              data = "";
+            canvas.width = imageWidth;
+            canvas.height = imageHeight;
+            context.drawImage(image, 0, 0, imageWidth, imageHeight);
+            data = canvas.toDataURL("image/jpeg");
+            console.log(data);
+            _this.imageUrl = data;
+            _this.registerForm.certificatesImg = data;
+          };
+        }
+      };
+    },
+      /** 提交按钮 */
+    submitForm: function() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+            wxBind(this.wxInfo.openId,this.wxInfo.phnumber,this.wxInfo.smsCode).then(response => {
+              if (response.code === 200) {
+              //跳转首页
+              let loginForm = {
+                username: response.data.userName,
+                password: response.data.old,
+              };
+              this.$store
+                .dispatch("WxLogin", loginForm)
+                .then(() => {
+                  localStorage.setItem("user", loginForm.username);
+                  this.$router.push({ path: "/index" });
+                })
+                .catch(() => {
+                  this.loading = false;
+                  this.getCode();
+                  this.$router.push({ path: "/login" });
+                });
+              } else {
+                this.msgError(response.msg);
+                this.$router.push({ path: "/login" });
+              }
+            });
+        }
+      });
+    },
+    reset() {
+      this.wxInfo={
+          openId:"",//openId
+          code: "", //微信回调获取的code 换取openID
+          phnumber: "", //手机号
+          smsCode: "", //验证码
+      }
+      this.resetForm("form");
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+      this.$router.push({ path: "/login" });
+    },
+    // 获取验证码
+    getphoneonecode() {
+      sendSms(this.registerForm.userName);
+      this.getphonecode();
+    },
+    getphonecode() {
+      var that = this;
+      if (wait == 0) {
+        this.phonedisabled = false;
+        this.phonetext = "获取验证码";
+        wait = 60;
+      } else {
+        // alert("1")
+
+        wait--;
+        this.phonedisabled = true;
+        this.phonetext = wait + "s";
+        // $(".clock").css({ color: "#000", background: "#f2f2f2" });
+        setTimeout(function () {
+          that.getphonecode();
+        }, 1000);
+      }
     },
     handleClick(tab, event) {
-        console.log(tab.index);
-        if(tab.index==0){
-          this.loginStatus=true;
-          this.registerStatus=false;
-        }else{
-          this.loginStatus=false;
-          this.registerStatus=true;
-         //this.resetForm("registerForm");
-        }
+      console.log(tab.index);
+      if (tab.index == 0) {
+        this.loginStatus = true;
+        this.registerStatus = false;
+      } else {
+        this.loginStatus = false;
+        this.registerStatus = true;
+        //this.resetForm("registerForm");
+      }
     },
     getCode() {
       getCodeImg().then((res) => {
@@ -536,23 +644,22 @@ export default {
       });
     },
     /** 提交按钮 */
-    handleRegister: function() {
-  
-      this.$refs["registerForm"].validate(valid => {
+    handleRegister: function () {
+      this.$refs["registerForm"].validate((valid) => {
         if (valid) {
-              this.zhuceloading = true;
-            registerUser(this.registerForm).then(response => {
-              if (response.code === 200) {
-                this.zhuceloading = false;
-                this.msgSuccess("注册成功");
-                this.activeName="first";
-                this.loginStatus=true;
-                this.registerStatus=false;
-                this.resetForm("registerForm");
-              } else {
-                this.msgError(response.msg);
-              }
-            });
+          this.zhuceloading = true;
+          registerUser(this.registerForm).then((response) => {
+            if (response.code === 200) {
+              this.zhuceloading = false;
+              this.msgSuccess("注册成功");
+              this.activeName = "first";
+              this.loginStatus = true;
+              this.registerStatus = false;
+              this.resetForm("registerForm");
+            } else {
+              this.msgError(response.msg);
+            }
+          });
         }
       });
     },
@@ -695,55 +802,67 @@ export default {
     requestAnimationFrame(this.animateDots);
     //回调获取code
     if (this.$route.query.code) {
-      console.log("微信code:"+this.$route.query.code);
-      this.wxInfo.code = this.$route.query.code
+      console.log("微信code:" + this.$route.query.code);
+      this.wxInfo.code = this.$route.query.code;
       getOpenId(this.wxInfo.code).then((res) => {
+        // const loading = this.$loading({
+        //           lock: true,
+        //           text: '加载中...',
+        //           spinner: 'el-icon-loading',
+        //           background: 'rgba(0, 0, 0, 0.7)',
+        //           customClass:'loadingbody'
+        // });
         //获取成功
-        if(res.code==200){
+        if (res.code == 200) {
+          this.wxInfo.openId=res.data;
           //判断是否绑定微信
           checkBind(res.data).then((res) => {
             //获取成功 判断是否绑定微信
-            if(res.code==200){
+            if (res.code == 200) {
               //跳转首页
-               let loginForm={
+              let loginForm = {
                 username: res.data.userName,
-                password: res.data.password,
-               }
+                password: res.data.old,
+              };
               this.$store
-              .dispatch("WxLogin", loginForm)
-              .then(() => {
-                localStorage.setItem("user", loginForm.username);
-                this.$router.push({ path: "/index" });
-              })
-              .catch(() => {
-                this.loading = false;
-                this.getCode();
-              });
-            }else{
+                .dispatch("WxLogin", loginForm)
+                .then(() => {
+                  localStorage.setItem("user", loginForm.username);
+                  this.$router.push({ path: "/index" });
+                })
+                .catch(() => {
+                  this.loading = false;
+                  this.getCode();
+                  this.$router.push({ path: "/login" });
+                });
+            } else {
+              console.log("填写手机号！");
               //弹窗填写手机号
-
+             // loading.close();
+              this.open=true;
             }
-          })
+          });
+        } else {
+          console.log("获取openId失败")
+         // loading.close();
+          this.$message({
+            message: res.msg,
+            type: "error",
+          });
         }
-        // if (res.code === 0) {
-        //   this.$cookie.set('token', res.token)
-        //   this.$router.replace({ name: 'home' })
-        // } else if (res.code === 500) {
-        //   this.dialogVisible4 = true
-        //   this.openId = res.openId
-        // } else {
-        //   this.$message({
-        //     message: res.msg,
-        //     type: 'error'
-        //   })
-        // }
-      })
+      });
     }
   },
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+.loadingbody{
+  z-index: 2002 !important;
+}
+.loadingbody .el-icon-loading{
+  font-size: 50px;
+}
 .login {
   display: flex;
   justify-content: center;
@@ -760,40 +879,38 @@ export default {
 }
 
 .login-form {
-  .el-tabs__content{
+  .el-tabs__content {
     padding: 0px !important;
   }
   .el-tabs--border-card {
     background: transparent !important;
     border: none !important;
   }
-  .el-tabs--border-card>.el-tabs__header{
+  .el-tabs--border-card > .el-tabs__header {
     background-color: transparent !important;
     margin: 0 0 15px !important;
   }
-  .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
-    background-color: transparent  !important;
-    border: none  !important;
+  .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+    background-color: transparent !important;
+    border: none !important;
   }
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.5);
   width: 400px;
   padding: 25px 25px 5px 25px;
   width: 540px;
-  height: 400px;
+  height: 425px;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   margin: auto;
-  .el-tabs__nav-wrap
-.el-tabs__nav-scroll
-.el-tabs__nav {
+  .el-tabs__nav-wrap .el-tabs__nav-scroll .el-tabs__nav {
     width: 100%;
     display: flex;
     justify-content: space-around;
-}
+  }
   box-shadow: -15px 15px 15px rgba(6, 17, 47, 0.7);
   z-index: 2001;
   .el-input {
@@ -802,7 +919,7 @@ export default {
       height: 38px;
     }
   }
-  .el-tabs__item{
+  .el-tabs__item {
     color: white;
   }
   .input-icon {
@@ -813,20 +930,20 @@ export default {
 }
 
 .register-form {
-  .el-tabs__content{
+  .el-tabs__content {
     padding: 0px !important;
   }
   .el-tabs--border-card {
     background: transparent !important;
     border: none !important;
   }
-  .el-tabs--border-card>.el-tabs__header{
+  .el-tabs--border-card > .el-tabs__header {
     background-color: transparent !important;
     margin: 0 0 15px !important;
   }
-  .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
-    background-color: transparent  !important;
-    border: none  !important;
+  .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+    background-color: transparent !important;
+    border: none !important;
   }
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.5);
@@ -840,13 +957,11 @@ export default {
   right: 0;
   bottom: 0;
   margin: auto;
-  .el-tabs__nav-wrap
-.el-tabs__nav-scroll
-.el-tabs__nav {
+  .el-tabs__nav-wrap .el-tabs__nav-scroll .el-tabs__nav {
     width: 100%;
     display: flex;
     justify-content: space-around;
-}
+  }
   box-shadow: -15px 15px 15px rgba(6, 17, 47, 0.7);
   z-index: 2001;
   .el-input {
@@ -855,7 +970,7 @@ export default {
       height: 38px;
     }
   }
-   .el-tabs__item{
+  .el-tabs__item {
     color: white;
   }
   .input-icon {
@@ -973,30 +1088,30 @@ export default {
   transition-duration: 0.2s;
 }
 // 图片
-  .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
-    .register-form .el-form-item{
-    margin-bottom: 15px;
-  }
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+.register-form .el-form-item {
+  margin-bottom: 15px;
+}
 </style>

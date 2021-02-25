@@ -26,10 +26,18 @@ export function getOpenId(code) {
 //检测是否绑定微信
 export function checkBind(code) {
   return request({
-    url: '/api/checkBind/'+code,
+    url: '/wx/api/checkBind/'+code,
     method: 'get'
   })
 }
+//绑定微信
+export function wxBind(openId,SMSCode,userName) {
+  return request({
+    url: '/wx/api/wxBind/'+openId+'/'+SMSCode+'/'+userName,
+    method: 'get'
+  })
+}
+
 
 
 // 查询用户审核列表
