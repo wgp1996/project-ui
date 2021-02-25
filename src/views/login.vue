@@ -259,8 +259,8 @@
         />
       </el-form-item>
     </el-form>
-    <el-dialog title="绑定手机号" :visible.sync="open" width="600px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog title="绑定手机号" :visible.sync="open" width="560px" :center="true" class="phonedialog" style="background-color:rgba(0,0,0,0.8)">
+      <el-form ref="form" :model="wxInfo" :rules="ruless" label-width="20px">
         <el-form-item prop="phnumber">
           <el-input
             v-model="wxInfo.phnumber"
@@ -281,7 +281,7 @@
             type="text"
             auto-complete="off"
             placeholder="验证码"
-            style="width: 350px; float: left"
+            style="width: 340px; float: left"
           >
             <svg-icon
               slot="prefix"
@@ -342,7 +342,9 @@ export default {
         phnumber: "", //手机号
         smsCode: "", //验证码
       },
-      form:{},
+      form:{
+        phnumber:''
+      },
       activeName: "first",
       registerStatus: false,
       loginStatus: true,
@@ -384,7 +386,7 @@ export default {
           label: "机构或企业",
         },
       ],
-      rules: {
+      ruless:{
         phnumber: [{ required: true, trigger: "blur", message: "手机号不能为空" }],
 
       },
