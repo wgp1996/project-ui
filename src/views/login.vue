@@ -259,8 +259,17 @@
         />
       </el-form-item>
     </el-form>
-    <el-dialog title="绑定手机号" :visible.sync="open" width="560px" :center="true" class="phonedialog" style="background-color:rgba(0,0,0,0.8)">
-      <el-form ref="form" :model="wxInfo" :rules="ruless" label-width="20px">
+    <el-dialog
+      title="绑定手机号"
+      :visible.sync="open"
+      width="530px"
+      :center="true"
+      :close-on-click-modal="false"
+      class="phonedialog"
+      :show-close="false"
+      style="background-color: rgba(0, 0, 0, 0.8)"
+    >
+      <el-form ref="form" :model="wxInfo" :rules="ruless" label-width="0px">
         <el-form-item prop="phnumber">
           <el-input
             v-model="wxInfo.phnumber"
@@ -292,15 +301,15 @@
           <el-button
             type="primary"
             style="float: left; width: 130px; height: 38px; margin-left: 10px"
-            @click="getphoneonecode"
+            @click="getphonesmscode"
             :disabled="phonedisabled"
             >{{ phonetext }}</el-button
           >
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">提 交</el-button>
+        <el-button @click="cancel">关 闭</el-button>
       </div>
     </el-dialog>
     <!--  底部  -->
@@ -311,7 +320,7 @@
 </template>
 
 <script>
-import { Loading } from 'element-ui';
+import { Loading } from "element-ui";
 import { sendSms, getOpenId, checkBind, wxBind } from "@/api/system/user";
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
@@ -335,15 +344,15 @@ export default {
   name: "Login",
   data() {
     return {
-      open: true,
+      open: false,
       wxInfo: {
-        openId:"",//openId
+        openId: "", //openId
         code: "", //微信回调获取的code 换取openID
         phnumber: "", //手机号
         smsCode: "", //验证码
       },
-      form:{
-        phnumber:''
+      form: {
+        phnumber: "",
       },
       activeName: "first",
       registerStatus: false,
@@ -386,14 +395,18 @@ export default {
           label: "机构或企业",
         },
       ],
-      ruless:{
-        phnumber: [{ required: true, trigger: "blur", message: "手机号不能为空" }],
-
+      ruless: {
+        phnumber: [
+          { required: true, validator: validatePhone, trigger: "change" },
+        ],
+        smsCode: [
+          { required: true, trigger: "blur", message: "验证码不能为空" },
+        ],
       },
       registerRules: {
         userName: [
           // { required: true, trigger: "blur", message: "手机号不能为空" },
-          { validator: validatePhone, trigger: "change" },
+          { required: true, validator: validatePhone, trigger: "change" },
         ],
         password: [
           { required: true, trigger: "blur", message: "密码不能为空" },
@@ -519,12 +532,16 @@ export default {
         }
       };
     },
-      /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    /** 提交按钮 */
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
-            wxBind(this.wxInfo.openId,this.wxInfo.phnumber,this.wxInfo.smsCode).then(response => {
-              if (response.code === 200) {
+          wxBind(
+            this.wxInfo.openId,
+            this.wxInfo.smsCode,
+            this.wxInfo.phnumber
+          ).then((response) => {
+            if (response.code === 200) {
               //跳转首页
               let loginForm = {
                 username: response.data.userName,
@@ -541,21 +558,21 @@ export default {
                   this.getCode();
                   this.$router.push({ path: "/login" });
                 });
-              } else {
-                this.msgError(response.msg);
-                this.$router.push({ path: "/login" });
-              }
-            });
+            } else {
+              this.msgError(response.msg);
+              this.$router.push({ path: "/login" });
+            }
+          });
         }
       });
     },
     reset() {
-      this.wxInfo={
-          openId:"",//openId
-          code: "", //微信回调获取的code 换取openID
-          phnumber: "", //手机号
-          smsCode: "", //验证码
-      }
+      this.wxInfo = {
+        openId: "", //openId
+        code: "", //微信回调获取的code 换取openID
+        phnumber: "", //手机号
+        smsCode: "", //验证码
+      };
       this.resetForm("form");
     },
     // 取消按钮
@@ -567,6 +584,11 @@ export default {
     // 获取验证码
     getphoneonecode() {
       sendSms(this.registerForm.userName);
+      this.getphonecode();
+    },
+    // 获取验证码
+    getphonesmscode() {
+      sendSms(this.wxInfo.phnumber);
       this.getphonecode();
     },
     getphonecode() {
@@ -807,16 +829,16 @@ export default {
       console.log("微信code:" + this.$route.query.code);
       this.wxInfo.code = this.$route.query.code;
       getOpenId(this.wxInfo.code).then((res) => {
-        // const loading = this.$loading({
-        //           lock: true,
-        //           text: '加载中...',
-        //           spinner: 'el-icon-loading',
-        //           background: 'rgba(0, 0, 0, 0.7)',
-        //           customClass:'loadingbody'
-        // });
+        const loading = this.$loading({
+                  lock: true,
+                  text: '加载中...',
+                  spinner: 'el-icon-loading',
+                  background: 'rgba(0, 0, 0, 0.7)',
+                  customClass:'loadingbody'
+        });
         //获取成功
         if (res.code == 200) {
-          this.wxInfo.openId=res.data;
+          this.wxInfo.openId = res.data;
           //判断是否绑定微信
           checkBind(res.data).then((res) => {
             //获取成功 判断是否绑定微信
@@ -830,23 +852,25 @@ export default {
                 .dispatch("WxLogin", loginForm)
                 .then(() => {
                   localStorage.setItem("user", loginForm.username);
+                  loading.close();
                   this.$router.push({ path: "/index" });
                 })
                 .catch(() => {
                   this.loading = false;
                   this.getCode();
+                  loading.close();
                   this.$router.push({ path: "/login" });
                 });
             } else {
               console.log("填写手机号！");
               //弹窗填写手机号
-             // loading.close();
-              this.open=true;
+               loading.close();
+              this.open = true;
             }
           });
         } else {
-          console.log("获取openId失败")
-         // loading.close();
+          console.log("获取openId失败");
+           loading.close();
           this.$message({
             message: res.msg,
             type: "error",
@@ -859,10 +883,10 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-.loadingbody{
+.loadingbody {
   z-index: 2002 !important;
 }
-.loadingbody .el-icon-loading{
+.loadingbody .el-icon-loading {
   font-size: 50px;
 }
 .login {
