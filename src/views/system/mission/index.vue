@@ -178,6 +178,7 @@
     <el-dialog title="反馈进度" :visible.sync="openTaskNum" width="400px">
       <el-slider
         v-model="taskNum"
+        @change="changeNum"
         show-input>
       </el-slider>
       <div slot="footer" class="dialog-footer">
@@ -217,6 +218,7 @@
         </el-form-item>
         <el-form-item label="截止日期" prop="taskEndTime">
           <el-date-picker
+            :picker-options='pickerBeginDateBefore'
             style="width: 100%"
             v-model="form.taskEndTime"
             type="date"
@@ -341,7 +343,7 @@
             </el-form-item>
           </el-form>
         </div>
-          <div style="width:345px;height:360px;background: #fafafa;float:right;padding:5px 10px 0px 10px;">
+          <div style="width:345px;height:360px;background: #fafafa;float:right;padding:5px 10px 0px 10px;overflow:auto">
              <div class="talkleft">
                 <span class="left">03.09 10:25</span>
                 <span class="right"><span class="name">name</span><span>创建了任务</span></span>
@@ -416,7 +418,12 @@ export default {
   },
   data() {
     return {
-       textarea:'',
+      pickerBeginDateBefore:{
+            disabledDate(time){
+                return time.getTime() < Date.now()-8.64e7   //如果当天可选，就不用减8.64e7
+            }
+      },
+      textarea:'',
       openUrgentStatus: false,
       openTaskNum: false,
       urgentStatus: 0, //设置优先级
@@ -518,6 +525,13 @@ export default {
         this.getSendList();
         this.cancelTwo();
       });
+    },
+    changeNum(data){
+        if(data>=this.detailForm.taskNum){
+           this.taskNum=data;
+        }else{
+          this.taskNum=parseInt(this.detailForm.taskNum);
+        }
     },
     handleClick(tab, event) {
       if (tab.index == 0) {
