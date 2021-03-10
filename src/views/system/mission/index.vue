@@ -35,18 +35,18 @@
           <el-option label="请选择字典生成" value="" />
         </el-select>
       </el-form-item>
-       <el-form-item label="" prop="isRead">
-          <el-radio-group v-model="queryParams.isRead" v-if="isMe">
-            <el-radio :label="0">未阅读</el-radio>
-            <el-radio :label="1">已阅读</el-radio>
-          </el-radio-group>
-       </el-form-item>
-        <el-form-item label="优先级状态" prop="sendIsRead" v-if="isSend">
-          <el-radio-group v-model="queryParams.sendIsRead">
-            <el-radio :label="0">未阅读</el-radio>
-            <el-radio :label="1">已阅读</el-radio>
-          </el-radio-group>
-       </el-form-item>
+      <el-form-item label="" prop="isRead">
+        <el-radio-group v-model="queryParams.isRead" v-if="isMe">
+          <el-radio :label="0">未阅读</el-radio>
+          <el-radio :label="1">已阅读</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="" prop="sendIsRead" v-if="isSend">
+        <el-radio-group v-model="queryParams.sendIsRead">
+          <el-radio :label="0">未阅读</el-radio>
+          <el-radio :label="1">已阅读</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item>
         <el-button
           type="primary"
@@ -72,92 +72,119 @@
         >
       </el-col>
     </el-row>
-   <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-       <el-tab-pane label="我安排的" name="first">
-    <el-table
-      v-loading="loading"
-      :data="taskInfoList"
-    >
-      <el-table-column label="任务名称" align="center" prop="taskName" />
-      <el-table-column label="项目编码" align="center" prop="projectCode" />
-      <el-table-column label="项目名称" align="center" prop="projectName" />
-      <el-table-column label="执行人" align="center" prop="implementUserName" />
-      <el-table-column label="任务进度(%)" align="center" prop="taskNum" />
-      <el-table-column label="任务状态" align="center" prop="statusName" />
-      <el-table-column label="截止日期" align="center" prop="taskEndTime" />
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleDetail(scope.row)"
-            v-hasPermi="['system:taskInfo:edit']"
-            >详情</el-button
+    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tab-pane label="我安排的" name="first">
+        <el-table v-loading="loading" :data="taskInfoList">
+          <el-table-column label="任务名称" align="center" prop="taskName" />
+          <el-table-column label="项目编码" align="center" prop="projectCode" />
+          <el-table-column label="项目名称" align="center" prop="projectName" />
+          <el-table-column
+            label="执行人"
+            align="center"
+            prop="implementUserName"
+          />
+          <el-table-column label="任务进度(%)" align="center" prop="taskNum" />
+          <el-table-column label="任务状态" align="center" prop="statusName" />
+          <el-table-column label="截止日期" align="center" prop="taskEndTime" />
+          <el-table-column
+            label="操作"
+            align="center"
+            class-name="small-padding fixed-width"
           >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:taskInfo:remove']"
-            >取消</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-edit"
+                @click="handleDetail(scope.row)"
+                v-hasPermi="['system:taskInfo:edit']"
+                >详情</el-button
+              >
+              <!-- <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-delete"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:taskInfo:remove']"
+                >取消</el-button
+              > -->
+            </template>
+          </el-table-column>
+        </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
-</el-tab-pane>
- <el-tab-pane label="派给我的" name="second">
-    <el-table
-      v-loading="loading"
-      :data="taskInfoList"
-    >
-      <el-table-column label="任务名称" align="center" prop="taskName" />
-      <el-table-column label="项目编码" align="center" prop="projectCode" />
-      <el-table-column label="项目名称" align="center" prop="projectName" />
-      <el-table-column label="执行人" align="center" prop="implementUserName" />
-      <el-table-column label="任务进度(%)" align="center" prop="taskNum" />
-      <el-table-column label="任务状态" align="center" prop="statusName" />
-      <el-table-column label="截止日期" align="center" prop="taskEndTime" />
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleDetail(scope.row)"
-            v-hasPermi="['system:taskInfo:edit']"
-            >详情</el-button
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </el-tab-pane>
+      <el-tab-pane label="派给我的" name="second">
+        <el-table v-loading="loading" :data="taskInfoList">
+          <el-table-column label="任务名称" align="center" prop="taskName" />
+          <el-table-column label="项目编码" align="center" prop="projectCode" />
+          <el-table-column label="项目名称" align="center" prop="projectName" />
+          <el-table-column
+            label="执行人"
+            align="center"
+            prop="implementUserName"
+          />
+          <el-table-column label="任务进度(%)" align="center" prop="taskNum" />
+          <el-table-column label="任务状态" align="center" prop="statusName" />
+          <el-table-column label="截止日期" align="center" prop="taskEndTime" />
+          <el-table-column
+            label="操作"
+            align="center"
+            class-name="small-padding fixed-width"
           >
-        </template>
-      </el-table-column>
-    </el-table>
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-edit"
+                @click="handleSendDetail(scope.row)"
+                v-hasPermi="['system:taskInfo:edit']"
+                >详情</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
- </el-tab-pane>
- </el-tabs>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </el-tab-pane>
+    </el-tabs>
+    <el-dialog
+      title="设置优先级"
+      :visible.sync="openUrgentStatus"
+      width="400px"
+    >
+      <el-radio-group v-model="urgentStatus">
+        <el-radio :label="0">普通</el-radio>
+        <el-radio :label="1">重要</el-radio>
+        <el-radio :label="2">紧急</el-radio>
+      </el-radio-group>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitUrgentStatus">确 定</el-button>
+        <el-button @click="cancelTwo">取 消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="反馈进度" :visible.sync="openTaskNum" width="400px">
+      <el-slider
+        v-model="taskNum"
+        show-input>
+      </el-slider>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitTaskNum">确 定</el-button>
+        <el-button @click="cancelTwo">取 消</el-button>
+      </div>
+    </el-dialog>
     <!-- 添加或修改任务管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
@@ -223,85 +250,105 @@
       </div>
     </el-dialog>
 
- <!-- 任务详情 -->
-    <el-dialog :title="title" :visible.sync="openDetail" width="800px">    
-       <el-row style="position: absolute;top: 18px;right: 45px;">
-            <el-col :span="1.5" style="padding:0px 5px 0px 5px">
-              <el-button
-                type="text"
-                icon="el-icon-edit"
-                size="mini"
-                @click="handleUpdate"
-                v-hasPermi="['system:post:edit']"
-              >修改</el-button>
-            </el-col>
-            <el-col :span="1.5" style="padding:0px 5px 0px 5px">
-              <el-button
-                type="text"
-                icon="el-icon-delete"
-                size="mini"
-                @click="handleDelete"
-                v-hasPermi="['system:post:remove']"
-              >删除</el-button>
-            </el-col>
-            <el-col :span="1.5" style="padding:0px 5px 0px 5px">
-              <el-button
-                type="text"
-                icon="el-icon-bell"
-                size="mini"
-                @click="handleAdd"
-                v-hasPermi="['system:post:add']"
-              >催办</el-button>
-            </el-col>
-            <el-col :span="1.5" style="padding:0px 5px 0px 5px">
-              <el-button
-                type="text"
-                icon="el-icon-s-custom"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:post:export']"
-              >任务参与人</el-button>
-       </el-col>
+    <!-- 任务详情 -->
+    <el-dialog :title="detailTitle" :visible.sync="openDetail" width="800px">
+      <el-row style="position: absolute; top: 18px; right: 45px" v-if="isMeMenu">
+        <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
+          <el-button
+            type="text"
+            icon="el-icon-edit"
+            size="mini"
+            @click="handleUpdate"
+            >修改</el-button
+          >
+        </el-col>
+        <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
+          <el-button
+            type="text"
+            icon="el-icon-delete"
+            size="mini"
+            @click="handleDelete"
+            >取消</el-button
+          >
+        </el-col>
+        <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
+          <el-button
+            type="text"
+            icon="el-icon-bell"
+            size="mini"
+            @click="handleIsUrge"
+            >催办</el-button
+          >
+        </el-col>
+      </el-row>
+      <el-row style="position: absolute; top: 18px; right: 45px" v-if="isSendMenu">
+        <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
+          <el-button
+            type="text"
+            icon="el-icon-edit"
+            size="mini"
+            @click="changeUrgentStatus"
+            >设置优先级</el-button
+          >
+        </el-col>
+        <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
+          <el-button
+            type="text"
+            icon="el-icon-bell"
+            size="mini"
+            @click="changeTaskNum"
+            >反馈</el-button
+          >
+        </el-col>
       </el-row>
       <div class="clearfix">
-      <div style="width:400px;float:left;height:500px" class="left">
-        <el-form ref="detailForm" :model="detailForm"  label-width="100px">
-        <el-form-item label="项目编码：">
-          <el-input v-model="detailForm.projectCode" :readonly="true"  />
-        </el-form-item>
-         <el-form-item label="项目名称：">
-          <el-input v-model="detailForm.projectName" :readonly="true" />
-        </el-form-item>
-        <el-form-item label="任务名称：" >
-          <el-input v-model="detailForm.taskName" :readonly="true" />
-        </el-form-item>
-        <el-form-item label="任务描述：">
-          <el-input
-          :readonly="true" 
-            v-model="detailForm.remark"
-            type="textarea"
-            placeholder="请输入内容"
-          />
-        </el-form-item>
-        <el-form-item label="截止日期：">
-          <el-date-picker
-          :readonly="true" 
-            style="width: 100%;border:none"
-            v-model="detailForm.taskEndTime"
-            type="date"
-            placeholder="单据日期"
-            format="yyyy 年 MM 月 dd 日"
-            value-format="yyyy-MM-dd"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="执行人：">
-            <el-input v-model="detailForm.implementUserName" :readonly="true"  placeholder="请输入执行人"/>
-          </el-form-item>
-      </el-form>
-      </div>
-        <div style="width:350px;height:500px;background: rgb(250,250,250);float:left">
-          
+        <div style="width: 400px; float: left; height: 500px" class="left">
+          <el-form ref="detailForm" :model="detailForm" label-width="100px">
+            <el-form-item label="项目编码：">
+              <el-input v-model="detailForm.projectCode" :readonly="true" />
+            </el-form-item>
+            <el-form-item label="项目名称：">
+              <el-input v-model="detailForm.projectName" :readonly="true" />
+            </el-form-item>
+            <el-form-item label="任务名称：">
+              <el-input v-model="detailForm.taskName" :readonly="true" />
+            </el-form-item>
+            <el-form-item label="任务描述：">
+              <el-input
+                :readonly="true"
+                v-model="detailForm.remark"
+                type="textarea"
+                placeholder="请输入内容"
+              />
+            </el-form-item>
+            <el-form-item label="截止日期：">
+              <el-date-picker
+                :readonly="true"
+                style="width: 100%; border: none"
+                v-model="detailForm.taskEndTime"
+                type="date"
+                placeholder="单据日期"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="执行人：">
+              <el-input
+                v-model="detailForm.implementUserName"
+                :readonly="true"
+                placeholder="请输入执行人"
+              />
+            </el-form-item>
+          </el-form>
         </div>
+        <div
+          style="
+            width: 350px;
+            height: 500px;
+            background: rgb(250, 250, 250);
+            float: left;
+          "
+        ></div>
       </div>
     </el-dialog>
 
@@ -322,6 +369,11 @@ import {
   addTaskInfo,
   updateTaskInfo,
   exportTaskInfo,
+  changeUrgentStatus,
+  checkAccept,
+  changeIsUrge,
+  getSendTaskInfo,
+  changeTaskNum
 } from "@/api/system/taskInfo";
 import projectSelect from "./projectSelect";
 import { getAllUser } from "@/api/system/user";
@@ -332,9 +384,16 @@ export default {
   },
   data() {
     return {
-      isMe:true,
-      isSend:false,
-      activeName: 'first',
+      openUrgentStatus: false,
+      openTaskNum: false,
+      urgentStatus: 0, //设置优先级
+      isUrge: 0, //是否催办
+      taskNum: 0, //任务进度
+      isMe: true,
+      isSend: false,
+      isMeMenu: true,
+      isSendMenu: false,
+      activeName: "first",
       people: [],
       selectProjectDialog: false,
       // 遮罩层
@@ -351,10 +410,11 @@ export default {
       taskInfoList: [],
       // 弹出层标题
       title: "",
+      detailTitle:"",
       // 是否显示弹出层
       open: false,
-      openDetail:false,
-      detailForm:[],
+      openDetail: false,
+      detailForm: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -404,13 +464,43 @@ export default {
     });
   },
   methods: {
-     handleClick(tab, event){
-       if(tab.index==0){
-         this.getList()
-       }
-       if(tab.index==1){
-         this.getSendList();
-       }
+    //设置优先级
+    changeUrgentStatus(){
+      this.openUrgentStatus=true;
+      this.urgentStatus=this.detailForm.urgentStatus
+    },
+    submitUrgentStatus(){
+      changeUrgentStatus(this.detailForm.id,this.urgentStatus,this.detailForm.taskCode).then((response) => {
+        this.getSendList();
+        this.cancelTwo();
+      });
+    },
+    //反馈任务进度
+    changeTaskNum(){
+      this.openTaskNum=true;
+      this.taskNum=parseInt(this.detailForm.taskNum)
+    },
+    submitTaskNum(){
+      changeTaskNum(this.detailForm.id,this.taskNum,this.detailForm.taskCode).then((response) => {
+        this.getSendList();
+        this.cancelTwo();
+      });
+    },
+    handleClick(tab, event) {
+      if (tab.index == 0) {
+        this.getList();
+        this.isMe=true;
+        this.isSend=false;
+        this.isMeMenu=true;
+        this.isSendMenu=false;
+      }
+      if (tab.index == 1) {
+        this.getSendList();
+        this.isMe=false;
+        this.isSend=true;
+        this.isMeMenu=false;
+        this.isSendMenu=true;
+      }
     },
     selectPerson(data) {
       //根据人员编码查找人员名称
@@ -457,8 +547,14 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
-      this.openDetail=false;
+      this.openDetail = false;
       this.reset();
+    },
+    cancelTwo() {
+      this.openUrgentStatus = false;
+      this.openTaskNum = false;
+      //this.urgentStatus = 0;
+      //this.taskNum = 0;
     },
     // 表单重置
     reset() {
@@ -511,14 +607,16 @@ export default {
       this.title = "新建任务";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    handleUpdate() {
+      //const id =  this.detailForm.id;
+      this.open = true;
       this.reset();
-      const id = row.id || this.ids;
-      getTaskInfo(id).then((response) => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "编辑任务";
-      });
+      this.form=this.detailForm
+      // getTaskInfo(id).then((response) => {
+      //   this.form = response.data;
+      //   this.open = true;
+      //   this.title = "编辑任务";
+      // });
     },
     handleDetail(row) {
       this.reset();
@@ -526,7 +624,22 @@ export default {
       getTaskInfo(id).then((response) => {
         this.detailForm = response.data;
         this.openDetail = true;
-        this.title = response.data.taskName;
+        if(response.data.status==4){
+          this.isMeMenu=false;
+        }
+        this.detailTitle = response.data.taskName;
+      });
+    },
+    handleSendDetail(row) {
+      this.reset();
+      const id = row.id || this.ids;
+      getSendTaskInfo(id).then((response) => {
+        this.detailForm = response.data;
+        this.openDetail = true;
+        if(response.data.status==4){
+          this.isSendMenu=false;
+        }
+        this.detailTitle = response.data.taskName;
       });
     },
     /** 提交按钮 */
@@ -538,6 +651,11 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
+                getTaskInfo(this.form.id).then((response) => {
+                  this.detailForm = response.data;
+                  this.openDetail = true;
+                  this.title = response.data.taskName;
+                });
                 this.getList();
               } else {
                 this.msgError(response.msg);
@@ -558,10 +676,10 @@ export default {
       });
     },
     /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
+    handleDelete() {
+      const ids = this.detailForm.id;
       this.$confirm(
-        '是否确认删除任务管理编号为"' + ids + '"的数据项?',
+        '是否确认取消?',
         "警告",
         {
           confirmButtonText: "确定",
@@ -574,10 +692,34 @@ export default {
         })
         .then(() => {
           this.getList();
-          this.msgSuccess("删除成功");
+          this.openDetail=false;
+          this.msgSuccess("取消成功");
         })
         .catch(function () {});
     },
+     handleIsUrge() {
+      const taskCode=this.detailForm.taskCode;
+      const ids = this.detailForm.id;
+      this.$confirm(
+        '是否确认催办?',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(function () {
+    
+          return changeIsUrge(ids,taskCode);
+        })
+        .then(() => {
+          //this.getList();
+          this.msgSuccess("催办成功");
+        })
+        .catch(function () {});
+    },
+    
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
@@ -598,16 +740,15 @@ export default {
 };
 </script>
 <style>
-  .left>>>.el-input__inner {
-    border: 0;
-  }
-  .clearfix{
-    display: block;
-    overflow: hidden;
-    content: '';
-    clear: both;
-  }
-  .el-dialog__body{
-    
-  }
+.left >>> .el-input__inner {
+  border: 0;
+}
+.clearfix {
+  display: block;
+  overflow: hidden;
+  content: "";
+  clear: both;
+}
+.el-dialog__body {
+}
 </style

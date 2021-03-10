@@ -43,34 +43,34 @@ export function addTaskInfo(data) {
 }
 
 // 修改任务优先级 0 普通 1重要 2紧急
-export function changeUrgentStatus(id,status) {
+export function changeUrgentStatus(id,status,taskCode) {
   return request({
-    url: '/system/taskInfo/changeUrgentStatus/' + id+"/"+status,
+    url: '/system/taskInfo/changeUrgentStatus/' + id+"/"+status+"/"+taskCode,
     method: 'get'
   })
 }
 
 
 // 任务验收
-export function checkAccept(id,message,num,type) {
+export function checkAccept(id,message,num,type,taskCode) {
   return request({
-    url: '/system/taskInfo/checkAccept/' + id+"/"+message+"/"+num+"/"+type,
+    url: '/system/taskInfo/checkAccept/' + id+"/"+message+"/"+num+"/"+type+"/"+taskCode,
     method: 'get'
   })
 }
 
 // 催办任务
-export function changeIsUrge(id) {
+export function changeIsUrge(id,taskCode) {
   return request({
-    url: '/system/taskInfo/changeIsUrge/' + id,
+    url: '/system/taskInfo/changeIsUrge/' + id+"/"+taskCode,
     method: 'get'
   })
 }
 
 // 反馈任务进度
-export function changeTaskNum(id,taskNum) {
+export function changeTaskNum(id,taskNum,taskCode) {
   return request({
-    url: '/system/taskInfo/changeTaskNum/' + id+"/"+taskNum,
+    url: '/system/taskInfo/changeTaskNum/' + id+"/"+taskNum+"/"+taskCode,
     method: 'get'
   })
 }
