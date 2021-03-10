@@ -341,14 +341,46 @@
             </el-form-item>
           </el-form>
         </div>
-        <div
-          style="
-            width: 350px;
-            height: 500px;
-            background: rgb(250, 250, 250);
-            float: left;
-          "
-        ></div>
+          <div style="width:345px;height:360px;background: #fafafa;float:right;padding:5px 10px 0px 10px;">
+             <div class="talkleft">
+                <span class="left">03.09 10:25</span>
+                <span class="right"><span class="name">name</span><span>创建了任务</span></span>
+            </div>
+             <div class="talkright">
+                <span class="left">03.09 10:25</span>
+                <span ><span class="name">name</span><span class="right">创建了任务</span></span>
+            </div>
+        </div>
+        <!-- 上传文件 -->
+        <div style="float:left;padding-left:20px;width:345px">
+          <p style="color:#0090ff">
+            <span>
+              <i class="el-icon-folder-opened"></i>文件</span> 
+              <span style="margin-left:10px">
+                <i class="el-icon-folder"></i>
+                本地上传
+               </span>
+          </p>
+        </div>
+        <!-- 输入框 -->
+        <div style="float:left">
+            <el-input
+                type="textarea"
+                :rows="2"
+                placeholder="请输入内容"
+                v-model="textarea"
+                style="width:360px;padding-left:12px;"
+                class="talktextarea"
+                >
+           </el-input>
+        </div>
+        <!-- 按钮 -->
+        <div style="float:right;margin-top:10px">
+              <el-button
+              type="primary"
+              size="medium"
+              >发送</el-button>
+        </div>
       </div>
     </el-dialog>
 
@@ -384,6 +416,7 @@ export default {
   },
   data() {
     return {
+       textarea:'',
       openUrgentStatus: false,
       openTaskNum: false,
       urgentStatus: 0, //设置优先级
@@ -740,15 +773,73 @@ export default {
 };
 </script>
 <style>
-.left >>> .el-input__inner {
-  border: 0;
-}
-.clearfix {
-  display: block;
-  overflow: hidden;
-  content: "";
-  clear: both;
-}
-.el-dialog__body {
-}
-</style
+  .left>>>.el-input__inner {
+    border: 0;
+  }
+  .clearfix{
+    display: block;
+    overflow: hidden;
+    content: '';
+    clear: both;
+  }
+  .talkleft{
+    float: left;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .talkright{
+    float: right;
+    width: 100%;
+     margin-bottom: 10px;
+  }
+  .talkleft .left{
+    float: left;
+    width: 80px;
+    text-align: center;
+    background-color: #ccc;
+    color: #fff;
+    padding: 3px 0;
+    border-radius: 4px;
+    margin-right: 5px;
+  }
+    .talkright .left{
+    float: left;
+    width: 80px;
+    text-align: center;
+    background-color: #ccc;
+    color: #fff;
+    padding: 3px 0;
+    border-radius: 4px;
+    margin-right: 5px;
+  }
+   .talkleft .right{
+    display: inline-block;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    padding: 3px 10px;
+    }
+     .talkleft .right .name{
+       color:#1890ff ;
+    }
+    .talkright .right{
+     float: right;
+     background-color: #fff;
+    border-radius: 4px;
+    padding: 12px 10px;
+    margin-right: 5px;
+    border:1px solid #f2f2f2
+    }
+    .talkright .name{
+      width: 40px;
+      height: 40px;
+     line-height: 40px;
+     color: #fff;
+      border-radius: 50%;
+      background-color: rgb(0, 144, 255);
+      float: right;
+      text-align: center;
+    }
+    .talktextarea textarea{
+      resize: none;
+    }
+</style>
