@@ -1,40 +1,65 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
-      <el-form-item label="岗位编码" prop="postCode">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      label-width="110px"
+    >
+      <el-form-item label="任务名称" prop="taskName">
         <el-input
-          v-model="queryParams.postCode"
-          placeholder="请输入岗位编码"
+          v-model="queryParams.taskName"
+          placeholder="请输入任务名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="岗位名称" prop="postName">
-        <el-input
-          v-model="queryParams.postName"
-          placeholder="请输入岗位名称"
+      <el-form-item label="任务状态" prop="status" v-if="isMe">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="请选择任务状态"
           clearable
           size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="岗位状态" clearable size="small">
-          <el-option
-            v-for="dict in statusOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
+        >
+          <el-option label="请选择字典生成" value="" />
         </el-select>
       </el-form-item>
+      <el-form-item label="优先级状态" prop="urgentStatus" v-if="isSend">
+        <el-select
+          v-model="queryParams.urgentStatus"
+          placeholder="请选择优先级状态"
+          clearable
+          size="small"
+        >
+          <el-option label="请选择字典生成" value="" />
+        </el-select>
+      </el-form-item>
+       <el-form-item label="" prop="isRead">
+          <el-radio-group v-model="queryParams.isRead" v-if="isMe">
+            <el-radio :label="0">未阅读</el-radio>
+            <el-radio :label="1">已阅读</el-radio>
+          </el-radio-group>
+       </el-form-item>
+        <el-form-item label="优先级状态" prop="sendIsRead" v-if="isSend">
+          <el-radio-group v-model="queryParams.sendIsRead">
+            <el-radio :label="0">未阅读</el-radio>
+            <el-radio :label="1">已阅读</el-radio>
+          </el-radio-group>
+       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -42,168 +67,154 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:post:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:post:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:post:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:post:export']"
-        >导出</el-button>
+          v-hasPermi="['system:taskInfo:add']"
+          >新增</el-button
+        >
       </el-col>
     </el-row>
-    <!-- 标签页 -->
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-       <el-tab-pane label="派给我的" name="first">
-          <el-table v-loading="loading" :data="postList" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="任务名称" align="center" prop="postId" />
-            <el-table-column label="项目名称" align="center" prop="postCode" />
-            <el-table-column label="安排人" align="center" prop="postName" />
-            <el-table-column label="进度" align="center" prop="postSort" />
-            <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat" />
-            <el-table-column label="截止时间" align="center" prop="createTime" width="180">
-              <template slot-scope="scope">
-                <span>{{ parseTime(scope.row.createTime) }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-              <template slot-scope="scope">
-                <el-button
-                  size="mini"
-                  type="text"
-                  icon="el-icon-edit"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:post:edit']"
-                >修改</el-button>
-                <el-button
-                  size="mini"
-                  type="text"
-                  icon="el-icon-delete"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:post:remove']"
-                >删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="queryParams.pageNum"
-            :limit.sync="queryParams.pageSize"
-            @pagination="getList"
-          />
-        </el-tab-pane>
-  <!-- 第二个 -->
-     <el-tab-pane label="我安排的" name="second">我安排的</el-tab-pane>
-     <el-tab-pane label="我参与的" name="third">我参与的</el-tab-pane> 
-  </el-tabs>
-    <!-- 添加或修改岗位对话框 -->
+   <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+       <el-tab-pane label="我安排的" name="first">
+    <el-table
+      v-loading="loading"
+      :data="taskInfoList"
+    >
+      <el-table-column label="任务名称" align="center" prop="taskName" />
+      <el-table-column label="项目编码" align="center" prop="projectCode" />
+      <el-table-column label="项目名称" align="center" prop="projectName" />
+      <el-table-column label="执行人" align="center" prop="implementUserName" />
+      <el-table-column label="任务进度(%)" align="center" prop="taskNum" />
+      <el-table-column label="任务状态" align="center" prop="statusName" />
+      <el-table-column label="截止日期" align="center" prop="taskEndTime" />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleDetail(scope.row)"
+            v-hasPermi="['system:taskInfo:edit']"
+            >详情</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:taskInfo:remove']"
+            >取消</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+</el-tab-pane>
+ <el-tab-pane label="派给我的" name="second">
+    <el-table
+      v-loading="loading"
+      :data="taskInfoList"
+    >
+      <el-table-column label="任务名称" align="center" prop="taskName" />
+      <el-table-column label="项目编码" align="center" prop="projectCode" />
+      <el-table-column label="项目名称" align="center" prop="projectName" />
+      <el-table-column label="执行人" align="center" prop="implementUserName" />
+      <el-table-column label="任务进度(%)" align="center" prop="taskNum" />
+      <el-table-column label="任务状态" align="center" prop="statusName" />
+      <el-table-column label="截止日期" align="center" prop="taskEndTime" />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleDetail(scope.row)"
+            v-hasPermi="['system:taskInfo:edit']"
+            >详情</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+ </el-tab-pane>
+ </el-tabs>
+    <!-- 添加或修改任务管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="项目" prop="postName">
-          <el-input v-model="form.postName" placeholder="请输入岗位名称" />
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form-item
+          label="选择项目"
+          prop="projectCode"
+          style="width: 90%; position: relative"
+        >
+          <el-input
+            v-model="form.projectName"
+            :readonly="true"
+            placeholder="请选择项目"
+          />
+          <el-button
+            icon="el-icon-plus"
+            type="primary"
+            style="position: absolute; right: -50px; top: 0px"
+            @click="projectSelect"
+          ></el-button>
         </el-form-item>
-        <el-form-item label="任务名称" prop="postCode">
-          <el-input v-model="form.postCode" placeholder="请输入编码名称" />
-        </el-form-item>
-        <el-form-item label="截止日期" prop="postSort">
-           <el-date-picker
-                style="width: 100%"
-                v-model="form.djTime"
-                type="date"
-                placeholder="单据日期"
-                format="yyyy 年 MM 月 dd 日"
-                value-format="yyyy-MM-dd"
-              ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="附件" prop="status">
-            <el-upload
-                  class="upload-demo"
-                 :file-list="fileList"
-                  :action="upload.url"
-                  :headers="upload.headers"
-                  :auto-upload="false"
-                >
-                <el-button size="small" type="primary">点击上传</el-button>
-            </el-upload>
-        </el-form-item>
-          <el-form-item label="图片" prop="status">
-            <!-- <el-upload
-                  class="upload-demo"
-                 :file-list="imgfileList"
-                  :action="imgupload.url"
-                  :headers="imgupload.headers"
-                  :auto-upload="false"
-                >
-                <el-button size="small" type="primary">点击上传</el-button>
-            </el-upload> -->
-            <el-upload
-                    :action="imgupload.url"
-                    list-type="picture-card"
-                    ref="imgupload"
-                    :auto-upload="false"
-                    :on-change="handleFileChage"
-                    :on-success="handleFileSuccess"
-                    :on-remove="handleRemove"
-                    >
-                      <i slot="default" class="el-icon-plus"></i>
-                      <div slot="file" slot-scope="{file}">
-                        <img
-                          class="el-upload-list__item-thumbnail"
-                          :src="file.url" alt=""
-                        >
-                        <span class="el-upload-list__item-actions">
-                          <span
-                            class="el-upload-list__item-preview"
-                            @click="handlePictureCardPreview(file)"
-                          >
-                            <i class="el-icon-zoom-in"></i>
-                          </span>
-                          <!-- <span
-                            v-if="!disabled"
-                            class="el-upload-list__item-delete"
-                            @click="handleDownload(file)"
-                          >
-                            <i class="el-icon-download"></i>
-                          </span> -->
-                          <span
-                            v-if="!disabled"
-                            class="el-upload-list__item-delete"
-                            @click="handleRemove(file)"
-                          >
-                            <i class="el-icon-delete"></i>
-                          </span>
-                        </span>
-                      </div>
-                  </el-upload>
+        <el-form-item label="任务名称" prop="taskName">
+          <el-input v-model="form.taskName" placeholder="请输入任务名称" />
         </el-form-item>
         <el-form-item label="任务描述" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input
+            v-model="form.remark"
+            type="textarea"
+            placeholder="请输入内容"
+          />
+        </el-form-item>
+        <el-form-item label="截止日期" prop="taskEndTime">
+          <el-date-picker
+            style="width: 100%"
+            v-model="form.taskEndTime"
+            type="date"
+            placeholder="单据日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="执行人" prop="implementUserCode">
+          <el-select
+            v-model="form.implementUserCode"
+            placeholder="请选择执行人"
+            filterable
+            style="width: 100%"
+            @change="selectPerson"
+          >
+            <el-option
+              v-for="item in people"
+              :key="item.userName"
+              :label="item.nickName"
+              :value="item.userName"
+            >
+              <span style="width: 100%">{{ item.nickName }}</span>
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -211,52 +222,121 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+ <!-- 任务详情 -->
+    <el-dialog :title="title" :visible.sync="openDetail" width="800px">    
+       <el-row style="position: absolute;top: 18px;right: 45px;">
+            <el-col :span="1.5" style="padding:0px 5px 0px 5px">
+              <el-button
+                type="text"
+                icon="el-icon-edit"
+                size="mini"
+                @click="handleUpdate"
+                v-hasPermi="['system:post:edit']"
+              >修改</el-button>
+            </el-col>
+            <el-col :span="1.5" style="padding:0px 5px 0px 5px">
+              <el-button
+                type="text"
+                icon="el-icon-delete"
+                size="mini"
+                @click="handleDelete"
+                v-hasPermi="['system:post:remove']"
+              >删除</el-button>
+            </el-col>
+            <el-col :span="1.5" style="padding:0px 5px 0px 5px">
+              <el-button
+                type="text"
+                icon="el-icon-bell"
+                size="mini"
+                @click="handleAdd"
+                v-hasPermi="['system:post:add']"
+              >催办</el-button>
+            </el-col>
+            <el-col :span="1.5" style="padding:0px 5px 0px 5px">
+              <el-button
+                type="text"
+                icon="el-icon-s-custom"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:post:export']"
+              >任务参与人</el-button>
+       </el-col>
+      </el-row>
+      <div class="clearfix">
+      <div style="width:400px;float:left;height:500px" class="left">
+        <el-form ref="detailForm" :model="detailForm"  label-width="100px">
+        <el-form-item label="项目编码：">
+          <el-input v-model="detailForm.projectCode" :readonly="true"  />
+        </el-form-item>
+         <el-form-item label="项目名称：">
+          <el-input v-model="detailForm.projectName" :readonly="true" />
+        </el-form-item>
+        <el-form-item label="任务名称：" >
+          <el-input v-model="detailForm.taskName" :readonly="true" />
+        </el-form-item>
+        <el-form-item label="任务描述：">
+          <el-input
+          :readonly="true" 
+            v-model="detailForm.remark"
+            type="textarea"
+            placeholder="请输入内容"
+          />
+        </el-form-item>
+        <el-form-item label="截止日期：">
+          <el-date-picker
+          :readonly="true" 
+            style="width: 100%;border:none"
+            v-model="detailForm.taskEndTime"
+            type="date"
+            placeholder="单据日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="执行人：">
+            <el-input v-model="detailForm.implementUserName" :readonly="true"  placeholder="请输入执行人"/>
+          </el-form-item>
+      </el-form>
+      </div>
+        <div style="width:350px;height:500px;background: rgb(250,250,250);float:left">
+          
+        </div>
+      </div>
+    </el-dialog>
+
+    <project-select
+      v-if="selectProjectDialog"
+      ref="selectProject"
+      @selectData="selectData"
+    ></project-select>
   </div>
 </template>
 
 <script>
-import { listPost, getPost, delPost, addPost, updatePost, exportPost } from "@/api/system/post";
-import { getToken } from "@/utils/auth";
+import {
+  listTaskInfo,
+  sendListTaskInfo,
+  getTaskInfo,
+  delTaskInfo,
+  addTaskInfo,
+  updateTaskInfo,
+  exportTaskInfo,
+} from "@/api/system/taskInfo";
+import projectSelect from "./projectSelect";
+import { getAllUser } from "@/api/system/user";
 export default {
-  name: "Post",
+  name: "TaskInfo",
+  components: {
+    projectSelect,
+  },
   data() {
     return {
-      dialogImageUrl: '',
-      dialogVisible: false,
-      disabled: false,
+      isMe:true,
+      isSend:false,
       activeName: 'first',
-      fileList: [],
-      // 附件
-        upload: {
-        // 是否显示弹出层（用户导入）
-        open: false,
-        // 弹出层标题（用户导入）
-        title: "",
-        // 是否禁用上传
-        isUploading: false,
-        // 是否更新已经存在的用户数据
-        updateSupport: 0,
-        // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
-        // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/common/upload",
-      },
-      imgfileList: [],
-      // 图片upload
-         imgupload: {
-        // 是否显示弹出层（用户导入）
-        open: false,
-        // 弹出层标题（用户导入）
-        title: "",
-        // 是否禁用上传
-        isUploading: false,
-        // 是否更新已经存在的用户数据
-        updateSupport: 0,
-        // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
-        // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/common/upload",
-      },
+      people: [],
+      selectProjectDialog: false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -267,111 +347,145 @@ export default {
       multiple: true,
       // 总条数
       total: 0,
-      // 岗位表格数据
-      postList: [],
+      // 任务管理表格数据
+      taskInfoList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
-      // 状态数据字典
-      statusOptions: [],
+      openDetail:false,
+      detailForm:[],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        postCode: undefined,
-        postName: undefined,
-        status: undefined
+        taskName: undefined,
+        taskCode: undefined,
+        taskEndTime: undefined,
+        projectCode: undefined,
+        projectName: undefined,
+        fileName: undefined,
+        implementUserCode: undefined,
+        implementUserName: undefined,
+        status: undefined,
+        urgentStatus: undefined,
+        isUrge: undefined,
+        isRead: undefined,
+        taskNum: undefined,
+        message: undefined,
+        resultNum: undefined,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        postName: [
-          { required: true, message: "岗位名称不能为空", trigger: "blur" }
+        projectCode: [
+          { required: true, message: "请选择项目", trigger: "change" },
         ],
-        postCode: [
-          { required: true, message: "岗位编码不能为空", trigger: "blur" }
+        taskName: [
+          { required: true, message: "任务名称不能为空", trigger: "blur" },
         ],
-        postSort: [
-          { required: true, message: "岗位顺序不能为空", trigger: "blur" }
-        ]
-      }
+        taskEndTime: [
+          { required: true, message: "请选择截止日期", trigger: "change" },
+        ],
+
+        implementUserCode: [
+          { required: true, message: "请选择执行人", trigger: "change" },
+        ],
+      },
     };
   },
   created() {
     this.getList();
-    this.getDicts("sys_normal_disable").then(response => {
-      this.statusOptions = response.data;
+    let queryParams = {};
+    getAllUser(queryParams).then((response) => {
+      console.log(response);
+      this.people = response.rows;
     });
   },
   methods: {
-    /** 查询岗位列表 */
+     handleClick(tab, event){
+       if(tab.index==0){
+         this.getList()
+       }
+       if(tab.index==1){
+         this.getSendList();
+       }
+    },
+    selectPerson(data) {
+      //根据人员编码查找人员名称
+      console.log(data); //admin
+      for (let i = 0; i < this.people.length; i++) {
+        if (this.people[i].userName == data) {
+          this.form.implementUserName = this.people[i].nickName;
+          break;
+        }
+      }
+    },
+    selectData(row) {
+      this.$nextTick(() => {
+        this.form.projectCode = row.projectCode;
+        this.form.projectName = row.projectName;
+        this.$refs.selectProject.visible = false;
+      });
+    },
+    /** 选择项目列表 */
+    projectSelect() {
+      this.selectProjectDialog = true;
+      this.$nextTick(() => {
+        this.$refs.selectProject.visible = true;
+      });
+    },
+    /** 我安排的任务管理列表 */
     getList() {
       this.loading = true;
-      listPost(this.queryParams).then(response => {
-        this.postList = response.rows;
+      listTaskInfo(this.queryParams).then((response) => {
+        this.taskInfoList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
     },
-
-     clickFile(file) {
-      if (file.url != "") {
-        window.location.href = file.url;
-      }
-    },
-    // 点击图片放大
-     handlePictureCardPreview(file) {
-        this.dialogImageUrl = file.url;
-        this.dialogVisible = true;
-      },
-      handleFileChage(file, fileList){
-        //  console.log(this.file)
-        //  let info = new Object();
-        // info.name = file.name;
-        // info.url = file.url;
-        // this.imgfileList.push(info)
-        // console.log(this.imgfileList)
-      },
-      // 图片上传成功
-      handleFileSuccess(res, file, fileList) {
-      // 上传成功
-   
-      // this.form.fileName = res.url;
-    },
-      // 图片删除
-      handleRemove(file) {
-          let fileList = this.$refs.imgupload.uploadFiles;
-          console.log(fileList)
-          let index = fileList.findIndex( fileItem => {return fileItem.uid === file.uid});
-          fileList.splice(index, 1);
-   },
-
-
-    handleClick(tab, event){
-       console.log(tab, event);
-    },
-    // 岗位状态字典翻译
-    statusFormat(row, column) {
-      return this.selectDictLabel(this.statusOptions, row.status);
+    /** 派给我任务管理列表 */
+    getSendList() {
+      this.loading = true;
+      sendListTaskInfo(this.queryParams).then((response) => {
+        this.taskInfoList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
     },
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openDetail=false;
       this.reset();
     },
     // 表单重置
     reset() {
       this.form = {
-        postId: undefined,
-        postCode: undefined,
-        postName: undefined,
-        postSort: 0,
-        status: "0",
-        remark: undefined,
+        id: undefined,
+        taskName: undefined,
+        taskCode: undefined,
+        taskEndTime: undefined,
+        projectCode: undefined,
+        projectName: undefined,
         fileName: undefined,
+        implementUserCode: undefined,
+        implementUserName: undefined,
+        status: "0",
+        urgentStatus: "0",
+        createBy: undefined,
+        createTime: undefined,
+        updateBy: undefined,
+        updateTime: undefined,
+        remark: undefined,
+        isUrge: undefined,
+        isRead: undefined,
+        taskNum: undefined,
+        message: undefined,
+        resultNum: undefined,
       };
+      this.resetForm("detailForm");
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -386,32 +500,41 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.postId)
-      this.single = selection.length!=1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.id);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加岗位";
+      this.title = "新建任务";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const postId = row.postId || this.ids
-      getPost(postId).then(response => {
+      const id = row.id || this.ids;
+      getTaskInfo(id).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改岗位";
+        this.title = "编辑任务";
+      });
+    },
+    handleDetail(row) {
+      this.reset();
+      const id = row.id || this.ids;
+      getTaskInfo(id).then((response) => {
+        this.detailForm = response.data;
+        this.openDetail = true;
+        this.title = response.data.taskName;
       });
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
-          if (this.form.postId != undefined) {
-            updatePost(this.form).then(response => {
+          if (this.form.id != undefined) {
+            updateTaskInfo(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -421,7 +544,7 @@ export default {
               }
             });
           } else {
-            addPost(this.form).then(response => {
+            addTaskInfo(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -436,31 +559,55 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const postIds = row.postId || this.ids;
-      this.$confirm('是否确认删除岗位编号为"' + postIds + '"的数据项?', "警告", {
+      const ids = row.id || this.ids;
+      this.$confirm(
+        '是否确认删除任务管理编号为"' + ids + '"的数据项?',
+        "警告",
+        {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return delPost(postIds);
-        }).then(() => {
+          type: "warning",
+        }
+      )
+        .then(function () {
+          return delTaskInfo(ids);
+        })
+        .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        })
+        .catch(function () {});
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有岗位数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return exportPost(queryParams);
-        }).then(response => {
+      this.$confirm("是否确认导出所有任务管理数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return exportTaskInfo(queryParams);
+        })
+        .then((response) => {
           this.download(response.msg);
-        }).catch(function() {});
-    }
-  }
+        })
+        .catch(function () {});
+    },
+  },
 };
 </script>
+<style>
+  .left>>>.el-input__inner {
+    border: 0;
+  }
+  .clearfix{
+    display: block;
+    overflow: hidden;
+    content: '';
+    clear: both;
+  }
+  .el-dialog__body{
+    
+  }
+</style
