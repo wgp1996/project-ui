@@ -97,7 +97,6 @@
                 type="text"
                 icon="el-icon-edit"
                 @click="handleDetail(scope.row)"
-                v-hasPermi="['system:taskInfo:edit']"
                 >详情</el-button
               >
               <!-- <el-button
@@ -144,7 +143,6 @@
                 type="text"
                 icon="el-icon-edit"
                 @click="handleSendDetail(scope.row)"
-                v-hasPermi="['system:taskInfo:edit']"
                 >详情</el-button
               >
             </template>
@@ -160,6 +158,44 @@
         />
       </el-tab-pane>
     </el-tabs>
+
+    <el-dialog
+      title="验收通过"
+      :visible.sync="openSuccessStatus"
+      width="400px"
+    >
+    <el-rate
+      v-model="num"
+      show-text>
+    </el-rate>
+
+      <el-input style="margin-top: 15px;"
+            v-model="message"
+            type="textarea"
+            placeholder="请输入意见"
+          />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitSuccessStatus">确 定</el-button>
+        <el-button @click="cancelTwo">取 消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+        title="验收不通过"
+        :visible.sync="openErrorStatus"
+        width="400px"
+      >
+        <el-input 
+            v-model="message"
+            type="textarea"
+            placeholder="请输入意见"
+          />
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitErrorStatus">确 定</el-button>
+          <el-button @click="cancelTwo">取 消</el-button>
+        </div>
+      </el-dialog>
+
+
     <el-dialog
       title="设置优先级"
       :visible.sync="openUrgentStatus"
@@ -176,11 +212,7 @@
       </div>
     </el-dialog>
     <el-dialog title="反馈进度" :visible.sync="openTaskNum" width="400px">
-      <el-slider
-        v-model="taskNum"
-        @change="changeNum"
-        show-input>
-      </el-slider>
+      <el-slider v-model="taskNum" @change="changeNum" show-input> </el-slider>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitTaskNum">确 定</el-button>
         <el-button @click="cancelTwo">取 消</el-button>
@@ -218,7 +250,7 @@
         </el-form-item>
         <el-form-item label="截止日期" prop="taskEndTime">
           <el-date-picker
-            :picker-options='pickerBeginDateBefore'
+            :picker-options="pickerBeginDateBefore"
             style="width: 100%"
             v-model="form.taskEndTime"
             type="date"
@@ -254,7 +286,10 @@
 
     <!-- 任务详情 -->
     <el-dialog :title="detailTitle" :visible.sync="openDetail" width="800px">
-      <el-row style="position: absolute; top: 18px; right: 45px" v-if="isMeMenu">
+      <el-row
+        style="position: absolute; top: 18px; right: 45px"
+        v-if="isMeMenu"
+      >
         <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
           <el-button
             type="text"
@@ -283,7 +318,10 @@
           >
         </el-col>
       </el-row>
-      <el-row style="position: absolute; top: 18px; right: 45px" v-if="isSendMenu">
+      <el-row
+        style="position: absolute; top: 18px; right: 45px"
+        v-if="isSendMenu"
+      >
         <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
           <el-button
             type="text"
@@ -303,8 +341,31 @@
           >
         </el-col>
       </el-row>
+      <el-row
+        style="position: absolute; top: 18px; right: 45px"
+        v-if="isEndMenu"
+      >
+        <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
+          <el-button
+            type="text"
+            icon="el-icon-check"
+            size="mini"
+            @click="taskSuccess"
+            >验收通过</el-button
+          >
+        </el-col>
+        <el-col :span="1.5" style="padding: 0px 5px 0px 5px">
+          <el-button
+            type="text"
+            icon="el-icon-close"
+            size="mini"
+            @click="taskError"
+            >验收不通过</el-button
+          >
+        </el-col>
+      </el-row>
       <div class="clearfix">
-        <div style="width: 400px; float: left; height: 500px" class="left">
+        <div style="width: 350px; float: left; height: 500px" class="left">
           <el-form ref="detailForm" :model="detailForm" label-width="100px">
             <el-form-item label="项目编码：">
               <el-input v-model="detailForm.projectCode" :readonly="true" />
@@ -343,45 +404,65 @@
             </el-form-item>
           </el-form>
         </div>
-          <div style="width:345px;height:360px;background: #fafafa;float:right;padding:5px 10px 0px 10px;overflow:auto">
-             <div class="talkleft">
-                <span class="left">03.09 10:25</span>
-                <span class="right"><span class="name">name</span><span>创建了任务</span></span>
-            </div>
-             <div class="talkright">
-                <span class="left">03.09 10:25</span>
-                <span ><span class="name">name</span><span class="right">创建了任务</span></span>
-            </div>
+        <div
+          class="innerbox"
+          ref="chatContent"
+          v-loading="loadingMessage"
+          style="
+            width: 395px;
+            height: 360px;
+            background: #fafafa;
+            float: right;
+            padding: 5px 10px 0px 10px;
+            overflow: auto;
+          "
+        >
+          <div
+            :class="item.type == 1? 'talkleft':'talkright'"
+            v-for="item in messageList"
+            :key="item.id"
+          >
+            <span class="left">{{item.createTime.slice(10) }}</span>
+            <span  :class="item.type == 1? 'right':''"
+              ><span class="name">{{ item.createBy }}</span
+              ><span :class="item.type == 1? '':'right'">{{ item.message }}</span></span
+            >
+          </div>
         </div>
         <!-- 上传文件 -->
-        <div style="float:left;padding-left:20px;width:345px">
-          <p style="color:#0090ff">
-            <span>
-              <i class="el-icon-folder-opened"></i>文件</span> 
-              <span style="margin-left:10px">
-                <i class="el-icon-folder"></i>
-                本地上传
-               </span>
+        <div style="float: left; padding-left: 20px; width: 345px">
+          <p style="color: #0090ff">
+            <span> <i class="el-icon-folder-opened"></i>文件</span>
+            <span style="margin-left: 10px">
+              <i class="el-icon-folder"></i>
+              本地上传
+            </span>
           </p>
         </div>
         <!-- 输入框 -->
-        <div style="float:left">
+        <div style="float: left">
+          <el-form
+            ref="sendForm"
+            :model="sendForm"
+            :rules="sendRules"
+            label-width="120px"
+          >
             <el-input
-                type="textarea"
-                :rows="2"
-                placeholder="请输入内容"
-                v-model="textarea"
-                style="width:360px;padding-left:12px;"
-                class="talktextarea"
-                >
-           </el-input>
+              type="textarea"
+              :rows="2"
+              placeholder="请输入内容"
+              v-model="sendForm.message"
+              style="width: 410px; padding-left: 20px"
+              class="talktextarea"
+            >
+            </el-input>
+          </el-form>
         </div>
         <!-- 按钮 -->
-        <div style="float:right;margin-top:10px">
-              <el-button
-              type="primary"
-              size="medium"
-              >发送</el-button>
+        <div style="float: right; margin-top: 10px">
+          <el-button type="primary" size="medium" @click="sendMessage" 
+            >发送</el-button
+          >
         </div>
       </div>
     </el-dialog>
@@ -407,8 +488,9 @@ import {
   checkAccept,
   changeIsUrge,
   getSendTaskInfo,
-  changeTaskNum
+  changeTaskNum,
 } from "@/api/system/taskInfo";
+import { listTaskMessage, addTaskMessage } from "@/api/system/taskMessage";
 import projectSelect from "./projectSelect";
 import { getAllUser } from "@/api/system/user";
 export default {
@@ -418,12 +500,16 @@ export default {
   },
   data() {
     return {
-      pickerBeginDateBefore:{
-            disabledDate(time){
-                return time.getTime() < Date.now()-8.64e7   //如果当天可选，就不用减8.64e7
-            }
+      message:"",
+      num:0,
+      loadingMessage:false,
+      pickerBeginDateBefore: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 8.64e7; //如果当天可选，就不用减8.64e7
+        },
       },
-      textarea:'',
+      messageList: [],
+      textarea: "",
       openUrgentStatus: false,
       openTaskNum: false,
       urgentStatus: 0, //设置优先级
@@ -432,6 +518,7 @@ export default {
       isMe: true,
       isSend: false,
       isMeMenu: true,
+      isEndMenu: false,
       isSendMenu: false,
       activeName: "first",
       people: [],
@@ -450,10 +537,12 @@ export default {
       taskInfoList: [],
       // 弹出层标题
       title: "",
-      detailTitle:"",
+      detailTitle: "",
       // 是否显示弹出层
       open: false,
       openDetail: false,
+      openSuccessStatus:false,
+      openErrorStatus:false,
       detailForm: [],
       // 查询参数
       queryParams: {
@@ -477,6 +566,7 @@ export default {
       },
       // 表单参数
       form: {},
+      sendForm: {},
       // 表单校验
       rules: {
         projectCode: [
@@ -493,6 +583,9 @@ export default {
           { required: true, message: "请选择执行人", trigger: "change" },
         ],
       },
+      sendRules: {
+        message: [{ required: true, message: "内容不能为空", trigger: "blur" }],
+      },
     };
   },
   created() {
@@ -504,49 +597,103 @@ export default {
     });
   },
   methods: {
-    //设置优先级
-    changeUrgentStatus(){
-      this.openUrgentStatus=true;
-      this.urgentStatus=this.detailForm.urgentStatus
+    //验证通过
+    taskSuccess(){
+        this.num=0;
+        this.message="";
+        this.openSuccessStatus=true;
     },
-    submitUrgentStatus(){
-      changeUrgentStatus(this.detailForm.id,this.urgentStatus,this.detailForm.taskCode).then((response) => {
+    submitSuccessStatus(){
+       checkAccept(
+        this.detailForm.id,
+        this.message,//意见
+        this.num,//星星数量
+        0,//0 通过 1 不通过
+        this.detailForm.taskCode
+      ).then((response) => {
         this.getSendList();
         this.cancelTwo();
+        this.getMessageList();
+        this.isEndMenu=false;
+      });
+    },
+        //验证不通过
+    taskError(){
+        this.message="";
+        this.openErrorStatus=true;
+    },
+    submitErrorStatus(){
+       checkAccept(
+        this.detailForm.id,
+        this.message,//意见
+        0,//星星数量
+        1,//0 通过 1 不通过
+        this.detailForm.taskCode
+      ).then((response) => {
+        this.getSendList();
+        this.cancelTwo();
+        this.getMessageList();
+        
+      });
+    },
+    //设置优先级
+    changeUrgentStatus() {
+      this.openUrgentStatus = true;
+      this.urgentStatus = this.detailForm.urgentStatus;
+    },
+    submitUrgentStatus() {
+      changeUrgentStatus(
+        this.detailForm.id,
+        this.urgentStatus,
+        this.detailForm.taskCode
+      ).then((response) => {
+        this.getSendList();
+        this.cancelTwo();
+        this.getMessageList();
       });
     },
     //反馈任务进度
-    changeTaskNum(){
-      this.openTaskNum=true;
-      this.taskNum=parseInt(this.detailForm.taskNum)
+    changeTaskNum() {
+      this.openTaskNum = true;
+      this.taskNum = parseInt(this.detailForm.taskNum);
     },
-    submitTaskNum(){
-      changeTaskNum(this.detailForm.id,this.taskNum,this.detailForm.taskCode).then((response) => {
+    submitTaskNum() {
+      changeTaskNum(
+        this.detailForm.id,
+        this.taskNum,
+        this.detailForm.taskCode
+      ).then((response) => {
+        if(this.taskNum==100){
+          this.isSendMenu=false;
+        }
         this.getSendList();
         this.cancelTwo();
+        this.getMessageList();
       });
     },
-    changeNum(data){
-        if(data>=this.detailForm.taskNum){
-           this.taskNum=data;
-        }else{
-          this.taskNum=parseInt(this.detailForm.taskNum);
-        }
+    changeNum(data) {
+      if (data >= this.detailForm.taskNum) {
+        this.taskNum = data;
+      } else {
+        this.taskNum = parseInt(this.detailForm.taskNum);
+      }
     },
     handleClick(tab, event) {
       if (tab.index == 0) {
         this.getList();
-        this.isMe=true;
-        this.isSend=false;
-        this.isMeMenu=true;
-        this.isSendMenu=false;
+        this.isMe = true;
+        this.isSend = false;
+        this.isMeMenu = true;
+        this.isEndMenu=false;
+        this.isSendMenu = false;
       }
       if (tab.index == 1) {
         this.getSendList();
-        this.isMe=false;
-        this.isSend=true;
-        this.isMeMenu=false;
-        this.isSendMenu=true;
+        this.isMe = false;
+        this.isSend = true;
+        this.isMeMenu = false;
+        this.isEndMenu=false;
+        this.isSendMenu = true;
       }
     },
     selectPerson(data) {
@@ -599,7 +746,11 @@ export default {
     },
     cancelTwo() {
       this.openUrgentStatus = false;
+      this.openSuccessStatus=false;
+      this.openErrorStatus=false;
       this.openTaskNum = false;
+      // this.message="";
+      // this.num=0;
       //this.urgentStatus = 0;
       //this.taskNum = 0;
     },
@@ -629,6 +780,7 @@ export default {
         resultNum: undefined,
       };
       this.resetForm("detailForm");
+      this.resetForm("sendForm");
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -658,7 +810,7 @@ export default {
       //const id =  this.detailForm.id;
       this.open = true;
       this.reset();
-      this.form=this.detailForm
+      this.form = this.detailForm;
       // getTaskInfo(id).then((response) => {
       //   this.form = response.data;
       //   this.open = true;
@@ -671,11 +823,34 @@ export default {
       getTaskInfo(id).then((response) => {
         this.detailForm = response.data;
         this.openDetail = true;
-        if(response.data.status==4){
-          this.isMeMenu=false;
+        if (response.data.status >=3) {
+          this.isMeMenu = false;
+          this.isEndMenu=true;
+        }
+        if (response.data.status == 4) {
+          this.isEndMenu = false;
         }
         this.detailTitle = response.data.taskName;
+        this.getMessageList();
       });
+    },
+    getMessageList() {
+      //this.messageList = [];
+      if (
+        this.detailForm.taskCode != undefined &&
+        this.detailForm.taskCode != null &&
+        this.detailForm.taskCode != ""
+      ) {
+        let queryParams = {
+          taskCode: this.detailForm.taskCode,
+        };
+        listTaskMessage(queryParams).then((response) => {
+          this.messageList = response.rows;
+          this.$nextTick(() =>{
+				  	this.$refs.chatContent.scrollTop = this.$refs.chatContent.scrollHeight;
+			  	})
+        });
+      }
     },
     handleSendDetail(row) {
       this.reset();
@@ -683,10 +858,11 @@ export default {
       getSendTaskInfo(id).then((response) => {
         this.detailForm = response.data;
         this.openDetail = true;
-        if(response.data.status==4){
-          this.isSendMenu=false;
+        if (response.data.status >= 3) {
+          this.isSendMenu = false;
         }
         this.detailTitle = response.data.taskName;
+        this.getMessageList();
       });
     },
     /** 提交按钮 */
@@ -702,6 +878,7 @@ export default {
                   this.detailForm = response.data;
                   this.openDetail = true;
                   this.title = response.data.taskName;
+                  this.getMessageList();
                 });
                 this.getList();
               } else {
@@ -722,51 +899,77 @@ export default {
         }
       });
     },
+    /** 提交按钮 */
+    sendMessage: function () {
+      if(this.detailForm.status==4){
+        this.msgError("任务已结束");
+        return
+      }
+      this.loadingMessage=true;
+      this.$refs["sendForm"].validate((valid) => {
+        if (valid) {
+          this.sendForm.taskCode=this.detailForm.taskCode;
+          this.sendForm.type=0;//普通消息
+          addTaskMessage(this.sendForm).then((response) => {
+            if (response.code === 200) {
+              this.msgSuccess("发送成功");
+              this.sendForm={};
+              this.getMessageList();
+              this.loadingMessage=false;
+            } else {
+              this.msgError(response.msg);
+            }
+          });
+        }
+      });
+    },
+    sendMessageEnter(){
+      alert("s")
+      //  document.onkeydown = e =>{
+      //           //13表示回车键，baseURI是当前页面的地址，为了更严谨，也可以加别的，可以打印e看一下
+      //           if (e.keyCode === 13 && e.target.baseURI.match(/freshmanage/)) {
+      //           //回车后执行搜索方法
+      //               this.sendMessage()
+      //           }
+      //       }
+    },
     /** 删除按钮操作 */
     handleDelete() {
       const ids = this.detailForm.id;
-      this.$confirm(
-        '是否确认取消?',
-        "警告",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }
-      )
+      this.$confirm("是否确认取消?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
         .then(function () {
           return delTaskInfo(ids);
         })
         .then(() => {
           this.getList();
-          this.openDetail=false;
+          this.openDetail = false;
           this.msgSuccess("取消成功");
         })
         .catch(function () {});
     },
-     handleIsUrge() {
-      const taskCode=this.detailForm.taskCode;
+    handleIsUrge() {
+      const taskCode = this.detailForm.taskCode;
       const ids = this.detailForm.id;
-      this.$confirm(
-        '是否确认催办?',
-        "警告",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }
-      )
+      this.$confirm("是否确认催办?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
         .then(function () {
-    
-          return changeIsUrge(ids,taskCode);
+          return changeIsUrge(ids, taskCode);
         })
         .then(() => {
           //this.getList();
           this.msgSuccess("催办成功");
+          this.getMessageList();
         })
         .catch(function () {});
     },
-    
+
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
@@ -787,73 +990,91 @@ export default {
 };
 </script>
 <style>
-  .left>>>.el-input__inner {
-    border: 0;
+.left >>> .el-input__inner {
+  border: 0;
+}
+.clearfix {
+  display: block;
+  overflow: hidden;
+  content: "";
+  clear: both;
+}
+.talkleft {
+  float: left;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.talkright {
+  float: right;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.talkleft .left {
+  float: left;
+  width: 80px;
+  text-align: center;
+  background-color: #ccc;
+  color: #fff;
+  padding: 3px 0;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+.talkright .left {
+  float: left;
+  width: 80px;
+  text-align: center;
+  background-color: #ccc;
+  color: #fff;
+  padding: 3px 0;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+.talkleft .right {
+  display: inline-block;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  padding: 3px 10px;
+}
+.talkleft .right .name {
+  color: #1890ff;
+  padding-right: 5px;
+}
+.talkright .right {
+  float: right;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 12px 10px;
+  margin-right: 5px;
+  border: 1px solid #f2f2f2;
+}
+.talkright .name {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  color: #fff;
+  border-radius: 50%;
+  background-color: rgb(0, 144, 255);
+  float: right;
+  text-align: center;
+  padding-right: 5px;
+}
+.talktextarea textarea {
+  resize: none;
+}
+.innerbox::-webkit-scrollbar {
+            width: 8px;    
+            height:8px
+     }
+  .innerbox::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 10px;
+  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background   : #535353;
   }
-  .clearfix{
-    display: block;
-    overflow: hidden;
-    content: '';
-    clear: both;
-  }
-  .talkleft{
-    float: left;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  .talkright{
-    float: right;
-    width: 100%;
-     margin-bottom: 10px;
-  }
-  .talkleft .left{
-    float: left;
-    width: 80px;
-    text-align: center;
-    background-color: #ccc;
-    color: #fff;
-    padding: 3px 0;
-    border-radius: 4px;
-    margin-right: 5px;
-  }
-    .talkright .left{
-    float: left;
-    width: 80px;
-    text-align: center;
-    background-color: #ccc;
-    color: #fff;
-    padding: 3px 0;
-    border-radius: 4px;
-    margin-right: 5px;
-  }
-   .talkleft .right{
-    display: inline-block;
-    background-color: #f2f2f2;
-    border-radius: 4px;
-    padding: 3px 10px;
-    }
-     .talkleft .right .name{
-       color:#1890ff ;
-    }
-    .talkright .right{
-     float: right;
-     background-color: #fff;
-    border-radius: 4px;
-    padding: 12px 10px;
-    margin-right: 5px;
-    border:1px solid #f2f2f2
-    }
-    .talkright .name{
-      width: 40px;
-      height: 40px;
-     line-height: 40px;
-     color: #fff;
-      border-radius: 50%;
-      background-color: rgb(0, 144, 255);
-      float: right;
-      text-align: center;
-    }
-    .talktextarea textarea{
-      resize: none;
-    }
+  .innerbox::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  background   : #ededed;
+  }        
 </style>
