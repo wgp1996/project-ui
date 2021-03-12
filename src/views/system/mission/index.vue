@@ -22,7 +22,13 @@
           clearable
           size="small"
         >
-          <el-option label="请选择字典生成" value="" />
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="优先级状态" prop="urgentStatus" v-if="isSend">
@@ -32,7 +38,13 @@
           clearable
           size="small"
         >
-          <el-option label="请选择字典生成" value="" />
+          <el-option
+            v-for="item in levelOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="" prop="isRead">
@@ -75,7 +87,21 @@
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
       <el-tab-pane label="我安排的" name="first">
         <el-table v-loading="loading" :data="taskInfoList">
-          <el-table-column label="任务名称" align="center" prop="taskName" />
+          <el-table-column label="任务名称" align="center" prop="taskName">
+            <template slot-scope="scope">
+              <i
+                v-if="scope.row.isRead == 0"
+                style="
+                  background-color: red;
+                  width: 8px;
+                  height: 8px;
+                  border-radius: 50%;
+                  display: inline-block;
+                "
+              ></i>
+              <span>{{ scope.row.taskName }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="项目编码" align="center" prop="projectCode" />
           <el-table-column label="项目名称" align="center" prop="projectName" />
           <el-table-column
@@ -84,7 +110,52 @@
             prop="implementUserName"
           />
           <el-table-column label="任务进度(%)" align="center" prop="taskNum" />
-          <el-table-column label="任务状态" align="center" prop="statusName" />
+          <el-table-column
+            label="任务状态"
+            align="center"
+            prop="statusName"
+            :filters="[
+              { text: '未开始', value: 0 },
+              { text: '进行中', value: 1 },
+              { text: '已超期', value: -1 },
+              { text: '待验收', value: 3 },
+              { text: '已完成', value: 4 },
+            ]"
+            :filter-method="filterTag"
+          >
+            <template slot-scope="scope">
+              <el-tag
+                v-if="scope.row.status == 0"
+                :type="scope.row.status == 0 ? 'info' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+              <el-tag
+                v-if="scope.row.status == 1"
+                :type="scope.row.status == 1 ? 'primary' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+              <el-tag
+                v-if="scope.row.status == -1"
+                :type="scope.row.status == -1 ? 'danger' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+              <el-tag
+                v-if="scope.row.status == 3"
+                :type="scope.row.status == 3 ? 'warning' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+              <el-tag
+                v-if="scope.row.status == 4"
+                :type="scope.row.status == 4 ? 'success' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="截止日期" align="center" prop="taskEndTime" />
           <el-table-column
             label="操作"
@@ -120,8 +191,45 @@
         />
       </el-tab-pane>
       <el-tab-pane label="派给我的" name="second">
-        <el-table v-loading="loading" :data="taskInfoList">
-          <el-table-column label="任务名称" align="center" prop="taskName" />
+        <el-table
+          v-loading="loading"
+          :data="taskInfoList"
+          :row-class-name="tableRowClassName"
+        >
+          <!-- <el-table-column v-if="row.urgentStatus>0"
+            prop="tag"
+            label="优先级"
+            width="100"
+            :filters="[{ text: '普通', value: 0 }, { text: '重要', value: 1 },{ text: '紧急', value: 2 }]"
+            :filter-method="filterTag"
+            filter-placement="bottom-end">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.urgentStatus === 1 ? 'warning' : 'danger'"
+                disable-transitions>{{scope.row.urgentStatusName}}</el-tag>
+            </template>
+          </el-table-column> -->
+          <el-table-column label="任务名称" align="center" prop="taskName">
+            <template slot-scope="scope">
+              <i
+                v-if="scope.row.sendIsRead == 0"
+                style="
+                  background-color: red;
+                  width: 8px;
+                  height: 8px;
+                  border-radius: 50%;
+                  display: inline-block;
+                "
+              ></i>
+              <span>{{ scope.row.taskName }}</span>
+              <i
+                v-if="scope.row.isUrge == 1"
+                class="el-icon-warning"
+                style="color: red"
+                >催</i
+              >
+            </template>
+          </el-table-column>
           <el-table-column label="项目编码" align="center" prop="projectCode" />
           <el-table-column label="项目名称" align="center" prop="projectName" />
           <el-table-column
@@ -130,7 +238,52 @@
             prop="implementUserName"
           />
           <el-table-column label="任务进度(%)" align="center" prop="taskNum" />
-          <el-table-column label="任务状态" align="center" prop="statusName" />
+          <el-table-column
+            label="任务状态"
+            align="center"
+            prop="statusName"
+            :filters="[
+              { text: '未开始', value: 0 },
+              { text: '进行中', value: 1 },
+              { text: '已超期', value: -1 },
+              { text: '待验收', value: 3 },
+              { text: '已完成', value: 4 },
+            ]"
+            :filter-method="filterTag"
+          >
+            <template slot-scope="scope">
+              <el-tag
+                v-if="scope.row.status == 0"
+                :type="scope.row.status == 0 ? 'info' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+              <el-tag
+                v-if="scope.row.status == 1"
+                :type="scope.row.status == 1 ? 'primary' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+              <el-tag
+                v-if="scope.row.status == -1"
+                :type="scope.row.status == -1 ? 'danger' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+              <el-tag
+                v-if="scope.row.status == 3"
+                :type="scope.row.status == 3 ? 'warning' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+              <el-tag
+                v-if="scope.row.status == 4"
+                :type="scope.row.status == 4 ? 'success' : ''"
+                disable-transitions
+                >{{ scope.row.statusName }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="截止日期" align="center" prop="taskEndTime" />
           <el-table-column
             label="操作"
@@ -159,42 +312,27 @@
       </el-tab-pane>
     </el-tabs>
 
-    <el-dialog
-      title="验收通过"
-      :visible.sync="openSuccessStatus"
-      width="400px"
-    >
-    <el-rate
-      v-model="num"
-      show-text>
-    </el-rate>
+    <el-dialog title="验收通过" :visible.sync="openSuccessStatus" width="400px">
+      <el-rate v-model="num" show-text> </el-rate>
 
-      <el-input style="margin-top: 15px;"
-            v-model="message"
-            type="textarea"
-            placeholder="请输入意见"
-          />
+      <el-input
+        style="margin-top: 15px"
+        v-model="message"
+        type="textarea"
+        placeholder="请输入意见"
+      />
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitSuccessStatus">确 定</el-button>
         <el-button @click="cancelTwo">取 消</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-        title="验收不通过"
-        :visible.sync="openErrorStatus"
-        width="400px"
-      >
-        <el-input 
-            v-model="message"
-            type="textarea"
-            placeholder="请输入意见"
-          />
-        <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitErrorStatus">确 定</el-button>
-          <el-button @click="cancelTwo">取 消</el-button>
-        </div>
-      </el-dialog>
-
+    <el-dialog title="验收不通过" :visible.sync="openErrorStatus" width="400px">
+      <el-input v-model="message" type="textarea" placeholder="请输入意见" />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitErrorStatus">确 定</el-button>
+        <el-button @click="cancelTwo">取 消</el-button>
+      </div>
+    </el-dialog>
 
     <el-dialog
       title="设置优先级"
@@ -418,14 +556,16 @@
           "
         >
           <div
-            :class="item.type == 1? 'talkleft':'talkright'"
+            :class="item.type == 1 ? 'talkleft' : 'talkright'"
             v-for="item in messageList"
             :key="item.id"
           >
-            <span class="left">{{item.createTime.slice(10) }}</span>
-            <span  :class="item.type == 1? 'right':''"
+            <span class="left">{{ item.createTime.slice(10) }}</span>
+            <span :class="item.type == 1 ? 'right' : ''"
               ><span class="name">{{ item.createBy }}</span
-              ><span :class="item.type == 1? '':'right'">{{ item.message }}</span></span
+              ><span :class="item.type == 1 ? '' : 'right'">{{
+                item.message
+              }}</span></span
             >
           </div>
         </div>
@@ -442,12 +582,14 @@
         <!-- 输入框 -->
         <div style="float: left">
           <el-form
+            @submit.native.prevent
             ref="sendForm"
             :model="sendForm"
             :rules="sendRules"
             label-width="120px"
           >
             <el-input
+              @keydown.enter.native="sendMessage"
               type="textarea"
               :rows="2"
               placeholder="请输入内容"
@@ -460,7 +602,7 @@
         </div>
         <!-- 按钮 -->
         <div style="float: right; margin-top: 10px">
-          <el-button type="primary" size="medium" @click="sendMessage" 
+          <el-button type="primary" size="medium" @click="sendMessage"
             >发送</el-button
           >
         </div>
@@ -500,9 +642,45 @@ export default {
   },
   data() {
     return {
-      message:"",
-      num:0,
-      loadingMessage:false,
+      options: [
+        {
+          value: 0,
+          label: "未进行",
+        },
+        {
+          value: 1,
+          label: "进行中",
+        },
+        {
+          value: -1,
+          label: "已超期",
+        },
+        {
+          value: 3,
+          label: "待验收",
+        },
+        {
+          value: 4,
+          label: "已完成",
+        },
+      ],
+      levelOptions: [
+        {
+          value: 0,
+          label: "普通",
+        },
+        {
+          value: 1,
+          label: "重要",
+        },
+        {
+          value: 2,
+          label: "紧急",
+        },
+      ],
+      message: "",
+      num: 0,
+      loadingMessage: false,
       pickerBeginDateBefore: {
         disabledDate(time) {
           return time.getTime() < Date.now() - 8.64e7; //如果当天可选，就不用减8.64e7
@@ -541,8 +719,8 @@ export default {
       // 是否显示弹出层
       open: false,
       openDetail: false,
-      openSuccessStatus:false,
-      openErrorStatus:false,
+      openSuccessStatus: false,
+      openErrorStatus: false,
       detailForm: [],
       // 查询参数
       queryParams: {
@@ -597,43 +775,50 @@ export default {
     });
   },
   methods: {
-    //验证通过
-    taskSuccess(){
-        this.num=0;
-        this.message="";
-        this.openSuccessStatus=true;
+    tableRowClassName({ row, rowIndex }) {
+      if (row.urgentStatus === 1) {
+        return "warning-row";
+      } else if (row.urgentStatus === 2) {
+        return "danger-row";
+      }
+      return "";
     },
-    submitSuccessStatus(){
-       checkAccept(
+    //验证通过
+    taskSuccess() {
+      this.num = 0;
+      this.message = "";
+      this.openSuccessStatus = true;
+    },
+    submitSuccessStatus() {
+      checkAccept(
         this.detailForm.id,
-        this.message,//意见
-        this.num,//星星数量
-        0,//0 通过 1 不通过
+        this.message, //意见
+        this.num, //星星数量
+        0, //0 通过 1 不通过
         this.detailForm.taskCode
       ).then((response) => {
-        this.getSendList();
+        this.getList();
         this.cancelTwo();
         this.getMessageList();
-        this.isEndMenu=false;
+        this.isEndMenu = false;
       });
     },
-        //验证不通过
-    taskError(){
-        this.message="";
-        this.openErrorStatus=true;
+    //验证不通过
+    taskError() {
+      this.message = "";
+      this.openErrorStatus = true;
     },
-    submitErrorStatus(){
-       checkAccept(
+    submitErrorStatus() {
+      checkAccept(
         this.detailForm.id,
-        this.message,//意见
-        0,//星星数量
-        1,//0 通过 1 不通过
+        this.message, //意见
+        0, //星星数量
+        1, //0 通过 1 不通过
         this.detailForm.taskCode
       ).then((response) => {
-        this.getSendList();
+        this.getList();
         this.cancelTwo();
         this.getMessageList();
-        
       });
     },
     //设置优先级
@@ -663,8 +848,8 @@ export default {
         this.taskNum,
         this.detailForm.taskCode
       ).then((response) => {
-        if(this.taskNum==100){
-          this.isSendMenu=false;
+        if (this.taskNum == 100) {
+          this.isSendMenu = false;
         }
         this.getSendList();
         this.cancelTwo();
@@ -684,7 +869,7 @@ export default {
         this.isMe = true;
         this.isSend = false;
         this.isMeMenu = true;
-        this.isEndMenu=false;
+        this.isEndMenu = false;
         this.isSendMenu = false;
       }
       if (tab.index == 1) {
@@ -692,7 +877,7 @@ export default {
         this.isMe = false;
         this.isSend = true;
         this.isMeMenu = false;
-        this.isEndMenu=false;
+        this.isEndMenu = false;
         this.isSendMenu = true;
       }
     },
@@ -746,8 +931,8 @@ export default {
     },
     cancelTwo() {
       this.openUrgentStatus = false;
-      this.openSuccessStatus=false;
-      this.openErrorStatus=false;
+      this.openSuccessStatus = false;
+      this.openErrorStatus = false;
       this.openTaskNum = false;
       // this.message="";
       // this.num=0;
@@ -786,7 +971,11 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
-      this.getList();
+      if (this.activeName == "first") {
+        this.getList();
+      } else {
+        this.getSendList();
+      }
     },
     /** 重置按钮操作 */
     resetQuery() {
@@ -823,15 +1012,16 @@ export default {
       getTaskInfo(id).then((response) => {
         this.detailForm = response.data;
         this.openDetail = true;
-        if (response.data.status >=3) {
+        if (response.data.status >= 3) {
           this.isMeMenu = false;
-          this.isEndMenu=true;
+          this.isEndMenu = true;
         }
         if (response.data.status == 4) {
           this.isEndMenu = false;
         }
         this.detailTitle = response.data.taskName;
         this.getMessageList();
+        //this.getList();
       });
     },
     getMessageList() {
@@ -846,9 +1036,9 @@ export default {
         };
         listTaskMessage(queryParams).then((response) => {
           this.messageList = response.rows;
-          this.$nextTick(() =>{
-				  	this.$refs.chatContent.scrollTop = this.$refs.chatContent.scrollHeight;
-			  	})
+          this.$nextTick(() => {
+            this.$refs.chatContent.scrollTop = this.$refs.chatContent.scrollHeight;
+          });
         });
       }
     },
@@ -863,6 +1053,7 @@ export default {
         }
         this.detailTitle = response.data.taskName;
         this.getMessageList();
+        //this.getSendList();
       });
     },
     /** 提交按钮 */
@@ -900,38 +1091,29 @@ export default {
       });
     },
     /** 提交按钮 */
-    sendMessage: function () {
-      if(this.detailForm.status==4){
+    sendMessage: function (event) {
+      event.preventDefault();
+      if (this.detailForm.status == 4) {
         this.msgError("任务已结束");
-        return
+        return;
       }
-      this.loadingMessage=true;
+      this.loadingMessage = true;
       this.$refs["sendForm"].validate((valid) => {
         if (valid) {
-          this.sendForm.taskCode=this.detailForm.taskCode;
-          this.sendForm.type=0;//普通消息
+          this.sendForm.taskCode = this.detailForm.taskCode;
+          this.sendForm.type = 0; //普通消息
           addTaskMessage(this.sendForm).then((response) => {
             if (response.code === 200) {
               this.msgSuccess("发送成功");
-              this.sendForm={};
+              this.sendForm = {};
               this.getMessageList();
-              this.loadingMessage=false;
+              this.loadingMessage = false;
             } else {
               this.msgError(response.msg);
             }
           });
         }
       });
-    },
-    sendMessageEnter(){
-      alert("s")
-      //  document.onkeydown = e =>{
-      //           //13表示回车键，baseURI是当前页面的地址，为了更严谨，也可以加别的，可以打印e看一下
-      //           if (e.keyCode === 13 && e.target.baseURI.match(/freshmanage/)) {
-      //           //回车后执行搜索方法
-      //               this.sendMessage()
-      //           }
-      //       }
     },
     /** 删除按钮操作 */
     handleDelete() {
@@ -1062,19 +1244,26 @@ export default {
   resize: none;
 }
 .innerbox::-webkit-scrollbar {
-            width: 8px;    
-            height:8px
-     }
-  .innerbox::-webkit-scrollbar-thumb {
+  width: 8px;
+  height: 8px;
+}
+.innerbox::-webkit-scrollbar-thumb {
   /*滚动条里面小方块*/
   border-radius: 10px;
-  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
-  background   : #535353;
-  }
-  .innerbox::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: #535353;
+}
+.innerbox::-webkit-scrollbar-track {
   /*滚动条里面轨道*/
-  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  background   : #ededed;
-  }        
+  background: #ededed;
+}
+.el-table .warning-row {
+  background: #eedec5;
+}
+
+.el-table .danger-row {
+  background: #fad8d8;
+}
 </style>
