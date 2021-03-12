@@ -121,7 +121,6 @@
               { text: '待验收', value: 3 },
               { text: '已完成', value: 4 },
             ]"
-            :filter-method="filterTag"
           >
             <template slot-scope="scope">
               <el-tag
@@ -249,7 +248,6 @@
               { text: '待验收', value: 3 },
               { text: '已完成', value: 4 },
             ]"
-            :filter-method="filterTag"
           >
             <template slot-scope="scope">
               <el-tag
@@ -795,7 +793,6 @@ export default {
         this.message, //意见
         this.num, //星星数量
         0, //0 通过 1 不通过
-        this.detailForm.taskCode
       ).then((response) => {
         this.getList();
         this.cancelTwo();
@@ -813,8 +810,7 @@ export default {
         this.detailForm.id,
         this.message, //意见
         0, //星星数量
-        1, //0 通过 1 不通过
-        this.detailForm.taskCode
+        1 //0 通过 1 不通过
       ).then((response) => {
         this.getList();
         this.cancelTwo();
@@ -845,8 +841,7 @@ export default {
     submitTaskNum() {
       changeTaskNum(
         this.detailForm.id,
-        this.taskNum,
-        this.detailForm.taskCode
+        this.taskNum
       ).then((response) => {
         if (this.taskNum == 100) {
           this.isSendMenu = false;
@@ -1134,7 +1129,6 @@ export default {
         .catch(function () {});
     },
     handleIsUrge() {
-      const taskCode = this.detailForm.taskCode;
       const ids = this.detailForm.id;
       this.$confirm("是否确认催办?", "警告", {
         confirmButtonText: "确定",
@@ -1142,7 +1136,7 @@ export default {
         type: "warning",
       })
         .then(function () {
-          return changeIsUrge(ids, taskCode);
+          return changeIsUrge(ids);
         })
         .then(() => {
           //this.getList();

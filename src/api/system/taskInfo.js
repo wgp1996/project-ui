@@ -52,25 +52,25 @@ export function changeUrgentStatus(id,status,taskCode) {
 
 
 // 任务验收
-export function checkAccept(id,message,num,type,taskCode) {
+export function checkAccept(id,message,num,type) {
   return request({
-    url: '/system/taskInfo/checkAccept/' + id+"/"+message+"/"+num+"/"+type+"/"+taskCode,
+    url: '/system/taskInfo/checkAccept/' + id+"/"+message+"/"+num,
     method: 'get'
   })
 }
 
 // 催办任务
-export function changeIsUrge(id,taskCode) {
+export function changeIsUrge(id) {
   return request({
-    url: '/system/taskInfo/changeIsUrge/' + id+"/"+taskCode,
+    url: '/system/taskInfo/changeIsUrge/' + id,
     method: 'get'
   })
 }
 
 // 反馈任务进度
-export function changeTaskNum(id,taskNum,taskCode) {
+export function changeTaskNum(id,taskNum) {
   return request({
-    url: '/system/taskInfo/changeTaskNum/' + id+"/"+taskNum+"/"+taskCode,
+    url: '/system/taskInfo/changeTaskNum/' + id+"/"+taskNum,
     method: 'get'
   })
 }

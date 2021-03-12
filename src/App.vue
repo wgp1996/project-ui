@@ -16,7 +16,7 @@ export default {
 	 let username = localStorage.getItem("user");
     if (username != "" && username != null && username != undefined) {
       this.userName = username;
-     // this.initWebSocket();
+      this.initWebSocket();
     }
   },
   data() {
@@ -62,7 +62,14 @@ export default {
       this.redata = e.data;
       console.log("-----redata-----");
       console.log(this.redata);
-      this.msgError(this.redata);
+      //this.msgError(this.redata);
+      this.$notify({
+          title: '任务通知',
+          duration:5000,
+          type:"success",
+          message:this.redata,
+          position: 'bottom-right'
+        });
     },
     websocketsend(Data) {
       //数据发送
