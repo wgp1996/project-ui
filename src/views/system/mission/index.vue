@@ -846,6 +846,7 @@ export default {
         if (this.taskNum == 100) {
           this.isSendMenu = false;
         }
+        this.detailForm.taskNum=this.taskNum;
         this.getSendList();
         this.cancelTwo();
         this.getMessageList();

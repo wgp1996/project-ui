@@ -523,7 +523,7 @@ export default {
   methods: {
     //追加子表必填样式
     starAdd(obj) {
-      if (obj.columnIndex === 0 || obj.columnIndex === 2) {
+      if (obj.columnIndex === 0 ) {
         return "star";
       }
     },
@@ -753,8 +753,8 @@ export default {
         if (valid) {
           for (let i = 0; i < this.tableData.length; i++) {
             if (
-              this.tableData[i].userCode == "" ||
-              this.tableData[i].projectPost == ""
+              this.tableData[i].userCode == "" 
+              // this.tableData[i].projectPost == ""
             ) {
               this.msgError("检查明细必填项!");
               return;

@@ -21,7 +21,7 @@ export function djFlowList(djId,flowStatus) {
 //查询审批节点
 export function listNode(flow_no) {
   return request({
-    url: '/system/flowNode/list?flow_no='+flow_no,
+    url: '/system/flowNode/list?flowNo='+flow_no,
     method: 'get',
   })
 }

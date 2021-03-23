@@ -9,6 +9,46 @@ export function listEnginnerApply(query) {
   })
 }
 
+// 查询立项申请审核列表
+export function shList(query) {
+  return request({
+    url: '/system/enginnerApply/shList',
+    method: 'get',
+    params: query
+  })
+}
+
+// 立项申请审核
+export function examine(data) {
+  return request({
+    url: '/system/enginnerApply/examine',
+    method: 'put',
+    data: data
+  })
+}
+
+// 立项申请取消审核
+export function cancelAudit(id,nodeNo) {
+  return request({
+    url: '/system/enginnerApply/cancelAudit/' + id+"/"+nodeNo,
+    method: 'delete'
+  })
+}
+// 提交立项申请
+export function effect(id) {
+  return request({
+    url: '/system/enginnerApply/effect/' + id,
+    method: 'delete'
+  })
+}
+// 取消提交立项申请
+export function cancel(id) {
+  return request({
+    url: '/system/enginnerApply/cancel/' + id,
+    method: 'delete'
+  })
+}
+
 // 查询立项申请详细
 export function getEnginnerApply(id) {
   return request({

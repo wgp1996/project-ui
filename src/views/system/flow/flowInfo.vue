@@ -291,7 +291,7 @@
                   placeholder=""
                 ></el-input> -->
                 <el-select
-                  v-model="scope.row.prId"
+                  v-model="scope.row.prName"
                   placeholder="请选择人员"
                   style="width: 100%"
                   @change="selectStore(scope.$index, scope.row)"
@@ -536,7 +536,7 @@ export default {
     selectStore(index, row) {
       for (let i = 0; i < this.people.length; i++) {
         //console.log(this.tableData)
-        if (this.people[i].nickName == row.prId) {
+        if (this.people[i].nickName == row.prName) {
           for (var j = 0; j < this.tableData.length; j++) {
             // console.log(this.tableData[j].prId)
             // console.log(row)
@@ -553,7 +553,7 @@ export default {
           }
           // console.log(this.people[i].nickName)
 
-          row.prName = this.people[i].userName;
+          row.prId = this.people[i].userName;
           break;
         }
       }
@@ -565,6 +565,9 @@ export default {
     },
     // 子表删除
     handleChildDelete(index, row) {
+      if(this.form.status>0){
+        return;
+      }
       if (row.id != "" && row.id != undefined && row.id != null) {
         delFlowNode(row.id);
         this.tableData.splice(index, 1);
@@ -639,7 +642,7 @@ export default {
         this.form = response.data;
         this.open = true;
         this.title = "修改流程表";
-        listNode(this.form.flowNo).then((response) => {
+        listNode(this.form.flowNo).then((response) => { 
           this.tableData = response.rows;
           console.log(this.tableData);
           for (var i = 0; i < this.tableData.length; i++) {
