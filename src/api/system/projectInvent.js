@@ -8,6 +8,13 @@ export function listProjectInvent(query) {
     params: query
   })
 }
+// 项目编码查询编制清单列表
+export function listProjectInvents(projectCode) {
+  return request({
+    url: '/system/projectInvent/list?projectCode='+projectCode,
+    method: 'get'
+  })
+}
 
 // 查询编制清单详细
 export function getProjectInvent(id) {

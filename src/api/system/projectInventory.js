@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+﻿import request from '@/utils/request'
 
 // 查询编制清单列表
 export function listProjectInventory(query) {
@@ -8,8 +8,6 @@ export function listProjectInventory(query) {
     params: query
   })
 }
-
-
 // 查询编制清单列表
 export function selectList(query) {
   return request({
@@ -18,11 +16,18 @@ export function selectList(query) {
     params: query
   })
 }
-
 // 查询编制清单详细
 export function getProjectInventory(id) {
   return request({
-    url: '/system/projectInventory/' + id,
+    url: '/system/projectInventory/detailInfo/' + id,
+    method: 'get'
+  })
+}
+
+// 查询编制清单列表
+export function getProjectInventoryList(djNumber) {
+  return request({
+    url: '/system/projectInventory/detail/' + djNumber,
     method: 'get'
   })
 }
