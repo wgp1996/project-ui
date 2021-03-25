@@ -664,11 +664,11 @@
         <el-button @click="cancel" type="danger">关 闭</el-button>
       </div>
     </el-dialog>
-    <project-select
+    <project-select-zb
       v-if="selectProjectDialog"
       ref="selectProject"
       @selectData="selectData"
-    ></project-select>
+    ></project-select-zb>
   </div>
 </template>
 
@@ -690,12 +690,12 @@ import {
   getProjectInfoByCode,
 } from "@/api/system/projectInfo";
 import { getKhList } from "@/api/system/kh";
-import projectSelect from "./projectSelect";
+import projectSelectZb from "./projectSelectZb";
 import { getToken } from "@/utils/auth";
 export default {
   name: "ContractGenera",
   components: {
-    projectSelect,
+    projectSelectZb,
   },
   data() {
     return {

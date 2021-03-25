@@ -9,6 +9,17 @@ export function listProjectInfo(query) {
   })
 }
 
+// 总包查询项目建档列表
+export function zbListProjectInfo(query) {
+  return request({
+    url: '/system/projectInfo/zbList',
+    method: 'get',
+    params: query
+  })
+}
+
+
+
 // 查询项目人员明细列表
 export function listProjectChild(projectCode) {
   return request({

@@ -17,6 +17,15 @@ export function getProjectContractChild(id) {
   })
 }
 
+
+// 查询分包合同明细详细
+export function getProjectContractChildByNum(djNumber) {
+  return request({
+    url: '/system/projectContractChild/list?djNumber=' + djNumber,
+    method: 'get'
+  })
+}
+
 // 新增分包合同明细
 export function addProjectContractChild(data) {
   return request({

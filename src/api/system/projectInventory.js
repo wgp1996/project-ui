@@ -9,6 +9,16 @@ export function listProjectInventory(query) {
   })
 }
 
+
+// 查询编制清单列表
+export function selectList(query) {
+  return request({
+    url: '/system/projectInventory/selectList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询编制清单详细
 export function getProjectInventory(id) {
   return request({
