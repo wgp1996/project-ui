@@ -28,73 +28,7 @@
       <!--用户数据-->
       <el-col :span="19" :xs="24">
         <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
-          <!-- <el-form-item label="创建时间">
-            <el-date-picker
-              v-model="dateRange"
-              size="small"
-              style="width: 240px"
-              value-format="yyyy-MM-dd"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            ></el-date-picker>
-          </el-form-item>-->
-          <!-- <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-          </el-form-item>-->
         </el-form>
-
-        <!-- <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              icon="el-icon-plus"
-              size="mini"
-              @click="handleAdd"
-              v-hasPermi="['system:user:add']"
-            >新增</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="success"
-              icon="el-icon-edit"
-              size="mini"
-              :disabled="single"
-              @click="handleUpdate"
-              v-hasPermi="['system:user:edit']"
-            >修改</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete"
-              v-hasPermi="['system:user:remove']"
-            >删除</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="info"
-              icon="el-icon-upload2"
-              size="mini"
-              @click="handleImport"
-              v-hasPermi="['system:user:import']"
-            >导入</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:user:export']"
-            >导出</el-button>
-          </el-col>
-        </el-row>-->
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="分享清单" name="first">
             <el-form ref="form" :model="form" :rules="rules" label-width="120px">
@@ -141,7 +75,7 @@
                     icon="el-icon-plus"
                     size="mini"
                     @click="fensubmitForm"
-                    v-hasPermi="['system:user:add']"
+                    v-hasPermi="['system:projectInvent:add']"
                   >提交</el-button>
                 </el-col>
               </el-row>
@@ -155,7 +89,7 @@
                   icon="el-icon-plus"
                   size="mini"
                   @click="handleAdd"
-                  v-hasPermi="['system:user:add']"
+                  v-hasPermi="['system:projectInvent:add']"
                 >新增</el-button>
               </el-col>
               <el-col :span="1.5">
@@ -165,7 +99,7 @@
                   size="mini"
                   @click="newhandleAdd"
                   :disabled="newsingle"
-                  v-hasPermi="['system:user:add']"
+                  v-hasPermi="['system:projectInvent:add']"
                 >新增下级</el-button>
               </el-col>
               <el-col :span="1.5">
@@ -175,7 +109,7 @@
                   size="mini"
                   :disabled="single"
                   @click="handleUpdate"
-                  v-hasPermi="['system:user:edit']"
+                  v-hasPermi="['system:projectInvent:edit']"
                 >修改</el-button>
               </el-col>
               <el-col :span="1.5">
@@ -185,7 +119,7 @@
                   size="mini"
                   :disabled="multiple"
                   @click="handleDelete"
-                  v-hasPermi="['system:user:remove']"
+                  v-hasPermi="['system:projectInvent:remove']"
                 >删除</el-button>
               </el-col>
               <!-- <el-col :span="1.5">
@@ -194,7 +128,7 @@
                       icon="el-icon-upload2"
                       size="mini"
                       @click="handleImport"
-                      v-hasPermi="['system:user:import']"
+                      v-hasPermi="['system:projectInvent:import']"
                     >导入</el-button>
               </el-col>-->
               <!-- <el-col :span="1.5">
@@ -203,7 +137,7 @@
                       icon="el-icon-download"
                       size="mini"
                       @click="handleExport"
-                      v-hasPermi="['system:user:export']"
+                      v-hasPermi="['system:projectInvent:export']"
                     >导出</el-button>
               </el-col>-->
             </el-row>
@@ -334,48 +268,19 @@
 </template>
 
 <script>
-// import { listPost, getPost, delPost, addPost, updatePost, exportPost } from "@/api/system/post";
 import {
-  listEnginnerApply,
-  getEnginnerApply,
-  delEnginnerApply,
-  addEnginnerApply,
-  updateEnginnerApply,
-  exportEnginnerApply
-} from "@/api/system/enginnerApply";
-import { listKh } from "@/api/system/kh";
-import {
-  listEnginnerByEnginner,
   delEnginnerApplyChild
 } from "@/api/system/enginnerApplyChild";
 import { systemFileList } from "@/api/system/projectInfo";
-import {
-  listUser,
-  getUser,
-  delUser,
-  addUser,
-  updateUser,
-  exportUser,
-  resetUserPwd,
-  changeUserStatus,
-  importTemplate
-} from "@/api/system/user";
-// import goodsSelect from "./goodsSelect";
 import { getToken } from "@/utils/auth";
 import { projectTree } from "@/api/system/projectType";
 import { getInfo } from "@/api/login";
 import { delFileInfo } from "@/api/system/projectInfo";
 import {
-  listProjectInvent,
   listProjectInvents,
-  getProjectInvent,
   addProjectInvent,
-  updateProjectInvent,
-  delProjectInvent,
-  exportProjectInvent
 } from "@/api/system/projectInvent";
 import {
-  listProjectInventory,
   getProjectInventory,
   addProjectInventory,
   updateProjectInventory,
@@ -394,10 +299,6 @@ var validatePass = (rule, value, callback) => {
 };
 export default {
   name: "Post",
-  // components: {
-  //   goodsSelect,
-  // },
-
   data() {
     return {
       shower: false,
@@ -488,6 +389,7 @@ export default {
         engineerName: undefined,
         deptId: undefined
       },
+      symbol:true,
       projectCode: "",
       // 表单参数
       form: {
@@ -507,7 +409,7 @@ export default {
         inventoryMoney: "",
         projectCode: "",
         djNumber: "",
-        id: undefined,
+        // id: undefined,
         inventoryUnit: ""
       },
       //用户信息
@@ -647,13 +549,6 @@ export default {
     //选择数据
     selectData(row) {
       this.$nextTick(() => {
-        //检查是否存在重复数据
-        // for (let i = 0; i < this.tableData.length; i++) {
-        //   if (row.goodsCode == this.tableData[i].goodsCode) {
-        //     this.msgError("信息重复!");
-        //     return;
-        //   }
-        // }
         console.log(row);
         let goodsInfo = new Object();
         goodsInfo.deptCode = row.deptId;
@@ -705,7 +600,7 @@ export default {
         this.loading = false;
         return;
       } else {
-        // alert("3")
+        //  alert("3")
         getProjectInventoryList(this.replace).then(response => {
           // this.userList = response.data;
           for (var i = 0; i < response.data.length; i++) {
@@ -716,6 +611,7 @@ export default {
               response.data[i].isLast = "有下级";
             }
           }
+          console.log(response.data)
           this.userList = this.handleTree(response.data, "id", "parentCode");
           this.loading = false;
         });
@@ -889,7 +785,7 @@ export default {
         inventoryMoney: "",
         projectCode: "",
         djNumber: "",
-        id: undefined,
+        // id: undefined,
         inventoryUnit: ""
       };
       this.resetForm("form");
@@ -953,6 +849,7 @@ export default {
     /** 新增按钮操作 */
     newhandleAdd(row) {
       // this.reset();
+      this.symbol=true
       if (this.isLast == "无下级") {
         this.open = false;
         this.msgError("不能添加下级!");
@@ -975,6 +872,7 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       // this.reset();
+      this.symbol=false;
       const postId = row.id || this.ids;
       // alert(postId)
       getProjectInventory(parseInt(postId)).then(response => {
@@ -1056,40 +954,7 @@ export default {
     submitForm: function() {
       this.$refs["form1"].validate(valid => {
         if (valid) {
-          //检查子表信息
-          // for (let i = 0; i < this.tableData.length; i++) {
-          //   if (
-          //     this.tableData[i].engineerCode  == "" ||
-          //     this.tableData[i].engineerName == ""
-          //   ) {
-          //     this.msgError("检查明细信息必填项!");
-          //     return;
-          //   }
-          // }
-          //  let fileList = [];
-          //   console.log(this.fileList);
-          //   for (let i = 0; i < this.fileList.length; i++) {
-          //     if (
-          //       this.fileList[i].id != "" &&
-          //       this.fileList[i].id != null &&
-          //       this.fileList[i].id != undefined
-          //     ) {
-          //       continue;
-          //     }
-          //     let info = new Object();
-          //     info.name = this.fileList[i].response.name;
-          //     info.url = this.fileList[i].response.url;
-          //     fileList.push(info);
-          //   }
-          // console.log(fileList)
-          //   this.form.fileRows = JSON.stringify(fileList);
-          //  this.form1.rows = JSON.stringify(this.tableData);
-          // alert(this.form1.id)
-          // return
-          // alert("33")
-          //  console.log(this.form1)
-          //  return false
-          if (this.form1.id != undefined) {
+          if (this.form1.id != undefined&&this.symbol==false) {
             updateProjectInventory(this.form1).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
@@ -1100,6 +965,8 @@ export default {
               }
             });
           } else {
+            // console.log(this.form1)
+            this.form1.id=""
             addProjectInventory(this.form1).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");

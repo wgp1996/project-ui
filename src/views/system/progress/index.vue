@@ -1,6 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      label-width="68px"
+    >
       <el-form-item label="单号" prop="djNumber">
         <el-input
           v-model="queryParams.djNumber"
@@ -10,38 +15,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
-          <el-option label="请选择字典生成" value="" />
-        </el-select>
-      </el-form-item>-->
-      <!-- <el-form-item label="单据日期" prop="djTime">
-        <el-input
-          v-model="queryParams.djTime"
-          placeholder="请输入单据日期"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="合同编号" prop="htDjNumber">
-        <el-input
-          v-model="queryParams.htDjNumber"
-          placeholder="请输入合同编号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="合同金额" prop="htMoney">
-        <el-input
-          v-model="queryParams.htMoney"
-          placeholder="请输入合同金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
       <el-form-item label="项目名称" prop="projectName">
         <el-input
           v-model="queryParams.projectName"
@@ -60,81 +33,17 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="开始时间" prop="startTime">
-        <el-input
-          v-model="queryParams.startTime"
-          placeholder="请输入开始时间"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="结束时间" prop="endTime">
-        <el-input
-          v-model="queryParams.endTime"
-          placeholder="请输入结束时间"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="已付金额" prop="yfMoney">
-        <el-input
-          v-model="queryParams.yfMoney"
-          placeholder="请输入已付金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="发票金额" prop="fpMoney">
-        <el-input
-          v-model="queryParams.fpMoney"
-          placeholder="请输入发票金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="产值金额" prop="czMoney">
-        <el-input
-          v-model="queryParams.czMoney"
-          placeholder="请输入产值金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="流程号" prop="flowNo">
-        <el-input
-          v-model="queryParams.flowNo"
-          placeholder="请输入流程号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="节点编号" prop="nodeNo">
-        <el-input
-          v-model="queryParams.nodeNo"
-          placeholder="请输入节点编号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-      <!-- <el-form-item label="是否审批" prop="isSp">
-        <el-input
-          v-model="queryParams.isSp"
-          placeholder="请输入是否审批"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -146,27 +55,52 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:projectReport:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:projectReport:edit']"
-        >修改</el-button>
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
+          type="primary"
           icon="el-icon-delete"
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:projectReport:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleEffect"
+          v-hasPermi="['system:projectReport:effect']"
+          >提交</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleCancel"
+          v-hasPermi="['system:projectReport:cancel']"
+          >取消提交</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -175,7 +109,8 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:projectReport:export']"
-        >导出</el-button>
+          >导出</el-button
+        >
       </el-col>
     </el-row>
 
@@ -196,28 +131,32 @@
       <el-table-column label="开始时间" align="center" prop="startTime" />
       <el-table-column label="结束时间" align="center" prop="endTime" />
       <el-table-column label="申请人" align="center" prop="createBy" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:projectReport:edit']"
-          >修改</el-button>
+            >详情</el-button
+          >
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:projectReport:remove']"
-          >删除</el-button>
+            icon="el-icon-edit"
+            @click="handleSelectFlow(scope.row)"
+            >查看审批</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -235,7 +174,11 @@
                                 <el-input v-model="form.djNumber" placeholder="请输入单号" />
                 </el-form-item>-->
                 <el-form-item label="流水号" prop="djNumber">
-                  <el-input v-model="form.djNumber" placeholder="自动生成" :disabled="true" />
+                  <el-input
+                    v-model="form.djNumber"
+                    placeholder="自动生成"
+                    :disabled="true"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -259,11 +202,15 @@
             </el-row>
 
             <el-form-item label="合同编号" prop="htDjNumber">
-              <el-input v-model="form.htDjNumber" placeholder="请输入合同编号" :disabled="true" />
+              <el-input
+                v-model="form.htDjNumber"
+                placeholder="请输入合同编号"
+                :disabled="true"
+              />
               <el-button
                 icon="el-icon-plus"
                 type="primary"
-                style="position:absolute;right:0px;top:0px"
+                style="position: absolute; right: 0px; top: 0px"
                 @click="projectSelect"
               ></el-button>
             </el-form-item>
@@ -273,12 +220,20 @@
             <el-row :gutter="10" class="mb8">
               <el-col :span="12">
                 <el-form-item label="合同金额" prop="htMoney">
-                  <el-input v-model="form.htMoney" placeholder="请输入合同金额" :disabled="true" />
+                  <el-input
+                    v-model="form.htMoney"
+                    placeholder="请输入合同金额"
+                    :disabled="true"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="项目名称" prop="projectName">
-                  <el-input v-model="form.projectName" placeholder="请输入项目名称" :disabled="true" />
+                  <el-input
+                    v-model="form.projectName"
+                    placeholder="请输入项目名称"
+                    :disabled="true"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -292,11 +247,10 @@
                     v-model="form.startTime"
                     type="date"
                     format="yyyy-MM-dd"
-                    value-format="timestamp"
+                    value-format="yyyy-MM-dd"
                     placeholder="请选择开始时间"
                     @change="changestarttime"
                   ></el-date-picker>
-                
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -308,8 +262,8 @@
                     v-model="form.endTime"
                     type="date"
                     format="yyyy-MM-dd"
-                    value-format="timestamp"
-                    placeholder="请选择单据时间"
+                    value-format="yyyy-MM-dd"
+                    placeholder="请选择结束时间"
                     @change="changeendtime"
                   ></el-date-picker>
                 </el-form-item>
@@ -318,12 +272,16 @@
             <el-row :gutter="10" class="mb8">
               <el-col :span="12">
                 <el-form-item label="天数" prop="dayNum">
-                  <el-input v-model="form.dayNum" placeholder  />
+                  <el-input v-model="form.dayNum" placeholder />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="发票金额" prop="fpMoney">
-                  <el-input v-model="form.fpMoney" placeholder="请输入发票金额" :disabled="true" />
+                  <el-input
+                    v-model="form.fpMoney"
+                    placeholder="请输入发票金额"
+                    :disabled="true"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -334,20 +292,38 @@
             <el-row :gutter="10" class="mb8">
               <el-col :span="12">
                 <el-form-item label="产值金额" prop="czMoney">
-                  <el-input v-model="form.czMoney" placeholder="请输入产值金额" :disabled="true" />
+                  <el-input
+                    v-model="form.czMoney"
+                    placeholder="请输入产值金额"
+                    :disabled="true"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="已付金额" prop="yfMoney">
-                  <el-input v-model="form.yfMoney" placeholder="请输入已付金额" :disabled="true" />
+                  <el-input
+                    v-model="form.yfMoney"
+                    placeholder="请输入已付金额"
+                    :disabled="true"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-form-item label="启用审批" prop="isSp">
+              <el-radio-group v-model="form.isSp">
+                <el-radio :label="1">启用</el-radio>
+                <el-radio :label="0">不启用</el-radio>
+              </el-radio-group>
+            </el-form-item>
             <el-form-item label="申请人" prop="remark">
-              <el-input v-model="user.ownerNameJc" :disabled="true" placeholder />
+              <el-input
+                v-model="user.ownerNameJc"
+                :disabled="true"
+                placeholder
+              />
             </el-form-item>
             <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.nodeNo" placeholder="输入备注" />
+              <el-input v-model="form.remark" placeholder="输入备注" />
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -359,7 +335,11 @@
             highlight-current-row
             :header-cell-class-name="starAdd"
           >
-            <el-table-column prop="inventoryName" label="分部分项内容" width="200">
+            <el-table-column
+              prop="inventoryName"
+              label="分部分项内容"
+              width="200"
+            >
               <template scope="scope">
                 <el-input
                   :disabled="true"
@@ -391,13 +371,17 @@
                 <span>{{ scope.row.inventoryNum }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="inventoryCheckNum" label="复核数量" width="120">
+            <el-table-column
+              prop="inventoryCheckNum"
+              label="复核数量"
+              width="120"
+            >
               <template scope="scope">
                 <el-input
                   size="small"
                   v-model="scope.row.inventoryCheckNum"
                   placeholder="请输入数量"
-                   :readonly="true"
+                  :readonly="true"
                 ></el-input>
                 <span>{{ scope.row.inventoryNum }}</span>
               </template>
@@ -424,7 +408,11 @@
             </el-table-column>
             <el-table-column label="备注" width="150" prop="remark">
               <template scope="scope">
-                <el-input size="small" v-model="scope.row.remark" placeholder="请输入备注"></el-input>
+                <el-input
+                  size="small"
+                  v-model="scope.row.remark"
+                  placeholder="请输入备注"
+                ></el-input>
               </template>
             </el-table-column>
             <el-table-column label="操作">
@@ -434,12 +422,13 @@
                   size="small"
                   type="danger"
                   @click="handleChildDelete(scope.$index, scope.row)"
-                >删除</el-button>
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
-           <el-tab-pane label="合同附件" name="two">
+        <el-tab-pane label="合同附件" name="two">
           <el-row :gutter="15" class="mb8">
             <el-col :span="1.5">
               <el-upload
@@ -473,7 +462,49 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <progress-select v-if="selectProjectDialog" ref="selectProject" @selectData="selectData"></progress-select>
+    <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
+      <el-tabs type="border-card">
+        <el-tab-pane label="最新审批">
+          <el-steps :space="100" direction="vertical" :active="stepsActive">
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsData"
+              :key="index"
+            ></el-step>
+          </el-steps>
+        </el-tab-pane>
+        <el-tab-pane label="历史审批">
+          <el-steps
+            :space="100"
+            direction="vertical"
+            :active="stepsHistoryActive"
+          >
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsDataHistory"
+              :key="index"
+            ></el-step>
+          </el-steps>
+        </el-tab-pane>
+      </el-tabs>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel" type="danger">关 闭</el-button>
+      </div>
+    </el-dialog>
+    <progress-select
+      v-if="selectProjectDialog"
+      ref="selectProject"
+      @selectData="selectData"
+    ></progress-select>
   </div>
 </template>
 
@@ -484,10 +515,16 @@ import {
   delProjectReport,
   addProjectReport,
   updateProjectReport,
-  exportProjectReport
+  exportProjectReport,
+  effectProjectReport,
+  cancelProjectReport,
 } from "@/api/system/projectReport";
-import { getProjectContractChildByNum } from "@/api/system/projectContractChild"
-import { delProjectReportChild,getProjectReportChildList } from "@/api/system/projectReportChild"
+import { djFlowList } from "@/api/system/flowInfo";
+import { getProjectContractChildByNum } from "@/api/system/projectContractChild";
+import {
+  delProjectReportChild,
+  getProjectReportChildList,
+} from "@/api/system/projectReportChild";
 import progressSelect from "./progressSelect";
 import { systemFileList, delFileInfo } from "@/api/system/projectInfo";
 import { getInfo } from "@/api/login";
@@ -504,24 +541,24 @@ var validatePass = (rule, value, callback) => {
 export default {
   name: "ProjectReport",
   components: {
-    progressSelect
+    progressSelect,
   },
   data() {
     return {
-        fileList: [],
-       stepsActive: 0,
-      stepsHistoryActive:0,
+      fileList: [],
+      stepsActive: 0,
+      stepsHistoryActive: 0,
       stepsData: [],
-      stepsDataHistory:[],
+      stepsDataHistory: [],
       openSh: false,
       activeName: "first",
-      tableData:[],
+      tableData: [],
       user: {
         ownerCode: "",
         ownerName: "",
-        ownerNameJc: ""
+        ownerNameJc: "",
       },
-        upload: {
+      upload: {
         // 是否显示弹出层（用户导入）
         open: false,
         // 弹出层标题（用户导入）
@@ -571,73 +608,139 @@ export default {
         czMoney: undefined,
         flowNo: undefined,
         nodeNo: undefined,
-        isSp: undefined
+        isSp: undefined,
       },
-      endTime:'',
-      startTime:'',
+      endTime: "",
+      startTime: "",
       // 表单参数
       form: {},
       // 表单校验
       rules: {
         djTime: [
-          { required: true, message: "单据日期不能为空", trigger: "blur" }
+          { required: true, message: "单据日期不能为空", trigger: "blur" },
         ],
         htDjNumber: [
-          { required: true, message: "合同编号不能为空", trigger: "blur" }
+          { required: true, message: "合同编号不能为空", trigger: "blur" },
         ],
         startTime: [
-          { required: true, message: "开始时间不能为空", trigger: "blur" }
+          { required: true, message: "开始时间不能为空", trigger: "blur" },
         ],
         endTime: [
-          { required: true, message: "结束时间不能为空", trigger: "blur" }
+          { required: true, message: "结束时间不能为空", trigger: "blur" },
         ],
+        isSp: [{ required: true, message: "请选择是否审批", trigger: "blur" }],
         dayNum: [{ required: true, message: "天数不能为空", trigger: "blur" }],
-        inventoryNum:[{ validator: validatePass, trigger: "blur" }]
-      }
+        inventoryNum: [{ validator: validatePass, trigger: "blur" }],
+      },
     };
   },
   created() {
     this.getList();
-    getInfo().then(response => {
+    getInfo().then((response) => {
       this.user.ownerNameJc = response.user.nickName;
     });
   },
   methods: {
+    //查看审批信息
+    handleSelectFlow(row) {
+      this.stepsActive = parseInt(row.nodeNo) - 1;
+      djFlowList(row.djNumber, 0).then((response) => {
+        this.stepsData = response.rows;
+        //判断是否为空
+        for (let i = 0; i < this.stepsData.length; i++) {
+          if (this.stepsData[i].auditTime == null) {
+            this.stepsData[i].auditTime == "";
+          }
+        }
+        console.log(this.stepsData);
+      });
+      djFlowList(row.djNumber, -1).then((response) => {
+        this.stepsDataHistory = response.rows;
+        this.stepsHistoryActive = this.stepsDataHistory.length;
+        //判断是否为空
+        for (let i = 0; i < this.stepsDataHistory.length; i++) {
+          if (this.stepsDataHistory[i].auditTime == null) {
+            this.stepsDataHistory[i].auditTime == "";
+          }
+        }
+      });
+
+      this.openSh = true;
+    },
+    /** 提交按钮操作 */
+    handleEffect(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认提交选中的数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return effectProjectReport(ids);
+        })
+
+        .then(() => {
+          this.getList();
+          this.msgSuccess("提交成功");
+        })
+        .catch(function () {});
+    },
+    /** 取消提交按钮操作 */
+    handleCancel(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认取消选中的数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return cancelProjectReport(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("取消成功");
+        })
+        .catch(function () {});
+    },
     // 开始时间
     changestarttime(data){
-         this.startTime=data
+         this.startTime=new Date(data).getTime();
         if(this.startTime!=''&&this.endTime!=''){
           if(Number(this.startTime)>Number(this.endTime)){
               this.msgError("日期格式不正确");
-                this.form.startTime=''
+             this.form.startTime=''
               this.form.endTime=''
               this.form.dayNum=''
+              this.startTime=''
+              this.endTime=''
           }else{
+            
             this.form.dayNum=(this.endTime - this.startTime) / (1000*3600*24);
           }
         }
     },
     // 结束时间
     changeendtime(data){
-         this.endTime=data
-       console.log(data)
+         this.endTime=new Date(data).getTime()
+           console.log(this.endTime)
           if(this.startTime!=''&&this.endTime!=''){
           if(Number(this.startTime)>Number(this.endTime)){
               this.msgError("日期格式不正确");
               this.form.startTime=''
               this.form.endTime=''
               this.form.dayNum=''
+              this.startTime=''
+              this.endTime=''
           }else{
             this.form.dayNum=(this.endTime - this.startTime) / (1000*3600*24);
           }
         }
     },
-     handleSuccess(res, file, fileList) {
+    handleSuccess(res, file, fileList) {
       this.fileList = fileList;
       // 上传成功
       console.log(res);
       console.log(fileList);
-
     },
     handleRemove(file, fileList) {
       if (file.id != null && file.id != "" && file.id != undefined) {
@@ -660,7 +763,7 @@ export default {
     /** 查询产值提报列表 */
     getList() {
       this.loading = true;
-      listProjectReport(this.queryParams).then(response => {
+      listProjectReport(this.queryParams).then((response) => {
         this.projectReportList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -669,6 +772,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openSh = false;
       this.reset();
     },
     // 表单重置
@@ -696,7 +800,7 @@ export default {
         remark: undefined,
         isSp: undefined,
         djTitle: undefined,
-        dayNum: undefined
+        dayNum: undefined,
       };
       this.resetForm("form");
     },
@@ -712,17 +816,17 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id);
+      this.ids = selection.map((item) => item.id);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
-        //追加子表必填样式
+    //追加子表必填样式
     starAdd(obj) {
-      if (obj.columnIndex === 2 ) {
+      if (obj.columnIndex === 2) {
         return "star";
       }
     },
-        editTime(i) {
+    editTime(i) {
       if (i < 10) {
         i = "0" + i;
       }
@@ -766,32 +870,32 @@ export default {
     selectData(row) {
       console.log(row);
       this.$nextTick(() => {
-        this.tableData=[];
+        this.tableData = [];
         this.form.htMoney = row.contractMoney;
         this.form.projectName = row.projectName;
         this.form.projectCode = row.projectCode;
         this.form.htDjNumber = row.djNumber;
         getProjectContractChildByNum(row.djNumber).then((response) => {
-          for(let i=0;i<response.rows.length;i++){
-              let info = new Object();
-              info.inventoryId = response.rows[i].id;
-              info.inventoryName = response.rows[i].inventoryName;
-              info.inventoryUnit = response.rows[i].inventoryUnit;
-              info.inventoryPrice = response.rows[i].inventoryPrice;
-              info.inventoryNum="";
-              info.inventoryCheckNum="";
-              info.inventoryMoney="";
-              info.remark = "";
-              this.tableData.push(info);
+          for (let i = 0; i < response.rows.length; i++) {
+            let info = new Object();
+            info.inventoryId = response.rows[i].id;
+            info.inventoryName = response.rows[i].inventoryName;
+            info.inventoryUnit = response.rows[i].inventoryUnit;
+            info.inventoryPrice = response.rows[i].inventoryPrice;
+            info.inventoryNum = "";
+            info.inventoryCheckNum = "";
+            info.inventoryMoney = "";
+            info.remark = "";
+            this.tableData.push(info);
           }
         });
         this.$refs.selectProject.visible = false;
       });
     },
     handleEdit(index, row) {
-      if(!/^[0-9]*$/.test(row.inventoryNum)){
-           this.msgError("请输入数字!");
-            row.inventoryNum=''
+      if (!/^[0-9]*$/.test(row.inventoryNum)) {
+        this.msgError("请输入数字!");
+        row.inventoryNum = "";
       }
       if (
         row.inventoryNum != "" &&
@@ -809,8 +913,8 @@ export default {
     },
     handleChildDelete(index, row) {
       if (row.id != "" && row.id != undefined && row.id != null) {
-        if(this.form.status>0){
-          return
+        if (this.form.status > 0) {
+          return;
         }
         delProjectReportChild(row.id);
         this.tableData.splice(index, 1);
@@ -829,7 +933,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids;
-      getProjectReport(id).then(response => {
+      getProjectReport(id).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改产值提报";
@@ -842,13 +946,13 @@ export default {
       });
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           for (let i = 0; i < this.tableData.length; i++) {
             if (
               this.tableData[i].inventoryId == "" ||
-              this.tableData[i].inventoryNum == ""||
+              this.tableData[i].inventoryNum == "" ||
               this.tableData[i].inventoryMoney == ""
             ) {
               this.msgError("检查明细必填项!");
@@ -873,7 +977,7 @@ export default {
           this.form.fileRows = JSON.stringify(fileList);
           this.form.rows = JSON.stringify(this.tableData);
           if (this.form.id != undefined) {
-            updateProjectReport(this.form).then(response => {
+            updateProjectReport(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -883,7 +987,7 @@ export default {
               }
             });
           } else {
-            addProjectReport(this.form).then(response => {
+            addProjectReport(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -905,17 +1009,17 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           return delProjectReport(ids);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -923,17 +1027,17 @@ export default {
       this.$confirm("是否确认导出所有产值提报数据项?", "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
-        .then(function() {
+        .then(function () {
           return exportProjectReport(queryParams);
         })
-        .then(response => {
+        .then((response) => {
           this.download(response.msg);
         })
-        .catch(function() {});
-    }
-  }
+        .catch(function () {});
+    },
+  },
 };
 </script>
 <style>

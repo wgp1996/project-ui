@@ -158,7 +158,6 @@
             type="text"
             icon="el-icon-edit"
             @click="handleSelectFlow(scope.row)"
-            v-hasPermi="['system:contractGenera:edit']"
             >查看审批</el-button
           >
         </template>

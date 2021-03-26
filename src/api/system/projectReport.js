@@ -17,6 +17,7 @@ export function getProjectReport(id) {
   })
 }
 
+
 // 新增产值提报
 export function addProjectReport(data) {
   return request({
@@ -32,6 +33,49 @@ export function updateProjectReport(data) {
     url: '/system/projectReport',
     method: 'put',
     data: data
+  })
+}
+
+
+// 查询产值提报审核列表
+export function shListProjectReport(query) {
+  return request({
+    url: '/system/projectReport/shList',
+    method: 'get',
+    params: query
+  })
+}
+
+
+// 产值提报审核
+export function examineProjectReport(data) {
+  return request({
+    url: '/system/projectReport/examine',
+    method: 'put',
+    data: data
+  })
+}
+ 
+// 产值提报取消审核
+export function cancelAuditProjectReport(id,nodeNo) {
+  return request({
+    url: '/system/projectReport/cancelAudit/' + id+"/"+nodeNo,
+    method: 'delete'
+  })
+}
+
+// 提交产值提报
+export function effectProjectReport(id) {
+  return request({
+    url: '/system/projectReport/effect/' + id,
+    method: 'delete'
+  })
+}
+// 取消提交产值提报
+export function cancelProjectReport(id) {
+  return request({
+    url: '/system/projectReport/cancel/' + id,
+    method: 'delete'
   })
 }
 
