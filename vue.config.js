@@ -51,7 +51,7 @@ module.exports = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       //target: `https://www.lczhuisu.cn/`,
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost/`,
+        target: `http://pigyty.natappfree.cc/`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

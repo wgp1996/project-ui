@@ -9,6 +9,17 @@ export function listProjectContract(query) {
   })
 }
 
+// 产值报告单查询分包合同列表
+export function listProjectContractByReport(query) {
+  return request({
+    url: '/system/projectContract/reportLlist',
+    method: 'get',
+    params: query
+  })
+}
+
+
+
 
 // 查询分包合同审核列表
 export function shListProjectContract(query) {
