@@ -18,6 +18,17 @@ export function projectTypeTree(query) {
   })
 }
 
+// 查询项目树
+export function projectTree(query) {
+  return request({
+    url: '/system/projectType/projecttreeselect',
+    method: 'get',
+    params: query
+  })
+}
+
+
+
 
 
 // 查询项目分类详细
