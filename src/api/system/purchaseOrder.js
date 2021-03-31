@@ -9,6 +9,60 @@ export function listPurchaseOrder(query) {
   })
 }
 
+
+// 入库单查询采购订单列表
+export function wareSelectList(query) {
+  return request({
+    url: '/system/purchaseOrder/wareSelectList',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询采购订单审核列表
+export function shListPurchaseOrder(query) {
+  return request({
+    url: '/system/purchaseOrder/shList',
+    method: 'get',
+    params: query
+  })
+}
+
+
+// 采购订单审核
+export function examinePurchaseOrder(data) {
+  return request({
+    url: '/system/purchaseOrder/examine',
+    method: 'put',
+    data: data
+  })
+}
+
+// 采购订单取消审核
+export function cancelAuditPurchaseOrder(id,nodeNo) {
+  return request({
+    url: '/system/purchaseOrder/cancelAudit/' + id+"/"+nodeNo,
+    method: 'delete'
+  })
+}
+
+// 提交采购订单
+export function effectPurchaseOrder(id) {
+  return request({
+    url: '/system/purchaseOrder/effect/' + id,
+    method: 'delete'
+  })
+}
+// 取消提交采购订单
+export function cancelPurchaseOrder(id) {
+  return request({
+    url: '/system/purchaseOrder/cancel/' + id,
+    method: 'delete'
+  })
+}
+
+
+
 // 查询采购订单详细
 export function getPurchaseOrder(id) {
   return request({
@@ -34,6 +88,17 @@ export function updatePurchaseOrder(data) {
     data: data
   })
 }
+
+// 审核时修改采购订单
+export function updatePurchaseOrderBySh(data) {
+  return request({
+    url: '/system/purchaseOrder/shEdit',
+    method: 'put',
+    data: data
+  })
+}
+
+
 
 // 删除采购订单
 export function delPurchaseOrder(id) {
