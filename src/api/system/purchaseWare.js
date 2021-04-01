@@ -9,6 +9,49 @@ export function listPurchaseWare(query) {
   })
 }
 
+
+// 查询采购入库审核列表
+export function shListPurchaseWare(query) {
+  return request({
+    url: '/system/purchaseWare/shList',
+    method: 'get',
+    params: query
+  })
+}
+
+
+// 采购入库审核
+export function examinePurchaseWare(data) {
+  return request({
+    url: '/system/purchaseWare/examine',
+    method: 'put',
+    data: data
+  })
+}
+
+// 采购入库取消审核
+export function cancelAuditPurchaseWare(id,nodeNo) {
+  return request({
+    url: '/system/purchaseWare/cancelAudit/' + id+"/"+nodeNo,
+    method: 'delete'
+  })
+}
+
+// 提交采购入库
+export function effectPurchaseWare(id) {
+  return request({
+    url: '/system/purchaseWare/effect/' + id,
+    method: 'delete'
+  })
+}
+// 取消提交采购入库
+export function cancelPurchaseWare(id) {
+  return request({
+    url: '/system/purchaseWare/cancel/' + id,
+    method: 'delete'
+  })
+}
+
 // 查询采购入库详细
 export function getPurchaseWare(id) {
   return request({

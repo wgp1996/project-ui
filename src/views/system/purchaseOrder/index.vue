@@ -1,6 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      label-width="68px"
+    >
       <el-form-item label="单号" prop="djNumber">
         <el-input
           v-model="queryParams.djNumber"
@@ -29,8 +34,16 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -42,7 +55,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:purchaseOrder:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -52,7 +66,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:purchaseOrder:edit']"
-        >修改</el-button>
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -62,9 +77,10 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:purchaseOrder:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
       </el-col>
-           <el-col :span="1.5">
+      <el-col :span="1.5">
         <el-button
           type="primary"
           icon="el-icon-edit"
@@ -93,22 +109,31 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:purchaseOrder:export']"
-        >导出</el-button>
+          >导出</el-button
+        >
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="purchaseOrderList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="purchaseOrderList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="单号" align="center" prop="djNumber" />
-      <el-table-column label="单据日期" align="center" prop="djTime" />
       <el-table-column label="状态" align="center" prop="statusName" />
+      <el-table-column label="单据日期" align="center" prop="djTime" />
       <el-table-column label="供货商编码" align="center" prop="khCode" />
       <el-table-column label="供货商名称" align="center" prop="khName" />
       <el-table-column label="项目编码" align="center" prop="projectCode" />
       <el-table-column label="项目名称" align="center" prop="projectName" />
       <el-table-column label="制单人" align="center" prop="createBy" />
       <el-table-column label="制单日期" align="center" prop="createTime" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -127,9 +152,9 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -141,31 +166,35 @@
       <el-tabs v-model="activeName">
         <el-tab-pane label="基本信息" name="first">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-              <el-row :span="12">
-                <el-col :span="12">
-                  <el-form-item label="" prop="djType">
+            <el-row :span="12">
+              <el-col :span="12">
+                <el-form-item label="" prop="djType">
                   <el-radio-group v-model="form.djType">
                     <el-radio :label="0">直入直出型</el-radio>
                     <el-radio :label="1">库存管理型</el-radio>
                   </el-radio-group>
                 </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="单据日期" prop="djTime">
-                        <el-date-picker
-                          clearable
-                          style="width: 100%"
-                          v-model="form.djTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择单据时间"
-                      ></el-date-picker>
-                    </el-form-item>
-                    </el-col>
-                </el-row>
-              <el-form-item label="供货商" prop="khName">
-              <el-input v-model="form.khName" placeholder="请选择供货商" :disabled="true"/>
-               <el-button
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="单据日期" prop="djTime">
+                  <el-date-picker
+                    clearable
+                    style="width: 100%"
+                    v-model="form.djTime"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="请选择单据时间"
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="供货商" prop="khName">
+              <el-input
+                v-model="form.khName"
+                placeholder="请选择供货商"
+                :disabled="true"
+              />
+              <el-button
                 icon="el-icon-plus"
                 type="primary"
                 style="position: absolute; right: 0px; top: 0px"
@@ -173,8 +202,12 @@
               ></el-button>
             </el-form-item>
             <el-form-item label="隶属项目" prop="projectName">
-               <el-input v-model="form.projectName" placeholder="请选择隶属项目" :disabled="true"/>
-                 <el-button
+              <el-input
+                v-model="form.projectName"
+                placeholder="请选择隶属项目"
+                :disabled="true"
+              />
+              <el-button
                 icon="el-icon-plus"
                 type="primary"
                 style="position: absolute; right: 0px; top: 0px"
@@ -189,8 +222,8 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
-         <el-tab-pane label="采购明细" name="second">
-            <el-row :gutter="10" class="mb8">
+        <el-tab-pane label="采购明细" name="second">
+          <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
               <el-button
                 type="primary"
@@ -201,18 +234,14 @@
               >
             </el-col>
           </el-row>
-              <el-table
+          <el-table
             :data="tableData"
             class="tb-edit"
             style="width: 100%"
             highlight-current-row
             :header-cell-class-name="starAdd"
           >
-            <el-table-column
-              prop="goodsCode"
-              label="物资编码"
-              width="200"
-            >
+            <el-table-column prop="goodsCode" label="物资编码" width="200">
               <template scope="scope">
                 <el-input
                   :disabled="true"
@@ -233,31 +262,29 @@
                 ></el-input>
               </template>
             </el-table-column>
-            
+
             <el-table-column prop="goodsNum" label="数量" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
                   v-model="scope.row.goodsNum"
-             
                   placeholder="请输入数量"
                   @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
                 <!-- <span>{{ scope.row.goodsNum }}</span> -->
               </template>
             </el-table-column>
-             <el-table-column prop="goodsPrice" label="单价" width="120">
+            <el-table-column prop="goodsPrice" label="单价" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
                   v-model="scope.row.goodsPrice"
-                  
                   placeholder="单价"
-                    @change="handleEdit(scope.$index, scope.row)"
+                  @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
               </template>
             </el-table-column>
-             <el-table-column prop="goodsSpPrice" label="审批单价" width="120">
+            <el-table-column prop="goodsSpPrice" label="审批单价" width="120">
               <template scope="scope">
                 <el-input
                   :disabled="true"
@@ -268,7 +295,7 @@
                 ></el-input>
               </template>
             </el-table-column>
-         
+
             <el-table-column prop="goodsMoney" label="金额" width="120">
               <template scope="scope">
                 <el-input
@@ -279,7 +306,7 @@
                 ></el-input>
               </template>
             </el-table-column>
-             <el-table-column prop="goodsGg" label="规格" width="120">
+            <el-table-column prop="goodsGg" label="规格" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
@@ -289,7 +316,7 @@
                 ></el-input>
               </template>
             </el-table-column>
-              <el-table-column prop="goodsDw" label="单位" width="120">
+            <el-table-column prop="goodsDw" label="单位" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
@@ -299,7 +326,7 @@
                 ></el-input>
               </template>
             </el-table-column>
-      
+
             <el-table-column label="操作">
               <template scope="scope">
                 <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
@@ -313,7 +340,7 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-          <el-tab-pane label="附件信息" name="three">
+        <el-tab-pane label="附件信息" name="three">
           <el-row :gutter="15" class="mb8">
             <el-col :span="1.5">
               <el-upload
@@ -346,36 +373,40 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-     <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
+    <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
       <el-tabs type="border-card">
         <el-tab-pane label="最新审批">
-            <el-steps :space="100" direction="vertical" :active="stepsActive">
-              <el-step
-                :status="item.stepStatus"
-                :title="
-                  item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
-                "
-                :description="item.auditInfo"
-                v-for="(item, index) in stepsData"
-                :key="index"
-              ></el-step>
-            </el-steps>
+          <el-steps :space="100" direction="vertical" :active="stepsActive">
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsData"
+              :key="index"
+            ></el-step>
+          </el-steps>
         </el-tab-pane>
         <el-tab-pane label="历史审批">
-              <el-steps :space="100" direction="vertical" :active="stepsHistoryActive">
-                <el-step
-                  :status="item.stepStatus"
-                  :title="
-                    item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
-                  "
-                  :description="item.auditInfo"
-                  v-for="(item, index) in stepsDataHistory"
-                  :key="index"
-                ></el-step>
-              </el-steps>
+          <el-steps
+            :space="100"
+            direction="vertical"
+            :active="stepsHistoryActive"
+          >
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsDataHistory"
+              :key="index"
+            ></el-step>
+          </el-steps>
         </el-tab-pane>
       </el-tabs>
- 
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel" type="danger">关 闭</el-button>
       </div>
@@ -391,7 +422,7 @@
       ref="selectSupplier"
       @selectDataSupplie="selectDataSupplie"
     ></supplier-select>
-      <!-- 字表选项 -->
+    <!-- 字表选项 -->
     <child-select
       v-if="selectGoodsDialogchild"
       ref="selectchild"
@@ -401,32 +432,41 @@
 </template>
 
 <script>
-import { listPurchaseOrder, getPurchaseOrder, delPurchaseOrder, addPurchaseOrder, updatePurchaseOrder, exportPurchaseOrder,
+import {
+  listPurchaseOrder,
+  getPurchaseOrder,
+  delPurchaseOrder,
+  addPurchaseOrder,
+  updatePurchaseOrder,
+  exportPurchaseOrder,
   effectPurchaseOrder,
-  cancelPurchaseOrder
+  cancelPurchaseOrder,
 } from "@/api/system/purchaseOrder";
 import goodsSelect from "./goodsSelect";
 import supplierSelect from "./supplierSelect";
 import childSelect from "./childSelect";
 import { djFlowList } from "@/api/system/flowInfo";
-import { listPurchaseOrderChild, delPurchaseOrderChild } from "@/api/system/purchaseOrderChild";
-import { getToken } from "@/utils/auth";
 import {
-  systemFileList,  delFileInfo,
-} from "@/api/system/projectInfo";
+  listPurchaseOrderChild,
+  delPurchaseOrderChild,
+} from "@/api/system/purchaseOrderChild";
+import { getToken } from "@/utils/auth";
+import { systemFileList, delFileInfo } from "@/api/system/projectInfo";
 export default {
   name: "PurchaseOrder",
   components: {
-    goodsSelect, supplierSelect,childSelect
+    goodsSelect,
+    supplierSelect,
+    childSelect,
   },
   data() {
     return {
       stepsActive: 0,
-      stepsHistoryActive:0,
+      stepsHistoryActive: 0,
       stepsData: [],
-      stepsDataHistory:[],
+      stepsDataHistory: [],
       openSh: false,
-       fileList: [],
+      fileList: [],
       upload: {
         // 是否显示弹出层（用户导入）
         open: false,
@@ -441,11 +481,11 @@ export default {
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/common/upload",
       },
-      tableData:[],
+      tableData: [],
       selectProjectDialog: false,
-      selectSupplierSelectDialog:false,
-      selectGoodsDialogchild:false,
-      activeName:'first',
+      selectSupplierSelectDialog: false,
+      selectGoodsDialogchild: false,
+      activeName: "first",
       // 遮罩层
       loading: true,
       // 选中数组
@@ -476,28 +516,34 @@ export default {
         projectName: undefined,
         flowNo: undefined,
         nodeNo: undefined,
-        isSp: undefined
+        isSp: undefined,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        projectName:[{required:true,message:"项目名称不能为空", trigger: "blur"}],
-        khName:[{required:true,message:"供货商不能为空", trigger: "blur"}],
-        isSp:[{required:true,message:"请选择是否审批", trigger: "blur"}],
-        djType:[{required:true,message:"请选择类型", trigger: "blur"}],
-        djTime:[{required:true,message:"请选择单据日期", trigger: "blur"}]
-      }
+        projectName: [
+          { required: true, message: "项目名称不能为空", trigger: "blur" },
+        ],
+        khName: [
+          { required: true, message: "供货商不能为空", trigger: "blur" },
+        ],
+        isSp: [{ required: true, message: "请选择是否审批", trigger: "blur" }],
+        djType: [{ required: true, message: "请选择类型", trigger: "blur" }],
+        djTime: [
+          { required: true, message: "请选择单据日期", trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
     this.getList();
   },
   methods: {
-     //查看审批信息
+    //查看审批信息
     handleSelectFlow(row) {
       this.stepsActive = parseInt(row.nodeNo) - 1;
-      djFlowList(row.djNumber,0).then((response) => {
+      djFlowList(row.djNumber, 0).then((response) => {
         this.stepsData = response.rows;
         //判断是否为空
         for (let i = 0; i < this.stepsData.length; i++) {
@@ -507,9 +553,9 @@ export default {
         }
         console.log(this.stepsData);
       });
-      djFlowList(row.djNumber,-1).then((response) => {
+      djFlowList(row.djNumber, -1).then((response) => {
         this.stepsDataHistory = response.rows;
-        this.stepsHistoryActive=this.stepsDataHistory.length;
+        this.stepsHistoryActive = this.stepsDataHistory.length;
         //判断是否为空
         for (let i = 0; i < this.stepsDataHistory.length; i++) {
           if (this.stepsDataHistory[i].auditTime == null) {
@@ -517,7 +563,7 @@ export default {
           }
         }
       });
-      
+
       this.openSh = true;
     },
     /** 提交按钮操作 */
@@ -555,7 +601,7 @@ export default {
         })
         .catch(function () {});
     },
-      handleSuccess(res, file, fileList) {
+    handleSuccess(res, file, fileList) {
       this.fileList = fileList;
       // 上传成功
       console.log(res);
@@ -580,21 +626,21 @@ export default {
     /** 查询采购订单列表 */
     getList() {
       this.loading = true;
-      listPurchaseOrder(this.queryParams).then(response => {
+      listPurchaseOrder(this.queryParams).then((response) => {
         this.purchaseOrderList = response.rows;
-        for(var i=0;i< this.purchaseOrderList.length;i++){
-             if(this.purchaseOrderList[i].isSp==0){
-                 this.purchaseOrderList[i].isSp="未启用"
-             }else{
-                this.purchaseOrderList[i].isSp="已启用"
-             }
+        for (var i = 0; i < this.purchaseOrderList.length; i++) {
+          if (this.purchaseOrderList[i].isSp == 0) {
+            this.purchaseOrderList[i].isSp = "未启用";
+          } else {
+            this.purchaseOrderList[i].isSp = "已启用";
+          }
         }
-       
+
         this.total = response.total;
         this.loading = false;
       });
     },
-        editTime(i) {
+    editTime(i) {
       if (i < 10) {
         i = "0" + i;
       }
@@ -635,9 +681,14 @@ export default {
       }
       return year + "-" + month + "-" + day;
     },
-      //追加子表必填样式
+    //追加子表必填样式
     starAdd(obj) {
-      if (obj.columnIndex === 0||obj.columnIndex === 1||obj.columnIndex === 2||obj.columnIndex === 3) {
+      if (
+        obj.columnIndex === 0 ||
+        obj.columnIndex === 1 ||
+        obj.columnIndex === 2 ||
+        obj.columnIndex === 3
+      ) {
         return "star";
       }
     },
@@ -667,43 +718,42 @@ export default {
         updateTime: undefined,
         remark: undefined,
         isSp: 0,
-        djType:0,
+        djType: 0,
       };
       this.resetForm("form");
-       this.tableData = [];
+      this.tableData = [];
     },
-      /** 选择供货商 */
+    /** 选择供货商 */
     supplierSelect() {
       this.selectSupplierSelectDialog = true;
       this.$nextTick(() => {
-        console.log(this.$refs.selectSupplier)
+        console.log(this.$refs.selectSupplier);
         this.$refs.selectSupplier.visible1 = true;
       });
     },
-        // 供货商产地数据
-     selectDataSupplie(row) {
-       console.log(row);
+    // 供货商产地数据
+    selectDataSupplie(row) {
+      console.log(row);
       this.$nextTick(() => {
-        this.form.khCode=row.khCode
-        this.form.khName=row.khName
+        this.form.khCode = row.khCode;
+        this.form.khName = row.khName;
         this.$refs.selectSupplier.visible1 = false;
       });
     },
-       /** 选择项目 */
+    /** 选择项目 */
     projectSelect() {
       this.selectProjectDialog = true;
       this.$nextTick(() => {
-         console.log(this.$refs.selectProject)
+        console.log(this.$refs.selectProject);
         this.$refs.selectProject.visible = true;
       });
     },
-        /** 选择项目产地数据 */
+    /** 选择项目产地数据 */
     selectData(row) {
-   
       this.$nextTick(() => {
-         console.log(this.$refs.selectProject)
-        this.form.projectName=row.projectName
-         this.form.projectCode=row.projectCode
+        console.log(this.$refs.selectProject);
+        this.form.projectName = row.projectName;
+        this.form.projectCode = row.projectCode;
         this.$refs.selectProject.visible = false;
       });
     },
@@ -712,27 +762,28 @@ export default {
         let goodsInfo = new Object();
         goodsInfo.goodsName = row.goodsName;
         goodsInfo.goodsCode = row.goodsCode;
-        goodsInfo.goodsDw   = row.goodsDw;
-        goodsInfo.goodsGg   = row.goodsGg;
-        goodsInfo.goodsNum   = '';
-        goodsInfo.goodsPrice   = '';
-        goodsInfo.goodsSpPrice   = '';
-        goodsInfo.goodsMoney   = '';
-    
+        goodsInfo.goodsDw = row.goodsDw;
+        goodsInfo.goodsGg = row.goodsGg;
+        goodsInfo.goodsNum = "";
+        goodsInfo.goodsPrice = "";
+        goodsInfo.goodsSpPrice = "";
+        goodsInfo.goodsMoney = "";
+
         this.tableData.push(goodsInfo);
         this.$refs.selectchild.visible2 = false;
       });
     },
-    handleEdit(index,row){
-        if(row.goodsPrice!=''&&row.goodsPrice!==undefined){
-           row.goodsSpPrice=row.goodsPrice;
-           row.goodsMoney=parseFloat(row.goodsSpPrice)*parseFloat(row.goodsNum)
-        }else{
-          // this.msgError("检查明细必填项!");
-        }
+    handleEdit(index, row) {
+      if (row.goodsPrice != "" && row.goodsPrice !== undefined) {
+        row.goodsSpPrice = row.goodsPrice;
+        row.goodsMoney =
+          parseFloat(row.goodsSpPrice) * parseFloat(row.goodsNum);
+      } else {
+        // this.msgError("检查明细必填项!");
+      }
     },
     // 删除字表信息
-      handleChildDelete(index, row) {
+    handleChildDelete(index, row) {
       if (row.id != "" && row.id != undefined && row.id != null) {
         delPurchaseOrderChild(row.id);
         this.tableData.splice(index, 1);
@@ -741,7 +792,7 @@ export default {
       }
       console.log(index, row);
     },
-        /** 操作 */
+    /** 操作 */
     goodsSelectchild() {
       this.selectGoodsDialogchild = true;
       this.$nextTick(() => {
@@ -760,9 +811,9 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!=1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.id);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -773,39 +824,38 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
-      getPurchaseOrder(id).then(response => {
+      const id = row.id || this.ids;
+      getPurchaseOrder(id).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改采购订单";
         listPurchaseOrderChild(this.form.djNumber).then((response) => {
           this.tableData = response.rows;
         });
-         systemFileList(this.form.djNumber).then((response) => {
+        systemFileList(this.form.djNumber).then((response) => {
           this.fileList = response.rows;
         });
       });
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
-          if(this.tableData.length==0){
-                  this.msgError("检查明细必填项!");
-                  return;
-          }else{
-                for (let i = 0; i < this.tableData.length; i++) {
-                  if (
-                    this.tableData[i].goodsPrice == "" ||
-                    this.tableData[i].goodsNum == ""
-                  ) {
-                    this.msgError("检查明细必填项!");
-                    return;
-                  }
-               }
-
+          if (this.tableData.length == 0) {
+            this.msgError("检查明细必填项!");
+            return;
+          } else {
+            for (let i = 0; i < this.tableData.length; i++) {
+              if (
+                this.tableData[i].goodsPrice == "" ||
+                this.tableData[i].goodsNum == ""
+              ) {
+                this.msgError("检查明细必填项!");
+                return;
+              }
+            }
           }
-            let fileList = [];
+          let fileList = [];
           console.log(this.fileList);
           for (let i = 0; i < this.fileList.length; i++) {
             if (
@@ -823,7 +873,7 @@ export default {
           this.form.fileRows = JSON.stringify(fileList);
           this.form.rows = JSON.stringify(this.tableData);
           if (this.form.id != undefined) {
-            updatePurchaseOrder(this.form).then(response => {
+            updatePurchaseOrder(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -833,7 +883,7 @@ export default {
               }
             });
           } else {
-            addPurchaseOrder(this.form).then(response => {
+            addPurchaseOrder(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -849,31 +899,41 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$confirm('是否确认删除采购订单编号为"' + ids + '"的数据项?', "警告", {
+      this.$confirm(
+        '是否确认删除采购订单编号为"' + ids + '"的数据项?',
+        "警告",
+        {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+          type: "warning",
+        }
+      )
+        .then(function () {
           return delPurchaseOrder(ids);
-        }).then(() => {
+        })
+        .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        })
+        .catch(function () {});
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有采购订单数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+      this.$confirm("是否确认导出所有采购订单数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
           return exportPurchaseOrder(queryParams);
-        }).then(response => {
+        })
+        .then((response) => {
           this.download(response.msg);
-        }).catch(function() {});
-    }
-  }
+        })
+        .catch(function () {});
+    },
+  },
 };
 </script>
 <style >

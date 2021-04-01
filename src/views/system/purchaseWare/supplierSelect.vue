@@ -2,30 +2,6 @@
     <el-dialog :close-on-click-modal="false" :title="title"
     :visible.sync="visible1" width="700px">
     <el-row :gutter="20">
-     <!--部门数据-->
-      <!-- <el-col :span="4" :xs="24">
-        <div class="head-container">
-          <el-input
-            v-model="deptName"
-            placeholder="请输入部门名称"
-            clearable
-            size="small"
-            prefix-icon="el-icon-search"
-            style="margin-bottom: 20px"
-          />
-        </div>
-        <div class="head-container">
-          <el-tree
-            :data="goodsTypeList"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
-            default-expand-all
-            @node-click="handleNodeClick"
-          />
-        </div>
-      </el-col> -->
      <el-col :span="24" :xs="24">
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="100px">
       <el-form-item label="供货商名称" prop="khName">
@@ -46,13 +22,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-       <!-- <el-form-item label="商品分类" prop="goodsTypePid">
-          <treeselect style="width:200px" v-model="queryParams.goodsType" :options="goodsTypeOptions" :normalizer="normalizer" placeholder="请选择商品分类父级" />
-        </el-form-item> -->
+      
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-        <!-- <el-button icon="el-icon-check" type="warning" size="mini" @click="selectDataMore">批量选择</el-button> -->
       </el-form-item>
     </el-form>
   
@@ -87,9 +60,7 @@
 
 <script>
 // import { leaseStallList } from "@/api/system/stall";
-import { listEnginnerApplyChild,getEnginnerApplyChild, delEnginnerApplyChild, addEnginnerApplyChild, updateEnginnerApplyChild, exportEnginnerApplyChild } from "@/api/system/enginnerApplyChild";
-import { listEnginnerDept} from "@/api/system/enginnerDept";
-import { goodsTypeTree,listGoodsType} from "@/api/system/goodsType";
+import { listGoodsType} from "@/api/system/goodsType";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {

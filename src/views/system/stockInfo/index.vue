@@ -27,8 +27,8 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item> -->
-      <!-- <el-form-item label="物料名称" prop="goodsName">
+      </el-form-item> --> 
+     <el-form-item label="物料名称" prop="goodsName">
         <el-input
           v-model="queryParams.goodsName"
           placeholder="请输入物料名称"
@@ -36,7 +36,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -44,35 +44,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <!-- <el-col :span="1.5">
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:stockInfo:add']"
-        >新增</el-button>
-      </el-col> -->
-      <!-- <el-col :span="1.5">
-        <el-button
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:stockInfo:edit']"
-        >修改</el-button>
-      </el-col> -->
-      <!-- <el-col :span="1.5">
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:stockInfo:remove']"
-        >删除</el-button>
-      </el-col> -->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -88,13 +59,11 @@
       <el-table-column type="selection" width="55" align="center" />
       <!-- <el-table-column label="ID" align="center" prop="id" /> -->
       <el-table-column label="单号" align="center" prop="djNumber" />
-      <!-- <el-table-column label="项目编码" align="center" prop="projectCode" /> -->
       <el-table-column label="项目名称" align="center" prop="projectName" />
       <!-- <el-table-column label="仓库编码" align="center" prop="storeCode" /> -->
       <!-- <el-table-column label="仓库名称" align="center" prop="storeName" /> -->
-      <!-- <el-table-column label="单据日期" align="center" prop="djTime" /> -->
-     
-      <el-table-column label="物料编码" align="center" prop="goodsCode" />
+      <el-table-column label="单据日期" align="center" prop="djTime" />
+      <!-- <el-table-column label="物料编码" align="center" prop="goodsCode" /> -->
       <el-table-column label="物料名称" align="center" prop="goodsName" />
       <el-table-column label="单位" align="center" prop="goodsDw" />
       <el-table-column label="规格" align="center" prop="goodsGg" />
@@ -102,25 +71,6 @@
       <el-table-column label="单价" align="center" prop="goodsPrice" />
       <el-table-column label="金额" align="center" prop="goodsMoney" />
        <el-table-column label="实际入库时间" align="center" prop="rkTime" />
-
-      <!-- <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:stockInfo:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:stockInfo:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column> -->
     </el-table>
     
     <pagination
@@ -233,7 +183,7 @@ export default {
         const { columns, data } = param;
         const sums = [];
         columns.forEach((column, index) => {
-          if (index === 6) {
+          if (index === 7) {
             sums[index] = '合计';
             return;
           }
@@ -249,7 +199,8 @@ export default {
               }
             }, 0);
              if(index==7){
-                sums[7] += '个';
+                //sums[7] += '';
+                sums[index] = '合计:';
              }else{
                 sums[index] += '元';
              }

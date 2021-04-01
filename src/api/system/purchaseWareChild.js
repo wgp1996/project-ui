@@ -1,11 +1,10 @@
 import request from '@/utils/request'
 
 // 查询采购入库子表列表
-export function listPurchaseWareChild(query) {
+export function listPurchaseWareChild(djNumber) {
   return request({
-    url: '/system/purchaseWareChild/list',
-    method: 'get',
-    params: query
+    url: '/system/purchaseWareChild/list?djNumber='+djNumber,
+    method: 'get'
   })
 }
 

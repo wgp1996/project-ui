@@ -4,7 +4,7 @@
       :model="queryParams"
       ref="queryForm"
       :inline="true"
-      label-width="80px"
+      label-width="120px"
     >
       <el-form-item label="单号" prop="djNumber">
         <el-input
@@ -24,10 +24,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="合同乙方" prop="khName">
+      <el-form-item label="供应商名称" prop="khName">
         <el-input
           v-model="queryParams.khName"
-          placeholder="请输入乙方名称"
+          placeholder="请输入供应商名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -56,7 +56,7 @@
           size="mini"
           :disabled="single"
           @click="handleEffect"
-          v-hasPermi="['system:projectContract:examine']"
+          v-hasPermi="['system:purchaseWare:examine']"
           >审核</el-button
         >
       </el-col>
@@ -67,7 +67,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleCancel"
-          v-hasPermi="['system:projectContract:cancelAudit']"
+          v-hasPermi="['system:purchaseWare:cancelAudit']"
           >取消审核</el-button
         >
       </el-col>
@@ -78,19 +78,17 @@
     </el-tabs>
     <el-table
       v-loading="loading"
-      :data="projectContractList"
+      :data="purchaseWareList"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="单据状态" align="center" prop="statusName" />
       <el-table-column label="单号" align="center" prop="djNumber" />
-      <el-table-column label="合约名称" align="center" prop="contractName" />
-      <el-table-column label="合约编号" align="center" prop="contractCode" />
-      <el-table-column label="项目名称" align="center" prop="projectName" />
+      <el-table-column label="状态" align="center" prop="statusName" />
+      <el-table-column label="单据日期" align="center" prop="djTime" />
+      <el-table-column label="供货商编码" align="center" prop="khCode" />
+      <el-table-column label="供货商名称" align="center" prop="khName" />
       <el-table-column label="项目编码" align="center" prop="projectCode" />
-      <el-table-column label="乙方" align="center" prop="khName" />
-      <el-table-column label="联系电话" align="center" prop="lxrPhone" />
-      <el-table-column label="合约金额" align="center" prop="contractMoney" />
+      <el-table-column label="项目名称" align="center" prop="projectName" />
       <el-table-column label="制单人" align="center" prop="createBy" />
       <el-table-column
         label="操作"
@@ -127,33 +125,37 @@
     <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
       <el-tabs type="border-card">
         <el-tab-pane label="最新审批">
-            <el-steps :space="100" direction="vertical" :active="stepsActive">
-              <el-step
-                :status="item.stepStatus"
-                :title="
-                  item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
-                "
-                :description="item.auditInfo"
-                v-for="(item, index) in stepsData"
-                :key="index"
-              ></el-step>
-            </el-steps>
+          <el-steps :space="100" direction="vertical" :active="stepsActive">
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsData"
+              :key="index"
+            ></el-step>
+          </el-steps>
         </el-tab-pane>
         <el-tab-pane label="历史审批">
-              <el-steps :space="100" direction="vertical" :active="stepsHistoryActive">
-                <el-step
-                  :status="item.stepStatus"
-                  :title="
-                    item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
-                  "
-                  :description="item.auditInfo"
-                  v-for="(item, index) in stepsDataHistory"
-                  :key="index"
-                ></el-step>
-              </el-steps>
+          <el-steps
+            :space="100"
+            direction="vertical"
+            :active="stepsHistoryActive"
+          >
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsDataHistory"
+              :key="index"
+            ></el-step>
+          </el-steps>
         </el-tab-pane>
       </el-tabs>
- 
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel" type="danger">关 闭</el-button>
       </div>
@@ -180,185 +182,123 @@
         <el-button @click="cancel" type="danger">关 闭</el-button>
       </div>
     </el-dialog>
-    <!-- 添加或修改分包合同对话框 -->
+    <!-- 添加或修改入库单对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-tabs v-model="activeName">
-       <el-tab-pane label="基础信息" name="first">
-          <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="合约编号" prop="contractCode">
+        <el-tab-pane label="基本信息" name="first">
+          <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+            <el-form-item label="单号" prop="djNumber">
               <el-input
-                v-model="form.contractCode"
-                placeholder="请输入合约编号"
+                v-model="form.djNumber"
+                placeholder="自动生成"
+                :disabled="true"
               />
             </el-form-item>
-                   <el-form-item label="合约名称" prop="contractName">
+            <el-form-item label="供货商" prop="khName">
               <el-input
-                v-model="form.contractName"
-                placeholder="请输入合约名称"
+                v-model="form.khName"
+                placeholder="供货商"
+                :disabled="true"
               />
             </el-form-item>
-            <el-form-item
-              label="选择项目"
-              prop="projectCode"
-              style="width: 80%; position: relative"
-            >
+            <el-form-item label="隶属项目" prop="projectName">
               <el-input
                 v-model="form.projectName"
-                :readonly="true"
-                placeholder="请选择项目"
-              />
-              <el-button
-                icon="el-icon-plus"
-                type="primary"
-                style="position: absolute; right: -50px; top: 0px"
-              ></el-button>
-            </el-form-item>
-            <el-form-item label="合同乙方" prop="khCode">
-              <!-- <el-input v-model="form.projectJpersonCode" placeholder="请输入乙方编码" /> -->
-              <el-select
-                v-model="form.khCode"
-                placeholder="请选择合同乙方"
-                filterable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in personList"
-                  :key="item.khCode"
-                  :label="item.khName"
-                  :value="item.khCode"
-                >
-                  <span style="float: left; width: 50%">{{ item.khCode }}</span>
-                  <span style="float: left; width: 50%">{{ item.khName }}</span>
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="工种" prop="projectTypeWork">
-              <el-input
-                v-model="form.projectTypeWork"
-                placeholder="请输入工种"
+                placeholder="隶属项目"
+                :disabled="true"
               />
             </el-form-item>
-            
-            <el-form-item label="启用审批" prop="isSp">
-              <el-radio-group v-model="form.isSp">
-                <el-radio :label="1">启用</el-radio>
-                <el-radio :label="0">不启用</el-radio>
-              </el-radio-group>
+            <el-form-item label="单据日期" prop="djTime">
+              <el-input v-model="form.djTime" placeholder="请输入单据日期" />
             </el-form-item>
-            <div class="clearfix">
-              <el-form-item
-                label="联系电话"
-                prop="lxrPhone"
-                style="width: 46%; float: left"
-              >
-                <el-input
-                  v-model="form.lxrPhone"
-                  placeholder="请输入联系电话"
-                />
-              </el-form-item>
-              <el-form-item
-                label="合约金额"
-                prop="contractMoney"
-                style="width: 46%; float: right"
-              >
-                <el-input
-                  v-model="form.contractMoney"
-                  placeholder="请输入合约金额"
-                />
-              </el-form-item>
-            </div>
-
-         <el-form-item label="审核意见" prop="remark">
-          <el-input
-            type="textarea"
-            :rows="3"
-            v-model="form.remark"
-            placeholder="请输入备注"
-          />
-        </el-form-item>
           </el-form>
         </el-tab-pane>
-         <el-tab-pane label="合同清单明细" name="second">
-            <el-table
-              :data="tableData"
-              class="tb-edit"
-              style="width: 100%"
-              highlight-current-row
-            >
-              <el-table-column prop="inventoryName" label="分部分项内容" width="200">
-                <template scope="scope">
-                  <el-input
-                    :disabled="true"
-                    size="small"
-                    v-model="scope.row.inventoryName"
-                    placeholder="分部分项内容"
-                  ></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column prop="inventoryUnit" label="单位" width="120">
-                <template scope="scope">
-                  <el-input
-                    :disabled="true"
-                    size="small"
-                    v-model="scope.row.inventoryUnit" :readonly="true"
-                    placeholder="请输入单位"
-                  ></el-input>
-                </template>
-              </el-table-column>
-               <el-table-column prop="inventoryNum" label="数量" width="120">
+        <el-tab-pane label="入库明细" name="second">
+          <el-table
+            :data="tableData"
+            class="tb-edit"
+            style="width: 100%"
+            highlight-current-row
+          >
+            <el-table-column prop="goodsCode" label="物资编码" width="120">
               <template scope="scope">
-              <el-input
-                size="small"
-                v-model="scope.row.inventoryNum"
-                placeholder="请输入数量"
-                :onkeyup="
-                  (scope.row.inventoryNum = scope.row.inventoryNum.replace(
-                    /[^\d.]/g,
-                    ''
-                  ))
-                "
-                @change="handleEdit(scope.$index, scope.row)"
-              ></el-input>
-            </template>
-               </el-table-column>
-                   <el-table-column
-                prop="inventoryPrice"
-                label="单价"
-                width="120"
-              >
-                <template scope="scope">
-                  <el-input
-                    size="small"
-                    v-model="scope.row.inventoryPrice" :readonly="true"
-                    placeholder="单价信息"
-                  ></el-input>
-                </template>
-              </el-table-column>
-                   <el-table-column
-                prop="inventoryMoney"
-                label="金额"
-                width="120"
-              >
-                <template scope="scope">
-                  <el-input
-                    size="small"
-                    v-model="scope.row.inventoryMoney"
-                    placeholder="金额信息" :readonly="true"
-                  ></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column label="备注" width="150" prop="remark">
-                <template scope="scope">
-                  <el-input
-                    size="small"
-                    v-model="scope.row.remark"
-                    placeholder="请输入备注"
-                  ></el-input>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-        <el-tab-pane label="合同附件" name="two">
+                <el-input
+                  :disabled="true"
+                  size="small"
+                  v-model="scope.row.goodsCode"
+                  placeholder="物资编码"
+                ></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="orderDjType" label="订单类型" width="120">
+              <template scope="scope">
+                <el-input
+                  :disabled="true"
+                  size="small"
+                  v-model="scope.row.orderDjType"
+                  :placeholder="saveType"
+                ></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="goodsName" label="物资名称" width="120">
+              <template scope="scope">
+                <el-input
+                  :disabled="true"
+                  size="small"
+                  v-model="scope.row.goodsName"
+                  :readonly="true"
+                  placeholder="请输入物资名称"
+                ></el-input>
+              </template>
+            </el-table-column>
+
+            <el-table-column prop="goodsNum" label="订单数量" width="120">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.goodsNum"
+                  :readonly="true"
+                  placeholder="请输入数量"
+                  @change="handleEdit(scope.$index, scope.row)"
+                ></el-input>
+                <!-- <span>{{ scope.row.goodsNum }}</span> -->
+              </template>
+            </el-table-column>
+            <el-table-column prop="goodsDhNum" label="到货数量" width="120">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.goodsDhNum"
+                  :readonly="true"
+                  placeholder="请输入数量"
+                  @change="handleEdit(scope.$index, scope.row)"
+                ></el-input>
+                <!-- <span>{{ scope.row.goodsNum }}</span> -->
+              </template>
+            </el-table-column>
+            <el-table-column prop="goodsGg" label="规格" width="120">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.goodsGg"
+                  placeholder="金额信息"
+                  :readonly="true"
+                ></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="goodsDw" label="单位" width="120">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.goodsDw"
+                  placeholder="单位"
+                  :readonly="true"
+                ></el-input>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="附件信息" name="two">
           <el-row :gutter="15" class="mb8">
             <el-col :span="1.5">
               <el-upload
@@ -384,7 +324,6 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-        
       </el-tabs>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">关 闭</el-button>
@@ -395,26 +334,26 @@
 
 <script>
 import {
-  shListProjectContract,
-  getProjectContract,
-  examineProjectContract,
-  cancelAuditProjectContract,
-} from "@/api/system/projectContract";
-import {getProjectContractChildByNum} from "@/api/system/projectContractChild"
-import { systemFileList, getProjectInfoByCode } from "@/api/system/projectInfo";
+  shListPurchaseWare,
+  getPurchaseWare,
+  examinePurchaseWare,
+  cancelAuditPurchaseWare,
+} from "@/api/system/purchaseWare";
+import { listPurchaseWareChild } from "@/api/system/purchaseWareChild";
+import { systemFileList } from "@/api/system/projectInfo";
 import { djFlowList } from "@/api/system/flowInfo";
 export default {
-  name: "ProjectContract",
+  name: "PurchaseWare",
   data() {
     return {
-      tableData:[],
+      tableData: [],
       showSh: true,
       showCancel: false,
       statusTabs: "one",
       stepsActive: 0,
-      stepsHistoryActive:0,
+      stepsHistoryActive: 0,
       stepsData: [],
-      stepsDataHistory:[],
+      stepsDataHistory: [],
       activeName: "first",
       fileList: [],
       selectProjectDialog: false,
@@ -431,8 +370,8 @@ export default {
       // 总条数
       total: 0,
       personList: [],
-      // 分包合同表格数据
-      projectContractList: [],
+      // 入库单表格数据
+      purchaseWareList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -490,21 +429,21 @@ export default {
       console.log(res);
       console.log(fileList);
     },
-    hadelOpenFile(file){
-        window.open(file.url);
+    hadelOpenFile(file) {
+      window.open(file.url);
     },
     handleRemove(file, fileList) {
-      return
+      return;
       //this.fileList = fileList;
     },
     submitUpload() {
       this.$refs.upload.submit();
     },
-    /** 查询分包合同列表 */
+    /** 查询入库单列表 */
     getList() {
       this.loading = true;
-      shListProjectContract(this.queryParams).then((response) => {
-        this.projectContractList = response.rows;
+      shListPurchaseWare(this.queryParams).then((response) => {
+        this.purchaseWareList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -562,7 +501,7 @@ export default {
     },
     handleSelectFlow(row) {
       this.stepsActive = parseInt(row.nodeNo) - 1;
-      djFlowList(row.djNumber,0).then((response) => {
+      djFlowList(row.djNumber, 0).then((response) => {
         this.stepsData = response.rows;
         //判断是否为空
         for (let i = 0; i < this.stepsData.length; i++) {
@@ -572,9 +511,9 @@ export default {
         }
         console.log(this.stepsData);
       });
-      djFlowList(row.djNumber,-1).then((response) => {
+      djFlowList(row.djNumber, -1).then((response) => {
         this.stepsDataHistory = response.rows;
-        this.stepsHistoryActive=this.stepsDataHistory.length;
+        this.stepsHistoryActive = this.stepsDataHistory.length;
         //判断是否为空
         for (let i = 0; i < this.stepsDataHistory.length; i++) {
           if (this.stepsDataHistory[i].auditTime == null) {
@@ -582,7 +521,7 @@ export default {
           }
         }
       });
-      
+
       this.openSh = true;
     },
     handleEffect(row) {
@@ -595,16 +534,23 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id;
-      getProjectContract(id).then((response) => {
+      getPurchaseWare(id).then((response) => {
         this.form = response.data;
         systemFileList(this.form.djNumber).then((response) => {
           this.fileList = response.rows;
         });
-        getProjectContractChildByNum(this.form.djNumber).then((response) => {
+        listPurchaseWareChild(this.form.djNumber).then((response) => {
           this.tableData = response.rows;
+          for (let i = 0; i < this.tableData.length; i++) {
+            if (this.tableData[i].orderDjType == "0") {
+              this.tableData[i].orderDjType = "直入直出型";
+            } else if (this.tableData[i].orderDjType == "1") {
+              this.tableData[i].orderDjType = "库管型";
+            }
+          }
         });
         this.open = true;
-        this.title = "分包合同详情";
+        this.title = "入库单详情";
       });
     },
     /** 取消按钮操作 */
@@ -617,7 +563,7 @@ export default {
         type: "warning",
       })
         .then(function () {
-          return cancelAuditProjectContract(ids, nodeNos);
+          return cancelAuditPurchaseWare(ids, nodeNos);
         })
         .then(() => {
           this.getList();
@@ -630,7 +576,7 @@ export default {
       console.log(this.shForm);
       this.$refs["shForm"].validate((valid) => {
         if (valid) {
-          examineProjectContract(this.shForm).then((response) => {
+          examinePurchaseWare(this.shForm).then((response) => {
             if (response.code === 200) {
               this.msgSuccess("审核成功");
               this.openLcsh = false;

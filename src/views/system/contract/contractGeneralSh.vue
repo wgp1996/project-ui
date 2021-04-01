@@ -119,7 +119,6 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:contractGenera:edit']"
             >详情</el-button
           >
           <el-button
@@ -127,7 +126,6 @@
             type="text"
             icon="el-icon-edit"
             @click="handleSelectFlow(scope.row)"
-            v-hasPermi="['system:contractGenera:edit']"
             >查看审批</el-button
           >
         </template>
