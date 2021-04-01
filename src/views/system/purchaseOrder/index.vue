@@ -10,43 +10,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="单据日期" prop="djTime">
-        <el-input
-          v-model="queryParams.djTime"
-          placeholder="请输入单据日期"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
-      <!-- <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
-          <el-option label="请选择字典生成" value="" />
-        </el-select>
-      </el-form-item> -->
-      <!-- <el-form-item label="订单类型" prop="type">
-        <el-select v-model="queryParams.type" placeholder="请选择订单类型" clearable size="small">
-          <el-option label="请选择字典生成" value="" />
-        </el-select>
-      </el-form-item> -->
-      <!-- <el-form-item label="供货商编码" prop="khCode">
-        <el-input
-          v-model="queryParams.khCode"
-          placeholder="请输入供货商编码"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
-      <!-- <el-form-item label="供货商名称" prop="khName">
-        <el-input
-          v-model="queryParams.khName"
-          placeholder="请输入供货商名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
       <el-form-item label="项目编码" prop="projectCode">
         <el-input
           v-model="queryParams.projectCode"
@@ -65,33 +28,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="流程号" prop="flowNo">
-        <el-input
-          v-model="queryParams.flowNo"
-          placeholder="请输入流程号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
-      <!-- <el-form-item label="节点编号" prop="nodeNo">
-        <el-input
-          v-model="queryParams.nodeNo"
-          placeholder="请输入节点编号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
-      <!-- <el-form-item label="是否审批" prop="isSp">
-        <el-input
-          v-model="queryParams.isSp"
-          placeholder="请输入是否审批"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -110,7 +46,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
@@ -120,7 +56,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
+          type="primary"
           icon="el-icon-delete"
           size="mini"
           :disabled="multiple"
@@ -128,9 +64,31 @@
           v-hasPermi="['system:purchaseOrder:remove']"
         >删除</el-button>
       </el-col>
+           <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleEffect"
+          v-hasPermi="['system:purchaseOrder:effect']"
+          >提交</el-button
+        >
+      </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleCancel"
+          v-hasPermi="['system:purchaseOrder:cancel']"
+          >取消提交</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
@@ -141,19 +99,15 @@
 
     <el-table v-loading="loading" :data="purchaseOrderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <!-- <el-table-column label="id" align="center" prop="id" /> -->
       <el-table-column label="单号" align="center" prop="djNumber" />
       <el-table-column label="单据日期" align="center" prop="djTime" />
       <el-table-column label="状态" align="center" prop="statusName" />
-      <!-- <el-table-column label="订单类型" align="center" prop="type" /> -->
       <el-table-column label="供货商编码" align="center" prop="khCode" />
       <el-table-column label="供货商名称" align="center" prop="khName" />
       <el-table-column label="项目编码" align="center" prop="projectCode" />
       <el-table-column label="项目名称" align="center" prop="projectName" />
-      <!-- <el-table-column label="流程号" align="center" prop="flowNo" /> -->
-      <!-- <el-table-column label="节点编号" align="center" prop="nodeNo" /> -->
-      <!-- <el-table-column label="备注" align="center" prop="remark" /> -->
-      <el-table-column label="是否启用审批" align="center" prop="isSp" />
+      <el-table-column label="制单人" align="center" prop="createBy" />
+      <el-table-column label="制单日期" align="center" prop="createTime" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -161,15 +115,15 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:purchaseOrder:edit']"
-          >修改</el-button>
+            >详情</el-button
+          >
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:purchaseOrder:remove']"
-          >删除</el-button>
+            icon="el-icon-edit"
+            @click="handleSelectFlow(scope.row)"
+            >查看审批</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -183,7 +137,7 @@
     />
 
     <!-- 添加或修改采购订单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="700px">
+    <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-tabs v-model="activeName">
         <el-tab-pane label="基本信息" name="first">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
@@ -229,8 +183,8 @@
             </el-form-item>
             <el-form-item label="启用审批" prop="isSp">
               <el-radio-group v-model="form.isSp">
-                <el-radio :label="0">启用</el-radio>
-                <el-radio :label="1">不启用</el-radio>
+                <el-radio :label="0">不启用</el-radio>
+                <el-radio :label="1">启用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -392,6 +346,40 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+     <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
+      <el-tabs type="border-card">
+        <el-tab-pane label="最新审批">
+            <el-steps :space="100" direction="vertical" :active="stepsActive">
+              <el-step
+                :status="item.stepStatus"
+                :title="
+                  item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+                "
+                :description="item.auditInfo"
+                v-for="(item, index) in stepsData"
+                :key="index"
+              ></el-step>
+            </el-steps>
+        </el-tab-pane>
+        <el-tab-pane label="历史审批">
+              <el-steps :space="100" direction="vertical" :active="stepsHistoryActive">
+                <el-step
+                  :status="item.stepStatus"
+                  :title="
+                    item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+                  "
+                  :description="item.auditInfo"
+                  v-for="(item, index) in stepsDataHistory"
+                  :key="index"
+                ></el-step>
+              </el-steps>
+        </el-tab-pane>
+      </el-tabs>
+ 
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel" type="danger">关 闭</el-button>
+      </div>
+    </el-dialog>
     <goods-select
       v-if="selectProjectDialog"
       ref="selectProject"
@@ -413,11 +401,15 @@
 </template>
 
 <script>
-import { listPurchaseOrder, getPurchaseOrder, delPurchaseOrder, addPurchaseOrder, updatePurchaseOrder, exportPurchaseOrder } from "@/api/system/purchaseOrder";
+import { listPurchaseOrder, getPurchaseOrder, delPurchaseOrder, addPurchaseOrder, updatePurchaseOrder, exportPurchaseOrder,
+  effectPurchaseOrder,
+  cancelPurchaseOrder
+} from "@/api/system/purchaseOrder";
 import goodsSelect from "./goodsSelect";
 import supplierSelect from "./supplierSelect";
 import childSelect from "./childSelect";
-import { listPurchaseOrderChild, getPurchaseOrderChild, delPurchaseOrderChild, addPurchaseOrderChild, updatePurchaseOrderChild, exportPurchaseOrderChild } from "@/api/system/purchaseOrderChild";
+import { djFlowList } from "@/api/system/flowInfo";
+import { listPurchaseOrderChild, delPurchaseOrderChild } from "@/api/system/purchaseOrderChild";
 import { getToken } from "@/utils/auth";
 import {
   systemFileList,  delFileInfo,
@@ -429,6 +421,11 @@ export default {
   },
   data() {
     return {
+      stepsActive: 0,
+      stepsHistoryActive:0,
+      stepsData: [],
+      stepsDataHistory:[],
+      openSh: false,
        fileList: [],
       upload: {
         // 是否显示弹出层（用户导入）
@@ -489,7 +486,7 @@ export default {
         khName:[{required:true,message:"供货商不能为空", trigger: "blur"}],
         isSp:[{required:true,message:"请选择是否审批", trigger: "blur"}],
         djType:[{required:true,message:"请选择类型", trigger: "blur"}],
-        djTime:[{required:true,message:"请选择时间", trigger: "blur"}]
+        djTime:[{required:true,message:"请选择单据日期", trigger: "blur"}]
       }
     };
   },
@@ -497,6 +494,67 @@ export default {
     this.getList();
   },
   methods: {
+     //查看审批信息
+    handleSelectFlow(row) {
+      this.stepsActive = parseInt(row.nodeNo) - 1;
+      djFlowList(row.djNumber,0).then((response) => {
+        this.stepsData = response.rows;
+        //判断是否为空
+        for (let i = 0; i < this.stepsData.length; i++) {
+          if (this.stepsData[i].auditTime == null) {
+            this.stepsData[i].auditTime == "";
+          }
+        }
+        console.log(this.stepsData);
+      });
+      djFlowList(row.djNumber,-1).then((response) => {
+        this.stepsDataHistory = response.rows;
+        this.stepsHistoryActive=this.stepsDataHistory.length;
+        //判断是否为空
+        for (let i = 0; i < this.stepsDataHistory.length; i++) {
+          if (this.stepsDataHistory[i].auditTime == null) {
+            this.stepsDataHistory[i].auditTime == "";
+          }
+        }
+      });
+      
+      this.openSh = true;
+    },
+    /** 提交按钮操作 */
+    handleEffect(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认提交选中的数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return effectPurchaseOrder(ids);
+        })
+
+        .then(() => {
+          this.getList();
+          this.msgSuccess("提交成功");
+        })
+        .catch(function () {});
+    },
+    /** 取消提交按钮操作 */
+    handleCancel(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认取消选中的数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return cancelPurchaseOrder(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("取消成功");
+        })
+        .catch(function () {});
+    },
       handleSuccess(res, file, fileList) {
       this.fileList = fileList;
       // 上传成功
@@ -526,9 +584,9 @@ export default {
         this.purchaseOrderList = response.rows;
         for(var i=0;i< this.purchaseOrderList.length;i++){
              if(this.purchaseOrderList[i].isSp==0){
-                 this.purchaseOrderList[i].isSp="已启用"
+                 this.purchaseOrderList[i].isSp="未启用"
              }else{
-                this.purchaseOrderList[i].isSp="未启用"
+                this.purchaseOrderList[i].isSp="已启用"
              }
         }
        
@@ -586,6 +644,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openSh = false;
       this.reset();
     },
     // 表单重置
