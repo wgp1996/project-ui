@@ -356,14 +356,15 @@
 
 <script>
 import {
-  addPurchaseOrder, updatePurchaseOrderBySh,
+  updatePurchaseOrderBySh,
   shListPurchaseOrder,
   getPurchaseOrder,
   examinePurchaseOrder,
   cancelAuditPurchaseOrder,
 } from "@/api/system/purchaseOrder";
+import { getInfo } from "@/api/login";
 import supplierSelect from "./supplierSelect";
-import { systemFileList, getProjectInfoByCode } from "@/api/system/projectInfo";
+import { systemFileList } from "@/api/system/projectInfo";
 import { djFlowList } from "@/api/system/flowInfo";
 import { listPurchaseOrderChild } from "@/api/system/purchaseOrderChild";
 export default {
@@ -373,6 +374,7 @@ export default {
   },
   data() {
     return {
+      user:undefined,
       visible1:false,
       tableData:[],
       selectSupplierSelectDialog:false,
@@ -435,6 +437,9 @@ export default {
   },
   created() {
     this.getList();
+    getInfo().then(response => {
+      this.user= response.user;
+    });
   },
   methods: {
          /** 选择供货商 */
