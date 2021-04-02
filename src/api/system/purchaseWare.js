@@ -9,6 +9,16 @@ export function listPurchaseWare(query) {
   })
 }
 
+// 结算单查询采购入库列表
+export function settlementSelectList(query) {
+  return request({
+    url: '/system/purchaseWare/settlementSelectList',
+    method: 'get',
+    params: query
+  })
+}
+
+
 
 // 查询采购入库审核列表
 export function shListPurchaseWare(query) {
