@@ -61,12 +61,13 @@
         >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="物资名称" align="center" prop="goodsName" />
+          <el-table-column label="物资编码" align="center" prop="goodsCode" />
           <el-table-column label="规格" align="center" prop="goodsGg" />
           <el-table-column label="单位" align="center" prop="goodsDw" />
-          <el-table-column label="单价" align="center" prop="goodsPrice" />
           <el-table-column label="订单数量" align="center" prop="goodsNum" />
-         
-          <el-table-column label="金额" align="center" prop="goodsMoney" />
+          <el-table-column label="剩余数量" align="center" prop="surplusNum" />
+           <!-- <el-table-column label="单价" align="center" prop="goodsPrice" /> -->
+          <!-- <el-table-column label="金额" align="center" prop="goodsMoney" /> -->
           <el-table-column
             label="操作"
             align="center"
@@ -127,7 +128,7 @@ export default {
       // 市场摊位信息表格数据
       stallList: [],
       // 弹出层标题
-      title: "选择采购订单信息",
+      title: "选择入库信息",
       // 是否显示弹出层
       open: false,
       // 所属非类市场

@@ -104,23 +104,20 @@
 
     <el-table v-loading="loading" :data="purchaseSettlementList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <!-- <el-table-column label="id" align="center" prop="id" /> -->
       <el-table-column label="单号" align="center" prop="djNumber" />
-      <!-- <el-table-column label="单据日期" align="center" prop="djTime" /> -->
-      <!-- <el-table-column label="状态" align="center" prop="status" /> -->
-      <!-- <el-table-column label="订单类型" align="center" prop="orderDjType" /> -->
-      <!-- <el-table-column label="供货商编码" align="center" prop="khCode" /> -->
+      <el-table-column label="状态" align="center" prop="statusName" />
+      <el-table-column label="单据日期" align="center" prop="djTime" />
       <el-table-column label="供货商名称" align="center" prop="khName" />
       <el-table-column label="项目编码" align="center" prop="projectCode" />
       <el-table-column label="项目名称" align="center" prop="projectName" />
-      <!-- <el-table-column label="创建者" align="center" prop="createBy" /> -->
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="申请结算金额" align="center" prop="sqPayMoney" />
+      <el-table-column label="批复结算金额" align="center" prop="pfPayMoney" />
+      <el-table-column label="制单人者" align="center" prop="createBy" />
+      <!-- <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="申请结算金额" align="center" prop="sqPayMoney" />
-      <el-table-column label="批发结算金额" align="center" prop="pfPayMoney" />
+      </el-table-column> -->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -190,13 +187,14 @@
             <el-form-item label="申请结算金额" prop="sqPayMoney">
                 <el-input
                   v-model="form.sqPayMoney"
-                  placeholder="自动生成申请结算金额"
+                  placeholder="申请结算金额"
                  />
               </el-form-item> 
               <el-form-item label="批发结算金额" prop="pfPayMoney">
                   <el-input
+                    :readonly="true"
                     v-model="form.pfPayMoney"
-                    placeholder="自动生成批发结算金额"
+                    placeholder="批复结算金额"
                   />
               </el-form-item> 
             <el-form-item label="单据日期" prop="djTime">
@@ -210,7 +208,7 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="入库明细" name="second">
+        <el-tab-pane label="结算明细" name="second">
           <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
               <el-button
@@ -218,7 +216,7 @@
                 icon="el-icon-plus"
                 size="mini"
                 @click="goodsSelectchild"
-                >引入采购订单</el-button
+                >引入入库单</el-button
               >
             </el-col>
           </el-row>
@@ -270,7 +268,7 @@
                 ></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="goodsNum" label="数量" width="120">
+            <el-table-column prop="goodsNum" label="订单数量" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
@@ -458,8 +456,8 @@ export default {
         isSp: [{ required: true, message: "请选择是否审批", trigger: "blur" }],
         djType: [{ required: true, message: "请选择类型", trigger: "blur" }],
         djTime: [{ required: true, message: "请选择时间", trigger: "blur" }],
-        sqPayMoney:[{ required: true, message: "请选择申请结算金额", trigger: "blur" }],
-        pfPayMoney:[{ required: true, message: "请选择批发结算金额", trigger: "blur" }],
+        sqPayMoney:[{ required: true, message: "请输入申请结算金额", trigger: "blur" }],
+        // pfPayMoney:[{ required: true, message: "请选择批发结算金额", trigger: "blur" }],
       }
     };
   },
@@ -516,7 +514,7 @@ export default {
            for (let i = 0; i < this.tableData.length; i++) {
               sum+=Number(this.tableData[i].goodsMoney);
               this.form.sqPayMoney=sum;
-              this.form.pfPayMoney=sum;
+              //this.form.pfPayMoney=sum;
             }
         
       }
@@ -564,12 +562,10 @@ export default {
         goodsInfo.goodsCode = row.goodsCode;
         goodsInfo.goodsDw = row.goodsDw;
         goodsInfo.goodsGg = row.goodsGg;
-        goodsInfo.goodsPrice = row.goodsPrice;
+        goodsInfo.goodsPrice = "";
         // 订单数量
-        goodsInfo.goodsNum = row.surplusNum;
-        // 到货数量
-        goodsInfo.goodsDhNum = row.surplusNum;
-        goodsInfo.goodsMoney = row.goodsMoney;
+        goodsInfo.goodsNum = row.goodsNum;
+        goodsInfo.goodsMoney = "";
         this.tableData.push(goodsInfo);
         if (row.orderDjType == "0") {
           this.DingDan = true;
@@ -596,10 +592,8 @@ export default {
           info.goodsDw = row.goodsDw;
           info.goodsGg = row.goodsGg;
           // 订单数量
-          info.goodsNum = row.surplusNum;
-          // 到货数量
-          info.goodsDhNum = row.goodsNum;
-          info.goodsMoney = row.goodsMoney;
+          info.goodsNum = row.goodsNum;
+          info.goodsMoney = "";
           if (row.orderDjType == "0") {
             this.DingDan = true;
             this.DaoHuo = false;
