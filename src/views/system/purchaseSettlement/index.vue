@@ -28,33 +28,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="是否审批" prop="isSp">
-        <el-input
-          v-model="queryParams.isSp"
-          placeholder="请输入是否审批"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
-      <!-- <el-form-item label="申请结算金额" prop="sqPayMoney">
-        <el-input
-          v-model="queryParams.sqPayMoney"
-          placeholder="请输入申请结算金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
-      <!-- <el-form-item label="批发结算金额" prop="pfPayMoney">
-        <el-input
-          v-model="queryParams.pfPayMoney"
-          placeholder="请输入批发结算金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -73,7 +46,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
@@ -83,13 +56,35 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
+          type="primary"
           icon="el-icon-delete"
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:purchaseSettlement:remove']"
         >删除</el-button>
+      </el-col>
+       <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleEffect"
+          v-hasPermi="['system:purchaseSettlement:effect']"
+          >提交</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleCancel"
+          v-hasPermi="['system:purchaseSettlement:cancel']"
+          >取消提交</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -112,28 +107,28 @@
       <el-table-column label="项目名称" align="center" prop="projectName" />
       <el-table-column label="申请结算金额" align="center" prop="sqPayMoney" />
       <el-table-column label="批复结算金额" align="center" prop="pfPayMoney" />
-      <el-table-column label="制单人者" align="center" prop="createBy" />
+      <el-table-column label="制单人" align="center" prop="createBy" />
       <!-- <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column> -->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
+          <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:purchaseSettlement:edit']"
-          >修改</el-button>
+            >详情</el-button
+          >
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:purchaseSettlement:remove']"
-          >删除</el-button>
+            icon="el-icon-edit"
+            @click="handleSelectFlow(scope.row)"
+            >查看审批</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -190,7 +185,7 @@
                   placeholder="申请结算金额"
                  />
               </el-form-item> 
-              <el-form-item label="批发结算金额" prop="pfPayMoney">
+              <el-form-item label="批复结算金额" prop="pfPayMoney">
                   <el-input
                     :readonly="true"
                     v-model="form.pfPayMoney"
@@ -352,6 +347,44 @@
       ref="selectProject"
       @selectData="selectData"
     ></goods-select>
+    <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
+      <el-tabs type="border-card">
+        <el-tab-pane label="最新审批">
+          <el-steps :space="100" direction="vertical" :active="stepsActive">
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsData"
+              :key="index"
+            ></el-step>
+          </el-steps>
+        </el-tab-pane>
+        <el-tab-pane label="历史审批">
+          <el-steps
+            :space="100"
+            direction="vertical"
+            :active="stepsHistoryActive"
+          >
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsDataHistory"
+              :key="index"
+            ></el-step>
+          </el-steps>
+        </el-tab-pane>
+      </el-tabs>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel" type="danger">关 闭</el-button>
+      </div>
+    </el-dialog>
     <!-- 供货商 -->
     <supplier-select
       v-if="selectSupplierSelectDialog"
@@ -370,7 +403,8 @@
 </template>
 
 <script>
-import { listPurchaseSettlement, getPurchaseSettlement, delPurchaseSettlement, addPurchaseSettlement, updatePurchaseSettlement, exportPurchaseSettlement } from "@/api/system/purchaseSettlement";
+import { djFlowList } from "@/api/system/flowInfo";
+import { effectPurchaseSettlement,cancelPurchaseSettlement,listPurchaseSettlement, getPurchaseSettlement, delPurchaseSettlement, addPurchaseSettlement, updatePurchaseSettlement, exportPurchaseSettlement } from "@/api/system/purchaseSettlement";
 import { getToken } from "@/utils/auth";
 import { systemFileList, delFileInfo } from "@/api/system/projectInfo";
 import childSelect from "./childSelect";
@@ -457,7 +491,7 @@ export default {
         djType: [{ required: true, message: "请选择类型", trigger: "blur" }],
         djTime: [{ required: true, message: "请选择时间", trigger: "blur" }],
         sqPayMoney:[{ required: true, message: "请输入申请结算金额", trigger: "blur" }],
-        // pfPayMoney:[{ required: true, message: "请选择批发结算金额", trigger: "blur" }],
+        // pfPayMoney:[{ required: true, message: "请选择批复结算金额", trigger: "blur" }],
       }
     };
   },
@@ -465,17 +499,78 @@ export default {
     this.getList();
   },
   methods: {
+    //查看审批信息
+    handleSelectFlow(row) {
+      this.stepsActive = parseInt(row.nodeNo) - 1;
+      djFlowList(row.djNumber, 0).then((response) => {
+        this.stepsData = response.rows;
+        //判断是否为空
+        for (let i = 0; i < this.stepsData.length; i++) {
+          if (this.stepsData[i].auditTime == null) {
+            this.stepsData[i].auditTime == "";
+          }
+        }
+        console.log(this.stepsData);
+      });
+      djFlowList(row.djNumber, -1).then((response) => {
+        this.stepsDataHistory = response.rows;
+        this.stepsHistoryActive = this.stepsDataHistory.length;
+        //判断是否为空
+        for (let i = 0; i < this.stepsDataHistory.length; i++) {
+          if (this.stepsDataHistory[i].auditTime == null) {
+            this.stepsDataHistory[i].auditTime == "";
+          }
+        }
+      });
+
+      this.openSh = true;
+    },
+    /** 提交按钮操作 */
+    handleEffect(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认提交选中的数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return effectPurchaseSettlement(ids);
+        })
+
+        .then(() => {
+          this.getList();
+          this.msgSuccess("提交成功");
+        })
+        .catch(function () {});
+    },
+    /** 取消提交按钮操作 */
+    handleCancel(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认取消选中的数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return cancelPurchaseSettlement(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("取消成功");
+        })
+        .catch(function () {});
+    },
     /** 查询结算申请单列表 */
     getList() {
       this.loading = true;
       listPurchaseSettlement(this.queryParams).then(response => {
         this.purchaseSettlementList = response.rows;
-        if (this.purchaseWareList) {
-          for (var i = 0; i < this.purchaseWareList.length; i++) {
-            if (this.purchaseWareList[i].isSp == 0) {
-              this.purchaseWareList[i].isSp = "未启用";
+        if (this.purchaseSettlementList) {
+          for (var i = 0; i < this.purchaseSettlementList.length; i++) {
+            if (this.purchaseSettlementList[i].isSp == 0) {
+              this.purchaseSettlementList[i].isSp = "未启用";
             } else {
-              this.purchaseWareList[i].isSp = "启用";
+              this.purchaseSettlementList[i].isSp = "启用";
             }
           }
         } else {
@@ -633,6 +728,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openSh = false;
       this.reset();
     },
     // 表单重置
