@@ -162,6 +162,13 @@ export default {
   created() {
     this.getList();
   },
+  watch:{
+	  system(newValue, oldValue) {
+		   var _this = this;
+        _this.queryParams.khCode = newValue;
+     
+	}
+},
   methods: {
     // 筛选节点
     filterNode(value, data) {

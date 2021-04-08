@@ -112,8 +112,7 @@ export default {
       goodsList: [],
       goodsTypeOptions: [],
       visible2: false,
-
-      // 遮罩层
+     // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
@@ -133,6 +132,7 @@ export default {
       markDatas: [],
       //摊位状态
       perationOptions: [],
+      systems:this.system,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -159,8 +159,18 @@ export default {
   // },
   created() {
     this.getList();
+    this.systems = this.system;
   },
+  watch:{
+	  system(newValue, oldValue) {
+		   var _this = this;
+        _this.queryParams.khCode = newValue;
+     
+	}
+},
+
   methods: {
+  
     // 筛选节点
     filterNode(value, data) {
       if (!value) return true;
@@ -177,6 +187,7 @@ export default {
     /** 查询市场摊位信息列表 */
     getList() {
       this.loading = true;
+      console.log(this.queryParams)
       if (
         this.queryParams.khCode != undefined &&
         this.queryParams.khCode != ""

@@ -203,7 +203,15 @@
               ></el-button>
             </el-form-item>
             <el-form-item label="单据日期" prop="djTime">
-              <el-input v-model="form.djTime" placeholder="请输入单据日期" />
+              <!-- <el-input v-model="form.djTime" placeholder="请输入单据日期" /> -->
+                <el-date-picker
+                style="width: 100%"
+                v-model="form.djTime"
+                type="date"
+                placeholder="单据日期"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
             </el-form-item>
             <el-form-item label="启用审批" prop="isSp">
               <el-radio-group v-model="form.isSp">
@@ -288,6 +296,28 @@
                 <!-- <span>{{ scope.row.goodsNum }}</span> -->
               </template>
             </el-table-column>
+             <!-- <el-table-column prop="goodsPrice" label="价格" width="120">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.goodsPrice"
+                  placeholder="请输入价格"
+                  @change="handleEdit(scope.$index, scope.row)"
+                ></el-input>
+               
+              </template>
+            </el-table-column> -->
+              <!-- <el-table-column prop="goodsMoney" label="金额" width="120">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.goodsMoney"
+                  placeholder="请输入金额"
+                  @change="handleEdit(scope.$index, scope.row)"
+                ></el-input>
+               
+              </template>
+            </el-table-column> -->
             <el-table-column prop="goodsGg" label="规格" width="120">
               <template scope="scope">
                 <el-input
@@ -690,6 +720,28 @@ export default {
         this.$refs.selectchild.visible2 = false;
       });
     },
+     handleEdit(index, row) {
+      if (!/^[0-9]*$/.test(row.goodsDhNum)) {
+        this.msgError("请输入数字!");
+        row.goodsDhNum = "";
+        row.goodsMoney='';
+      }
+      if(!/^[0-9]*$/.test(row.goodsPrice)){
+        this.msgError("请输入数字!");
+        row.goodsPrice = "";
+        row.goodsMoney='';
+      }
+      if (
+        row.goodsDhNum != "" &&
+        row.goodsDhNum != undefined &&
+        row.goodsPrice != undefined &&
+        row.goodsPrice != "" 
+       ) {
+        row.goodsMoney = (
+          parseFloat(row.goodsDhNum) * parseFloat(row.goodsPrice)
+        ).toFixed(2);
+      }
+    },
     //批量选择数据
     selectchildMore(rows) {
       this.$nextTick(() => {
@@ -706,6 +758,7 @@ export default {
           info.goodsNum = row.surplusNum;
           // 到货数量
           info.goodsDhNum = row.goodsNum;
+          info.goodsPrice = row.goodsPrice;
           info.goodsMoney = row.goodsMoney;
           if (row.djType == "0") {
             this.DingDan = true;
@@ -882,7 +935,8 @@ export default {
                 this.tableData[i].goodsCode == "" ||
                 this.tableData[i].goodsName == "" ||
                 this.tableData[i].goodsNum == "" ||
-                this.tableData[i].goodsDhNum == ""
+                this.tableData[i].goodsDhNum == ""||
+                this.tableData[i].goodsPrice == ""
               ) {
                 this.msgError("检查明细必填项!");
                 return;
