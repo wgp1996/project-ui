@@ -9,6 +9,15 @@ export function listStockInfo(query) {
   })
 }
 
+// 领料出库查询库存管理列表
+export function listStockInfoByCk(query) {
+  return request({
+    url: '/system/stockInfo/ckList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询库存管理详细
 export function getStockInfo(id) {
   return request({
