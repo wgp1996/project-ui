@@ -269,7 +269,7 @@
                 <el-input
                   size="small"
                   v-model="scope.row.goodsNum"
-                  :readonly="DingDan"
+                  :readonly="true"
                   placeholder="请输入数量"
                   @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
@@ -372,7 +372,6 @@
       ref="selectchild"
       @selectchild="selectchild"
       @selectchildMore="selectchildMore"
-      :system="this.form.khCode"
     ></child-select>
     <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
       <el-tabs type="border-card">
@@ -673,7 +672,7 @@ export default {
         goodsInfo.goodsGg = row.goodsGg;
         goodsInfo.goodsPrice = row.goodsPrice;
         // 订单数量
-        goodsInfo.goodsNum = row.surplusNum;
+        goodsInfo.goodsNum = row.goodsNum;
         // 到货数量
         goodsInfo.goodsDhNum = row.surplusNum;
         goodsInfo.goodsMoney = row.goodsMoney;
@@ -703,9 +702,9 @@ export default {
           info.goodsDw = row.goodsDw;
           info.goodsGg = row.goodsGg;
           // 订单数量
-          info.goodsNum = row.surplusNum;
+          info.goodsNum = row.goodsNum;
           // 到货数量
-          info.goodsDhNum = row.goodsNum;
+          info.goodsDhNum = row.surplusNum;
           info.goodsMoney = row.goodsMoney;
           if (row.djType == "0") {
             this.DingDan = true;
@@ -729,6 +728,7 @@ export default {
       }
       this.selectGoodsDialogchild = true;
       this.$nextTick(() => {
+        this.$refs.selectchild.queryParams.khCode=this.form.khCode;
         this.$refs.selectchild.getList();
         this.$refs.selectchild.visible2 = true;
       });
@@ -864,7 +864,8 @@ export default {
         obj.columnIndex === 0 ||
         obj.columnIndex === 1 ||
         obj.columnIndex === 2 ||
-        obj.columnIndex === 3
+        obj.columnIndex === 3 ||
+        obj.columnIndex === 4
       ) {
         return "star";
       }

@@ -137,7 +137,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        khCode: this.system,
+        khCode: "-1",
       },
       // 表单参数
       form: {},
@@ -158,7 +158,7 @@ export default {
   //     }
   // },
   created() {
-    this.getList();
+    //this.getList();
   },
   methods: {
     // 筛选节点

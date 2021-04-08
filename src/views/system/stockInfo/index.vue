@@ -1,16 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
-      <el-form-item label="单号" prop="djNumber">
-        <el-input
-          v-model="queryParams.djNumber"
-          placeholder="请输入单号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="项目名称" prop="projectName">
+      <!-- <el-form-item label="项目名称" prop="projectName">
         <el-input
           v-model="queryParams.projectName"
           placeholder="请输入项目名称"
@@ -18,7 +9,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item label="仓库名称" prop="storeName">
         <el-input
           v-model="queryParams.storeName"
@@ -28,6 +19,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item> --> 
+         <el-form-item label="物料编码" prop="goodsCode">
+        <el-input
+          v-model="queryParams.goodsCode"
+          placeholder="请输入物料编码"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
      <el-form-item label="物料名称" prop="goodsName">
         <el-input
           v-model="queryParams.goodsName"
@@ -58,19 +58,18 @@
     <el-table v-loading="loading" :data="stockInfoList" @selection-change="handleSelectionChange" show-summary :summary-method="getSummaries">
       <el-table-column type="selection" width="55" align="center" />
       <!-- <el-table-column label="ID" align="center" prop="id" /> -->
-      <el-table-column label="单号" align="center" prop="djNumber" />
-      <el-table-column label="项目名称" align="center" prop="projectName" />
+      <!-- <el-table-column label="单号" align="center" prop="djNumber" /> -->
       <!-- <el-table-column label="仓库编码" align="center" prop="storeCode" /> -->
       <!-- <el-table-column label="仓库名称" align="center" prop="storeName" /> -->
-      <el-table-column label="单据日期" align="center" prop="djTime" />
-      <!-- <el-table-column label="物料编码" align="center" prop="goodsCode" /> -->
+      <!-- <el-table-column label="单据日期" align="center" prop="djTime" /> -->
+      <el-table-column label="物料编码" align="center" prop="goodsCode" />
       <el-table-column label="物料名称" align="center" prop="goodsName" />
       <el-table-column label="单位" align="center" prop="goodsDw" />
       <el-table-column label="规格" align="center" prop="goodsGg" />
-      <el-table-column label="数量" align="center" prop="goodsNum" />
-      <el-table-column label="单价" align="center" prop="goodsPrice" />
-      <el-table-column label="金额" align="center" prop="goodsMoney" />
-       <el-table-column label="实际入库时间" align="center" prop="rkTime" />
+      <el-table-column label="库存数量" align="center" prop="goodsNum" />
+      <!-- <el-table-column label="单价" align="center" prop="goodsPrice" /> -->
+      <!-- <el-table-column label="金额" align="center" prop="goodsMoney" /> -->
+       <!-- <el-table-column label="实际入库时间" align="center" prop="rkTime" /> -->
     </el-table>
     
     <pagination
@@ -201,8 +200,6 @@ export default {
              if(index==7){
                 //sums[7] += '';
                 sums[index] = '合计:';
-             }else{
-                sums[index] += '元';
              }
             } else {
             sums[index] = '';
