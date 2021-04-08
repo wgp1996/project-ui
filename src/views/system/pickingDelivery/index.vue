@@ -241,12 +241,26 @@
               ></el-button>
             </el-form-item>
             <el-form-item label="单据日期" prop="djTime">
-              <el-input v-model="form.djTime" placeholder="请输入单据日期" />
+              <!-- <el-input v-model="form.djTime" placeholder="请输入单据日期" /> -->
+              <el-date-picker
+                style="width: 100%"
+                v-model="form.djTime"
+                type="date"
+                placeholder="单据日期"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
             </el-form-item>
             <el-form-item label="领料类型" prop="packType">
               <el-radio-group v-model="form.packType">
                 <el-radio :label="0">借用型</el-radio>
                 <el-radio :label="1">耗用型</el-radio>
+              </el-radio-group>
+            </el-form-item>
+             <el-form-item label="启用审批" prop="isSp">
+              <el-radio-group v-model="form.isSp">
+                <el-radio :label="0">不启用</el-radio>
+                <el-radio :label="1">启用</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="仓库" prop="storeName">
@@ -421,6 +435,33 @@
               </template>
             </el-table-column>
           </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="附件信息" name="three">
+            <el-row :gutter="15" class="mb8">
+              <el-col :span="1.5">
+                <el-upload
+                  class="upload-demo"
+                  ref="upload"
+                  :file-list="fileList"
+                  :action="upload.url"
+                  :headers="upload.headers"
+                  :on-success="handleSuccess"
+                  :on-remove="handleRemove"
+                  :auto-upload="false"
+                >
+                  <el-button slot="trigger" size="small" type="primary"
+                    >选取文件</el-button
+                  >
+                  <el-button
+                    style="margin-left: 10px"
+                    size="small"
+                    type="success"
+                    @click="submitUpload"
+                    >上传到服务器</el-button
+                  >
+                </el-upload>
+              </el-col>
+            </el-row>
         </el-tab-pane>
       </el-tabs>
       <div slot="footer" class="dialog-footer">
@@ -456,7 +497,7 @@ import childSelect from "./childSelect";
 import goodsSelect from "./goodsSelect";
 import supplierSelect from "./supplierSelect";
 import { getToken } from "@/utils/auth";
-
+import { systemFileList, delFileInfo } from "@/api/system/projectInfo";
 import { listPickingDeliveryChild,delPickingDeliveryChild } from "@/api/system/pickingDeliveryChild";
 export default {
   name: "PickingDelivery",
@@ -622,7 +663,7 @@ export default {
         updateBy: undefined,
         updateTime: undefined,
         remark: undefined,
-        isSp: undefined,
+        isSp: 0,
         packType:0,
         storeName:'0'
       };
@@ -710,6 +751,22 @@ export default {
       this.open = true;
       this.title = "添加领料出库单";
     },
+   handleSuccess(res, file, fileList) {
+      this.fileList = fileList;
+      // 上传成功
+     console.log(fileList);
+    
+    },
+    handleRemove(file, fileList) {
+      if (file.id != null && file.id != "" && file.id != undefined) {
+        delFileInfo(file.id);
+      }
+      this.fileList = fileList;
+      
+    },
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -723,6 +780,9 @@ export default {
           for(let i=0;i<this.tableData.length;i++){
             this.tableData[i].oldGoodsNum= this.tableData[i].goodsNum
           }
+        });
+         systemFileList(this.form.djNumber).then((response) => {
+          this.fileList = response.rows;
         });
       });
     },
@@ -853,7 +913,7 @@ export default {
     submitForm: function() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-             if (this.tableData.length == 0) {
+          if (this.tableData.length == 0) {
             this.msgError("检查明细必填项!");
             return;
           } else {
@@ -870,6 +930,21 @@ export default {
               } 
             }
           }
+          let fileList = [];
+          for (let i = 0; i < this.fileList.length; i++) {
+            if (
+              this.fileList[i].id != "" &&
+              this.fileList[i].id != null &&
+              this.fileList[i].id != undefined
+            ) {
+              continue;
+            }
+            let info = new Object();
+            info.name = this.fileList[i].response.name;
+            info.url = this.fileList[i].response.url;
+            fileList.push(info);
+          }
+          this.form.fileRows = JSON.stringify(fileList);
            this.form.rows = JSON.stringify(this.tableData);
           if (this.form.id != undefined) {
             updatePickingDelivery(this.form).then(response => {
