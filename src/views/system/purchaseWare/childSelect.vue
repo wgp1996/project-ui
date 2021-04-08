@@ -61,13 +61,12 @@
         >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="物资名称" align="center" prop="goodsName" />
-          <el-table-column label="物资编码" align="center" prop="goodsCode" />
           <el-table-column label="规格" align="center" prop="goodsGg" />
           <el-table-column label="单位" align="center" prop="goodsDw" />
+          <el-table-column label="单价" align="center" prop="goodsPrice" />
           <el-table-column label="订单数量" align="center" prop="goodsNum" />
           <el-table-column label="剩余数量" align="center" prop="surplusNum" />
-           <!-- <el-table-column label="单价" align="center" prop="goodsPrice" /> -->
-          <!-- <el-table-column label="金额" align="center" prop="goodsMoney" /> -->
+          <el-table-column label="金额" align="center" prop="goodsMoney" />
           <el-table-column
             label="操作"
             align="center"
@@ -102,8 +101,7 @@ import { listGoodsType } from "@/api/system/goodsType";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 // import { listGoods } from "@/api/system/goods";
-// import { wareSelectList } from "@/api/system/purchaseOrder";
-import {settlementSelectList} from "@/api/system/purchaseWare";
+import { wareSelectList } from "@/api/system/purchaseOrder";
 export default {
   name: "Stall",
   components: { Treeselect },
@@ -114,8 +112,7 @@ export default {
       goodsList: [],
       goodsTypeOptions: [],
       visible2: false,
-
-      // 遮罩层
+     // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
@@ -128,13 +125,14 @@ export default {
       // 市场摊位信息表格数据
       stallList: [],
       // 弹出层标题
-      title: "选择入库信息",
+      title: "选择采购订单信息",
       // 是否显示弹出层
       open: false,
       // 所属非类市场
       markDatas: [],
       //摊位状态
       perationOptions: [],
+      systems:this.system,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -161,6 +159,7 @@ export default {
   // },
   created() {
     this.getList();
+    this.systems = this.system;
   },
   watch:{
 	  system(newValue, oldValue) {
@@ -169,7 +168,9 @@ export default {
      
 	}
 },
+
   methods: {
+  
     // 筛选节点
     filterNode(value, data) {
       if (!value) return true;
@@ -186,11 +187,12 @@ export default {
     /** 查询市场摊位信息列表 */
     getList() {
       this.loading = true;
+      console.log(this.queryParams)
       if (
         this.queryParams.khCode != undefined &&
         this.queryParams.khCode != ""
       ) {
-        settlementSelectList(this.queryParams).then((response) => {
+        wareSelectList(this.queryParams).then((response) => {
           this.goodsList = response.rows;
           console.log(response);
           // this.total = response.total;
