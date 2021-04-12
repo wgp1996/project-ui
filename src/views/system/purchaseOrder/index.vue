@@ -784,6 +784,14 @@ export default {
     },
     // 删除字表信息
     handleChildDelete(index, row) {
+      if(this.form.status>0){
+        this.msgError("该状态禁止删除!")
+        return
+      }
+      if(this.tableData.length==1){
+        this.msgError("明细不能为空!")
+        return
+      }
       if (row.id != "" && row.id != undefined && row.id != null) {
         delPurchaseOrderChild(row.id);
         this.tableData.splice(index, 1);

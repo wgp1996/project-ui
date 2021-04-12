@@ -1,6 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      label-width="68px"
+    >
       <el-form-item label="单号" prop="djNumber">
         <el-input
           v-model="queryParams.djNumber"
@@ -111,8 +116,16 @@
         />
       </el-form-item> -->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -124,27 +137,52 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:pickingDelivery:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:pickingDelivery:edit']"
-        >修改</el-button>
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
+          type="primary"
           icon="el-icon-delete"
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:pickingDelivery:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
+      </el-col>
+       <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleEffect"
+          v-hasPermi="['system:pickingDelivery:effect']"
+          >提交</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="multiple"
+          @click="handleCancel"
+          v-hasPermi="['system:pickingDelivery:cancel']"
+          >取消提交</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -153,49 +191,52 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:pickingDelivery:export']"
-        >导出</el-button>
+          >导出</el-button
+        >
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="pickingDeliveryList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="pickingDeliveryList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
-      <!-- <el-table-column label="ID" align="center" prop="id" /> -->
       <el-table-column label="单号" align="center" prop="djNumber" />
+      <el-table-column label="状态" align="center" prop="statusName" />
       <el-table-column label="单据日期" align="center" prop="djTime" />
-      <!-- <el-table-column label="状态" align="center" prop="status" /> -->
       <el-table-column label="领料类型" align="center" prop="packType" />
       <el-table-column label="项目编码" align="center" prop="projectCode" />
       <el-table-column label="项目名称" align="center" prop="projectName" />
       <el-table-column label="班组编码" align="center" prop="khCode" />
       <el-table-column label="班组名称" align="center" prop="khName" />
-      <!-- <el-table-column label="仓库编码" align="center" prop="storeCode" /> -->
       <el-table-column label="仓库名称" align="center" prop="storeName" />
-      <!-- <el-table-column label="流程号" align="center" prop="flowNo" /> -->
-      <!-- <el-table-column label="节点编号" align="center" prop="nodeNo" /> -->
-      <!-- <el-table-column label="备注" align="center" prop="remark" /> -->
-      <!-- <el-table-column label="是否审批" align="center" prop="isSp" /> -->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
+           <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:pickingDelivery:edit']"
-          >修改</el-button>
+            >详情</el-button
+          >
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:pickingDelivery:remove']"
-          >删除</el-button>
+            icon="el-icon-edit"
+            @click="handleSelectFlow(scope.row)"
+            >查看审批</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -204,10 +245,10 @@
 
     <!-- 添加或修改领料出库单对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="750px">
-       <el-tabs v-model="activeName">
-          <el-tab-pane label="基本信息" name="first">
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="基本信息" name="first">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-              <el-form-item label="单号" prop="djNumber">
+            <el-form-item label="单号" prop="djNumber">
               <el-input
                 v-model="form.djNumber"
                 placeholder="自动生成"
@@ -257,7 +298,7 @@
                 <el-radio :label="1">耗用型</el-radio>
               </el-radio-group>
             </el-form-item>
-             <el-form-item label="启用审批" prop="isSp">
+            <el-form-item label="启用审批" prop="isSp">
               <el-radio-group v-model="form.isSp">
                 <el-radio :label="0">不启用</el-radio>
                 <el-radio :label="1">启用</el-radio>
@@ -277,57 +318,15 @@
                   :label="item.dictLabel"
                   :value="item.dictValue"
                 >
-                  <span style="float: left; width: 50%">{{ item.dictLabel }}</span>
-         
+                  <span style="float: left; width: 50%">{{
+                    item.dictLabel
+                  }}</span>
                 </el-option>
               </el-select>
             </el-form-item>
-            <!-- <el-form-item label="单号" prop="djNumber">
-              <el-input v-model="form.djNumber" placeholder="请输入单号" />
-            </el-form-item>
-            <el-form-item label="单据日期" prop="djTime">
-              <el-input v-model="form.djTime" placeholder="请输入单据日期" />
-            </el-form-item>
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio label="1">请选择字典生成</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="领料类型">
-              <el-select v-model="form.packType" placeholder="请选择领料类型">
-                <el-option label="请选择字典生成" value="" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="项目编码" prop="projectCode">
-              <el-input v-model="form.projectCode" placeholder="请输入项目编码" />
-            </el-form-item>
-            <el-form-item label="项目名称" prop="projectName">
-              <el-input v-model="form.projectName" placeholder="请输入项目名称" />
-            </el-form-item>
-            <el-form-item label="班组编码" prop="khCode">
-              <el-input v-model="form.khCode" placeholder="请输入班组编码" />
-            </el-form-item>
-            <el-form-item label="班组名称" prop="khName">
-              <el-input v-model="form.khName" placeholder="请输入班组名称" />
-            </el-form-item>
-            <el-form-item label="仓库编码" prop="storeCode">
-              <el-input v-model="form.storeCode" placeholder="请输入仓库编码" />
-            </el-form-item>
-            <el-form-item label="仓库名称" prop="storeName">
-              <el-input v-model="form.storeName" placeholder="请输入仓库名称" />
-            </el-form-item>
-            <el-form-item label="流程号" prop="flowNo">
-              <el-input v-model="form.flowNo" placeholder="请输入流程号" />
-            </el-form-item>
-            <el-form-item label="节点编号" prop="nodeNo">
-              <el-input v-model="form.nodeNo" placeholder="请输入节点编号" />
-            </el-form-item>
-            <el-form-item label="是否审批" prop="isSp">
-              <el-input v-model="form.isSp" placeholder="请输入是否审批" />
-            </el-form-item> -->
           </el-form>
-           </el-tab-pane>
-             <el-tab-pane label="领用明细" name="second">
+        </el-tab-pane>
+        <el-tab-pane label="领用明细" name="second">
           <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
               <el-button
@@ -356,7 +355,7 @@
                 ></el-input>
               </template>
             </el-table-column>
-       
+
             <el-table-column prop="goodsName" label="物料名称" width="120">
               <template scope="scope">
                 <el-input
@@ -368,19 +367,18 @@
                 ></el-input>
               </template>
             </el-table-column>
-           <el-table-column prop="goodsNum" label="数量" width="120">
+            <el-table-column prop="goodsNum" label="数量" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
                   v-model="scope.row.goodsNum"
-                   placeholder="请输入数量"
+                  placeholder="请输入数量"
                   @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
-                <!-- <span>{{ scope.row.goodsNum }}</span> -->
               </template>
             </el-table-column>
-           
-             <el-table-column prop="goodsPrice" label="价格" width="120">
+
+            <el-table-column prop="goodsPrice" label="价格" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
@@ -388,18 +386,17 @@
                   placeholder="请输入价格"
                   @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
-               
               </template>
             </el-table-column>
-              <el-table-column prop="goodsMoney" label="金额" width="120">
+            <el-table-column prop="goodsMoney" label="金额" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
                   v-model="scope.row.goodsMoney"
                   placeholder="请输入金额"
+                  :readonly="true"
                   @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
-               
               </template>
             </el-table-column>
             <el-table-column prop="goodsGg" label="规格" width="120">
@@ -435,33 +432,33 @@
               </template>
             </el-table-column>
           </el-table>
-          </el-tab-pane>
-          <el-tab-pane label="附件信息" name="three">
-            <el-row :gutter="15" class="mb8">
-              <el-col :span="1.5">
-                <el-upload
-                  class="upload-demo"
-                  ref="upload"
-                  :file-list="fileList"
-                  :action="upload.url"
-                  :headers="upload.headers"
-                  :on-success="handleSuccess"
-                  :on-remove="handleRemove"
-                  :auto-upload="false"
+        </el-tab-pane>
+        <el-tab-pane label="附件信息" name="three">
+          <el-row :gutter="15" class="mb8">
+            <el-col :span="1.5">
+              <el-upload
+                class="upload-demo"
+                ref="upload"
+                :file-list="fileList"
+                :action="upload.url"
+                :headers="upload.headers"
+                :on-success="handleSuccess"
+                :on-remove="handleRemove"
+                :auto-upload="false"
+              >
+                <el-button slot="trigger" size="small" type="primary"
+                  >选取文件</el-button
                 >
-                  <el-button slot="trigger" size="small" type="primary"
-                    >选取文件</el-button
-                  >
-                  <el-button
-                    style="margin-left: 10px"
-                    size="small"
-                    type="success"
-                    @click="submitUpload"
-                    >上传到服务器</el-button
-                  >
-                </el-upload>
-              </el-col>
-            </el-row>
+                <el-button
+                  style="margin-left: 10px"
+                  size="small"
+                  type="success"
+                  @click="submitUpload"
+                  >上传到服务器</el-button
+                >
+              </el-upload>
+            </el-col>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
       <div slot="footer" class="dialog-footer">
@@ -469,7 +466,7 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-     <goods-select
+    <goods-select
       v-if="selectProjectDialog"
       ref="selectProject"
       @selectData="selectData"
@@ -488,17 +485,68 @@
       @selectchildMore="selectchildMore"
       :system="this.form.khCode"
     ></child-select>
+     <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
+      <el-tabs type="border-card">
+        <el-tab-pane label="最新审批">
+          <el-steps :space="100" direction="vertical" :active="stepsActive">
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsData"
+              :key="index"
+            ></el-step>
+          </el-steps>
+        </el-tab-pane>
+        <el-tab-pane label="历史审批">
+          <el-steps
+            :space="100"
+            direction="vertical"
+            :active="stepsHistoryActive"
+          >
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsDataHistory"
+              :key="index"
+            ></el-step>
+          </el-steps>
+        </el-tab-pane>
+      </el-tabs>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel" type="danger">关 闭</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listPickingDelivery, getPickingDelivery, delPickingDelivery, addPickingDelivery, updatePickingDelivery, exportPickingDelivery } from "@/api/system/pickingDelivery";
+import {
+  listPickingDelivery,
+  getPickingDelivery,
+  delPickingDelivery,
+  addPickingDelivery,
+  updatePickingDelivery,
+  exportPickingDelivery,
+  effectPickingDelivery,
+  cancelPickingDelivery,
+} from "@/api/system/pickingDelivery";
 import childSelect from "./childSelect";
 import goodsSelect from "./goodsSelect";
 import supplierSelect from "./supplierSelect";
+import { djFlowList } from "@/api/system/flowInfo";
 import { getToken } from "@/utils/auth";
 import { systemFileList, delFileInfo } from "@/api/system/projectInfo";
-import { listPickingDeliveryChild,delPickingDeliveryChild } from "@/api/system/pickingDeliveryChild";
+import {
+  listPickingDeliveryChild,
+  delPickingDeliveryChild,
+} from "@/api/system/pickingDeliveryChild";
 export default {
   name: "PickingDelivery",
   components: {
@@ -508,18 +556,23 @@ export default {
   },
   data() {
     return {
-      number: "",
-      // 仓库
-      personList:[],
-       stepsActive: 0,
+      stepsActive: 0,
       stepsHistoryActive: 0,
       stepsData: [],
       stepsDataHistory: [],
       openSh:false,
+      number: "",
+      // 仓库
+      personList: [],
+      stepsActive: 0,
+      stepsHistoryActive: 0,
+      stepsData: [],
+      stepsDataHistory: [],
+      openSh: false,
       // 保存类型
       saveType: "",
       fileList: [],
-      number:'',
+      number: "",
       upload: {
         // 是否显示弹出层（用户导入）
         open: false,
@@ -571,7 +624,7 @@ export default {
         storeName: undefined,
         flowNo: undefined,
         nodeNo: undefined,
-        isSp: undefined
+        isSp: undefined,
       },
       // 表单参数
       form: {},
@@ -584,13 +637,11 @@ export default {
             trigger: "blur",
           },
         ],
-        khName: [
-          { required: true, message: "请选择领料", trigger: "blur" },
-        ],
+        khName: [{ required: true, message: "请选择领料", trigger: "blur" }],
         projectName: [
           { required: true, message: "请选择项目", trigger: "blur" },
         ],
-       storeName: [
+        storeName: [
           { required: true, message: "请选择仓库名称", trigger: "blur" },
         ],
       },
@@ -598,34 +649,94 @@ export default {
   },
   created() {
     this.getList();
-      this.getDicts("system_Llck").then(response => {
+    this.getDicts("system_Llck").then((response) => {
       this.personList = response.data;
     });
   },
   methods: {
+    //查看审批信息
+    handleSelectFlow(row) {
+      this.stepsActive = parseInt(row.nodeNo) - 1;
+      djFlowList(row.djNumber, 0).then((response) => {
+        this.stepsData = response.rows;
+        //判断是否为空
+        for (let i = 0; i < this.stepsData.length; i++) {
+          if (this.stepsData[i].auditTime == null) {
+            this.stepsData[i].auditTime == "";
+          }
+        }
+        console.log(this.stepsData);
+      });
+      djFlowList(row.djNumber, -1).then((response) => {
+        this.stepsDataHistory = response.rows;
+        this.stepsHistoryActive = this.stepsDataHistory.length;
+        //判断是否为空
+        for (let i = 0; i < this.stepsDataHistory.length; i++) {
+          if (this.stepsDataHistory[i].auditTime == null) {
+            this.stepsDataHistory[i].auditTime == "";
+          }
+        }
+      });
+
+      this.openSh = true;
+    },
+    /** 提交按钮操作 */
+    handleEffect(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认提交选中的数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return effectPickingDelivery(ids);
+        })
+
+        .then(() => {
+          this.getList();
+          this.msgSuccess("提交成功");
+        })
+        .catch(function () {});
+    },
+    /** 取消提交按钮操作 */
+    handleCancel(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认取消选中的数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return cancelPickingDelivery(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("取消成功");
+        })
+        .catch(function () {});
+    },
     /** 查询领料出库单列表 */
     getList() {
       this.loading = true;
-      listPickingDelivery(this.queryParams).then(response => {
+      listPickingDelivery(this.queryParams).then((response) => {
         this.pickingDeliveryList = response.rows;
-        for(var i=0;i<this.pickingDeliveryList.length;i++){
-          if(this.pickingDeliveryList[i].packType==0){
-              this.pickingDeliveryList[i].packType="借用型"
-          }else{
-              this.pickingDeliveryList[i].packType="耗用型"
+        for (var i = 0; i < this.pickingDeliveryList.length; i++) {
+          if (this.pickingDeliveryList[i].packType == 0) {
+            this.pickingDeliveryList[i].packType = "借用型";
+          } else {
+            this.pickingDeliveryList[i].packType = "耗用型";
           }
-           if(this.pickingDeliveryList[i].storeName==0){
-              this.pickingDeliveryList[i].storeName="项目库"
-          }else{
-              this.pickingDeliveryList[i].storeName="出场库"
+          if (this.pickingDeliveryList[i].storeName == 0) {
+            this.pickingDeliveryList[i].storeName = "项目库";
+          } else {
+            this.pickingDeliveryList[i].storeName = "出场库";
           }
-        
         }
         this.total = response.total;
         this.loading = false;
       });
     },
-       //选择仓库
+    //选择仓库
     selectPerson(data) {
       //根据编码找名称
       for (let i = 0; i < this.personList.length; i++) {
@@ -639,6 +750,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openSh = false;
       this.reset();
     },
     // 表单重置
@@ -664,10 +776,10 @@ export default {
         updateTime: undefined,
         remark: undefined,
         isSp: 0,
-        packType:0,
-        storeName:'0'
+        packType: 0,
+        storeName: "0",
       };
-      this.tableData=[];
+      this.tableData = [];
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -675,7 +787,7 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-        /** 选择供货商 */
+    /** 选择供货商 */
     supplierSelect() {
       this.selectSupplierSelectDialog = true;
       this.$nextTick(() => {
@@ -711,10 +823,10 @@ export default {
     },
     selectchild(row) {
       this.$nextTick(() => {
-          //检查是否存在重复数据
+        //检查是否存在重复数据
         for (let i = 0; i < this.tableData.length; i++) {
-          if (row.goodsCode == this.tableData[i].goodsCode) {
-            this.msgError("信息重复!");
+          if (row.rkOrderId == this.tableData[i].rkOrderId) {
+            this.msgError("信息重复选择!");
             return;
           }
         }
@@ -728,9 +840,13 @@ export default {
         goodsInfo.goodsPrice = row.goodsPrice;
         // 订单数量
         goodsInfo.goodsNum = row.goodsNum;
-        goodsInfo.goodsMoney = row.goodsMoney;
+        goodsInfo.goodsMoney = (
+          parseFloat(row.goodsNum) * parseFloat(row.goodsPrice)
+        ).toFixed(2);
+        goodsInfo.rkDjNumber = row.djNumber;
+        goodsInfo.rkOrderId = row.rkOrderId;
         this.tableData.push(goodsInfo);
-     
+
         this.$refs.selectchild.visible2 = false;
       });
     },
@@ -741,9 +857,9 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!=1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.id);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -751,18 +867,16 @@ export default {
       this.open = true;
       this.title = "添加领料出库单";
     },
-   handleSuccess(res, file, fileList) {
+    handleSuccess(res, file, fileList) {
       this.fileList = fileList;
       // 上传成功
-     console.log(fileList);
-    
+      console.log(fileList);
     },
     handleRemove(file, fileList) {
       if (file.id != null && file.id != "" && file.id != undefined) {
         delFileInfo(file.id);
       }
       this.fileList = fileList;
-      
     },
     submitUpload() {
       this.$refs.upload.submit();
@@ -770,23 +884,23 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
-      getPickingDelivery(id).then(response => {
+      const id = row.id || this.ids;
+      getPickingDelivery(id).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改领料出库单";
         listPickingDeliveryChild(this.form.djNumber).then((response) => {
           this.tableData = response.rows;
-          for(let i=0;i<this.tableData.length;i++){
-            this.tableData[i].oldGoodsNum= this.tableData[i].goodsNum
+          for (let i = 0; i < this.tableData.length; i++) {
+            this.tableData[i].oldGoodsNum = this.tableData[i].goodsNum;
           }
         });
-         systemFileList(this.form.djNumber).then((response) => {
+        systemFileList(this.form.djNumber).then((response) => {
           this.fileList = response.rows;
         });
       });
     },
-        //批量选择数据
+    //批量选择数据
     selectchildMore(rows) {
       this.$nextTick(() => {
         for (let i = 0; i < rows.length; i++) {
@@ -801,16 +915,20 @@ export default {
           // 开始数量
           info.goodsNum = row.goodsNum;
           info.goodsPrice = row.goodsPrice;
-          info.goodsMoney = row.goodsMoney;
+          info.goodsMoney = (
+            parseFloat(row.goodsNum) * parseFloat(row.goodsPrice)
+          ).toFixed(2);
+          info.rkDjNumber = row.djNumber;
+          info.rkOrderId = row.rkOrderId;
           this.tableData.push(info);
-          console.log(this.tableData)
+          console.log(this.tableData);
         }
         this.$refs.selectchild.visible2 = false;
       });
     },
-        handleEdit(index, row) {
-          console.log(row)
-      
+    handleEdit(index, row) {
+      console.log(row);
+
       if (
         row.goodsNum != "" &&
         row.goodsNum != null &&
@@ -819,27 +937,30 @@ export default {
         // row.goodsPrice != null &&
         // row.goodsPrice != undefined
       ) {
-       if(parseFloat(row.goodsNum)>parseFloat(row.surplusNum)){
-           row.goodsNum=row.surplusNum
-           this.msgError("库存剩余:"+row.surplusNum);
-           row.goodsMoney = ( parseFloat(row.goodsNum) * parseFloat(row.goodsPrice)).toFixed(2);
-            return 
-        }else{
-          if( row.goodsPrice != "" &&
-         row.goodsPrice != null &&
-         row.goodsPrice != undefined){
-        row.goodsMoney = ( parseFloat(row.goodsNum) * parseFloat(row.goodsPrice)).toFixed(2);
-         }
-   
+        if (parseFloat(row.goodsNum) > parseFloat(row.surplusNum)) {
+          row.goodsNum = row.surplusNum;
+          this.msgError("库存剩余:" + row.surplusNum);
+          row.goodsMoney = (
+            parseFloat(row.goodsNum) * parseFloat(row.goodsPrice)
+          ).toFixed(2);
+          return;
+        } else {
+          if (
+            row.goodsPrice != "" &&
+            row.goodsPrice != null &&
+            row.goodsPrice != undefined
+          ) {
+            row.goodsMoney = (
+              parseFloat(row.goodsNum) * parseFloat(row.goodsPrice)
+            ).toFixed(2);
+          }
         }
-     
       } else {
         this.msgError("!请输入数量");
       }
     },
-        /** 操作 */
+    /** 操作 */
     goodsSelectchild() {
-     
       this.selectGoodsDialogchild = true;
       this.$nextTick(() => {
         this.$refs.selectchild.getList();
@@ -848,6 +969,14 @@ export default {
     },
     // 删除字表信息
     handleChildDelete(index, row) {
+      if(this.form.status>0){
+        this.msgError("该状态禁止删除!")
+        return
+      }
+      if(this.tableData.length==1){
+        this.msgError("明细不能为空!")
+        return
+      }
       if (row.id != "" && row.id != undefined && row.id != null) {
         delPickingDeliveryChild(row.id);
         this.tableData.splice(index, 1);
@@ -856,7 +985,7 @@ export default {
       }
       console.log(index, row);
     },
-      editTime(i) {
+    editTime(i) {
       if (i < 10) {
         i = "0" + i;
       }
@@ -903,15 +1032,15 @@ export default {
         obj.columnIndex === 0 ||
         obj.columnIndex === 1 ||
         obj.columnIndex === 2 ||
-        obj.columnIndex === 3||
+        obj.columnIndex === 3 ||
         obj.columnIndex === 4
       ) {
         return "star";
       }
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.tableData.length == 0) {
             this.msgError("检查明细必填项!");
@@ -922,12 +1051,12 @@ export default {
                 this.tableData[i].goodsCode == "" ||
                 this.tableData[i].goodsName == "" ||
                 this.tableData[i].goodsNum == "" ||
-                this.tableData[i].goodsDhNum == ""||
+                this.tableData[i].goodsDhNum == "" ||
                 this.tableData[i].goodsPrice == ""
               ) {
                 this.msgError("检查明细必填项!");
                 return;
-              } 
+              }
             }
           }
           let fileList = [];
@@ -945,9 +1074,9 @@ export default {
             fileList.push(info);
           }
           this.form.fileRows = JSON.stringify(fileList);
-           this.form.rows = JSON.stringify(this.tableData);
+          this.form.rows = JSON.stringify(this.tableData);
           if (this.form.id != undefined) {
-            updatePickingDelivery(this.form).then(response => {
+            updatePickingDelivery(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -957,7 +1086,7 @@ export default {
               }
             });
           } else {
-            addPickingDelivery(this.form).then(response => {
+            addPickingDelivery(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -973,31 +1102,41 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$confirm('是否确认删除领料出库单编号为"' + ids + '"的数据项?', "警告", {
+      this.$confirm(
+        '是否确认删除领料出库单编号为"' + ids + '"的数据项?',
+        "警告",
+        {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+          type: "warning",
+        }
+      )
+        .then(function () {
           return delPickingDelivery(ids);
-        }).then(() => {
+        })
+        .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        })
+        .catch(function () {});
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有领料出库单数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+      this.$confirm("是否确认导出所有领料出库单数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
           return exportPickingDelivery(queryParams);
-        }).then(response => {
+        })
+        .then((response) => {
           this.download(response.msg);
-        }).catch(function() {});
-    }
-  }
+        })
+        .catch(function () {});
+    },
+  },
 };
 </script>
 <style >

@@ -46,6 +46,14 @@ export function cancelAuditPurchaseOrder(id,nodeNo) {
   })
 }
 
+// 采购订单取消批复
+export function cancelReplyAuditPurchaseOrder(id,nodeNo) {
+  return request({
+    url: '/system/purchaseOrder/cancelReply/' + id+"/"+nodeNo,
+    method: 'delete'
+  })
+}
+
 // 提交采购订单
 export function effectPurchaseOrder(id) {
   return request({
@@ -89,10 +97,10 @@ export function updatePurchaseOrder(data) {
   })
 }
 
-// 审核时修改采购订单
+// 批复采购订单
 export function updatePurchaseOrderBySh(data) {
   return request({
-    url: '/system/purchaseOrder/shEdit',
+    url: '/system/purchaseOrder/reply',
     method: 'put',
     data: data
   })

@@ -4,7 +4,7 @@
       :model="queryParams"
       ref="queryForm"
       :inline="true"
-      label-width="80px"
+      label-width="120px"
     >
       <el-form-item label="单号" prop="djNumber">
         <el-input
@@ -19,6 +19,15 @@
         <el-input
           v-model="queryParams.projectName"
           placeholder="请输入项目名称"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="班组名称" prop="khName">
+        <el-input
+          v-model="queryParams.khName"
+          placeholder="请输入班组名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -39,20 +48,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-
-      <el-col :span="1.5">
-        <el-button
-          v-if="showSh"
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdateByReply"
-          v-hasPermi="['system:purchaseOrder:reply']"
-          >批复</el-button
-        >
-      </el-col>
-
       <el-col :span="1.5">
         <el-button
           v-if="showSh"
@@ -61,23 +56,10 @@
           size="mini"
           :disabled="single"
           @click="handleEffect"
-          v-hasPermi="['system:purchaseOrder:examine']"
+          v-hasPermi="['system:pickingDelivery:examine']"
           >审核</el-button
         >
       </el-col>
-
-      <el-col :span="1.5" v-if="showCancel">
-        <el-button
-          type="danger"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="multiple"
-          @click="handleCancelReply"
-          v-hasPermi="['system:purchaseOrder:cancelReply']"
-          >取消批复</el-button
-        >
-      </el-col>
-
       <el-col :span="1.5" v-if="showCancel">
         <el-button
           type="danger"
@@ -85,12 +67,10 @@
           size="mini"
           :disabled="multiple"
           @click="handleCancel"
-          v-hasPermi="['system:purchaseOrder:cancelAudit']"
+          v-hasPermi="['system:pickingDelivery:cancelAudit']"
           >取消审核</el-button
-        >
+        > 
       </el-col>
-
-
     </el-row>
     <el-tabs type="card" v-model="statusTabs" @tab-click="handleClick">
       <el-tab-pane label="待审核" name="one"></el-tab-pane>
@@ -98,19 +78,20 @@
     </el-tabs>
     <el-table
       v-loading="loading"
-      :data="purchaseOrderList"
+      :data="pickingDeliveryList"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="单号" align="center" prop="djNumber" />
-      <el-table-column label="单据日期" align="center" prop="djTime" />
       <el-table-column label="状态" align="center" prop="statusName" />
-      <el-table-column label="供货商编码" align="center" prop="khCode" />
-      <el-table-column label="供货商名称" align="center" prop="khName" />
+      <el-table-column label="单据日期" align="center" prop="djTime" />
+      <!-- <el-table-column label="领料类型" align="center" prop="packType" /> -->
       <el-table-column label="项目编码" align="center" prop="projectCode" />
       <el-table-column label="项目名称" align="center" prop="projectName" />
-      <el-table-column label="制单人" align="center" prop="createBy" />
+      <el-table-column label="班组编码" align="center" prop="khCode" />
+      <el-table-column label="班组名称" align="center" prop="khName" />
       <el-table-column label="制单日期" align="center" prop="createTime" />
+      <!-- <el-table-column label="仓库名称" align="center" prop="storeName" /> -->
       <el-table-column
         label="操作"
         align="center"
@@ -146,33 +127,37 @@
     <el-dialog title="审核流程" :visible.sync="openSh" width="500px">
       <el-tabs type="border-card">
         <el-tab-pane label="最新审批">
-            <el-steps :space="100" direction="vertical" :active="stepsActive">
-              <el-step
-                :status="item.stepStatus"
-                :title="
-                  item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
-                "
-                :description="item.auditInfo"
-                v-for="(item, index) in stepsData"
-                :key="index"
-              ></el-step>
-            </el-steps>
+          <el-steps :space="100" direction="vertical" :active="stepsActive">
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsData"
+              :key="index"
+            ></el-step>
+          </el-steps>
         </el-tab-pane>
         <el-tab-pane label="历史审批">
-              <el-steps :space="100" direction="vertical" :active="stepsHistoryActive">
-                <el-step
-                  :status="item.stepStatus"
-                  :title="
-                    item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
-                  "
-                  :description="item.auditInfo"
-                  v-for="(item, index) in stepsDataHistory"
-                  :key="index"
-                ></el-step>
-              </el-steps>
+          <el-steps
+            :space="100"
+            direction="vertical"
+            :active="stepsHistoryActive"
+          >
+            <el-step
+              :status="item.stepStatus"
+              :title="
+                item.prName + ' - ' + item.statusName + ' - ' + item.auditTime
+              "
+              :description="item.auditInfo"
+              v-for="(item, index) in stepsDataHistory"
+              :key="index"
+            ></el-step>
+          </el-steps>
         </el-tab-pane>
       </el-tabs>
- 
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel" type="danger">关 闭</el-button>
       </div>
@@ -198,93 +183,79 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel" type="danger">关 闭</el-button>
       </div>
-    </el-dialog> 
-
-    <!-- 添加或修改采购订单对话框 -->
+    </el-dialog>
+    <!-- 添加或修改入库单对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px">
-        <el-form ref="form" :model="form" :rules="formRules" label-width="80px">
       <el-tabs v-model="activeName">
-       
-        <el-tab-pane label="基本信息" name="first">
-         
-              <el-row :span="12">
-                <el-col :span="12">
-                  <el-form-item label="" prop="djType">
-                  <el-radio-group v-model="form.djType">
-                    <el-radio :label="0" disabled>直入直出型</el-radio>
-                    <el-radio :label="1" disabled>库存管理型</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="单据日期" prop="djTime">
-                        <el-date-picker
-                          :disabled="true"
-                          clearable
-                          style="width: 100%"
-                          v-model="form.djTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择单据时间"
-                      ></el-date-picker>
-                    </el-form-item>
-                    </el-col>
-                </el-row>
-              <el-form-item label="供货商" prop="khName">
-              <el-input v-model="form.khName" placeholder="请选择供货商" :readonly="true"/>
-               <el-button
-                icon="el-icon-plus"
-                type="primary"
-                style="position: absolute; right: 0px; top: 0px"
-                @click="supplierSelect"
-              ></el-button>
-            </el-form-item>
-            <el-form-item label="隶属项目" prop="projectName">
-               <el-input v-model="form.projectName" placeholder="请选择隶属项目" :disabled="true"/>
-            </el-form-item>
-    
-       
-        </el-tab-pane>
-         <el-tab-pane label="审批信息" name="three" v-if="isReply">
-      <el-form-item label="审核结果" prop="spStatus">
-              <el-radio-group v-model="form.spStatus">
-                <el-radio :label="1">审核通过</el-radio>
-                <el-radio :label="2">审核退回</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="审核意见" prop="auditInfo">
+         <el-tab-pane label="基本信息" name="first">
+          <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+            <el-form-item label="单号" prop="djNumber">
               <el-input
-                type="textarea"
-                :rows="4"
-                v-model="form.auditInfo"
-                placeholder="请输入审核意见,200字以内"
+                v-model="form.djNumber"
+                placeholder="自动生成"
+                :disabled="true"
               />
             </el-form-item>
-         </el-tab-pane>
-      
-         <el-tab-pane label="采购明细" name="second">
-              <el-table
+            <el-form-item label="领用班组" prop="khName">
+              <el-input
+                v-model="form.khName"
+                placeholder="请选择领用班组"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item label="隶属项目" prop="projectName">
+              <el-input
+                v-model="form.projectName"
+                placeholder="请选择隶属项目"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item label="单据日期" prop="djTime">
+              <!-- <el-input v-model="form.djTime" placeholder="请输入单据日期" /> -->
+              <el-date-picker
+                style="width: 100%"
+                :readonly="true"
+                v-model="form.djTime"
+                type="date"
+                placeholder="单据日期"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="领料类型" prop="packType">
+              <el-radio-group v-model="form.packType">
+                <el-radio :label="0">借用型</el-radio>
+                <el-radio :label="1">耗用型</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="仓库" prop="storeName">
+              <el-input
+                v-model="form.storeName"
+                placeholder="仓库"
+                :disabled="true"
+              />
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="领用明细" name="second">
+          <el-table
             :data="tableData"
             class="tb-edit"
             style="width: 100%"
             highlight-current-row
-            :header-cell-class-name="starAdd"
           >
-            <el-table-column
-              prop="goodsCode"
-              label="物资编码"
-              width="200"
-            >
+            <el-table-column prop="goodsCode" label="物料编码" width="120">
               <template scope="scope">
                 <el-input
                   :disabled="true"
                   size="small"
                   v-model="scope.row.goodsCode"
-                  placeholder="分部分项内容"
+                  placeholder="物资编码"
                 ></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="goodsName" label="物资名称" width="120">
+
+            <el-table-column prop="goodsName" label="物料名称" width="120">
               <template scope="scope">
                 <el-input
                   :disabled="true"
@@ -295,7 +266,6 @@
                 ></el-input>
               </template>
             </el-table-column>
-            
             <el-table-column prop="goodsNum" label="数量" width="120">
               <template scope="scope">
                 <el-input
@@ -303,52 +273,41 @@
                   v-model="scope.row.goodsNum"
                   :readonly="true"
                   placeholder="请输入数量"
-                  @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
               </template>
             </el-table-column>
-             <el-table-column prop="goodsPrice" label="单价" width="120">
+
+            <el-table-column prop="goodsPrice" label="价格" width="120">
               <template scope="scope">
                 <el-input
-                  :readonly="true"
                   size="small"
                   v-model="scope.row.goodsPrice"
-                  placeholder="单价"
+                  :readonly="true"
+                  placeholder="请输入价格"
                 ></el-input>
               </template>
             </el-table-column>
-             <el-table-column prop="goodsSpPrice" label="批复单价" width="120">
-              <template scope="scope">
-                <el-input
-                  size="small"
-                  v-model="scope.row.goodsSpPrice"
-                  @change="handleEdit(scope.$index, scope.row)"
-                  placeholder=""
-                ></el-input>
-              </template>
-            </el-table-column>
-         
             <el-table-column prop="goodsMoney" label="金额" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
                   v-model="scope.row.goodsMoney"
+                  placeholder="请输入金额"
+                  :readonly="true"
+                ></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="goodsGg" label="规格" width="120">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.goodsGg"
                   placeholder="金额信息"
                   :readonly="true"
                 ></el-input>
               </template>
             </el-table-column>
-             <el-table-column prop="goodsGg" label="规格" width="120">
-              <template scope="scope">
-                <el-input
-                  size="small"
-                  v-model="scope.row.goodsGg"
-                  placeholder="规格信息"
-                  :readonly="true"
-                ></el-input>
-              </template>
-            </el-table-column>
-              <el-table-column prop="goodsDw" label="单位" width="120">
+            <el-table-column prop="goodsDw" label="单位" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
@@ -360,7 +319,7 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="合同附件" name="two">
+        <el-tab-pane label="附件信息" name="two">
           <el-row :gutter="15" class="mb8">
             <el-col :span="1.5">
               <el-upload
@@ -387,54 +346,35 @@
           </el-row>
         </el-tab-pane>
       </el-tabs>
-         </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFormOrder" v-if="isReply">批 复</el-button>
         <el-button @click="cancel">关 闭</el-button>
       </div>
     </el-dialog>
-     <!-- 供货商 -->
-    <supplier-select
-      v-if="selectSupplierSelectDialog"
-      ref="selectSupplier"
-      @selectDataSupplie="selectDataSupplie"
-    ></supplier-select>
   </div>
 </template>
 
 <script>
 import {
-  updatePurchaseOrderBySh,
-  shListPurchaseOrder,
-  getPurchaseOrder,
-  examinePurchaseOrder,
-  cancelAuditPurchaseOrder,
-  cancelReplyAuditPurchaseOrder
-} from "@/api/system/purchaseOrder";
-import { getInfo } from "@/api/login";
-import supplierSelect from "./supplierSelect";
+  shListPickingDelivery,
+  getPickingDelivery,
+  examinePickingDelivery,
+  cancelAuditPickingDelivery,
+} from "@/api/system/pickingDelivery";
+import { listPickingDeliveryChild } from "@/api/system/pickingDeliveryChild";
 import { systemFileList } from "@/api/system/projectInfo";
 import { djFlowList } from "@/api/system/flowInfo";
-import { listPurchaseOrderChild } from "@/api/system/purchaseOrderChild";
 export default {
-  name: "PurchaseOrder",
-  components: {
-    supplierSelect
-  },
+  name: "PickingDelivery",
   data() {
     return {
-      isReply:false,
-      user:undefined,
-      visible1:false,
-      tableData:[],
-      selectSupplierSelectDialog:false,
+      tableData: [],
       showSh: true,
-      showCancel: false, 
+      showCancel: false,
       statusTabs: "one",
       stepsActive: 0,
-      stepsHistoryActive:0,
+      stepsHistoryActive: 0,
       stepsData: [],
-      stepsDataHistory:[],
+      stepsDataHistory: [],
       activeName: "first",
       fileList: [],
       selectProjectDialog: false,
@@ -442,7 +382,6 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-      idList:[],
       // 选中数组
       nodeNos: [],
       // 非单个禁用
@@ -452,8 +391,8 @@ export default {
       // 总条数
       total: 0,
       personList: [],
-      // 采购订单表格数据
-      purchaseOrderList: [],
+      // 入库单表格数据
+      pickingDeliveryList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -484,46 +423,12 @@ export default {
           { required: true, message: "请选择审核结果!", trigger: "change" },
         ],
       },
-      formRules:{
-        khName: [
-          { required: true, message: "请选择供应商!", trigger: "change" },
-        ],
-        spStatus: [
-          { required: true, message: "请选择审核结果!", trigger: "change" },
-        ],
-      },
     };
   },
   created() {
     this.getList();
-    getInfo().then(response => {
-      this.user= response.user;
-    });
   },
   methods: {
-         /** 选择供货商 */
-    supplierSelect() {
-      this.selectSupplierSelectDialog = true;
-      this.$nextTick(() => {
-        console.log(this.$refs.selectSupplier)
-        this.$refs.selectSupplier.visible1 = true;
-      });
-    },
-       //追加子表必填样式
-    starAdd(obj) {
-      if (obj.columnIndex === 4) {
-        return "star";
-      }
-    },
-       // 供货商产地数据
-     selectDataSupplie(row) {
-       console.log(row);
-      this.$nextTick(() => {
-        this.form.khCode=row.khCode
-        this.form.khName=row.khName
-        this.$refs.selectSupplier.visible1 = false;
-      });
-    },
     handleClick(tab, event) {
       //待审核
       if (tab.index == 0) {
@@ -545,21 +450,21 @@ export default {
       console.log(res);
       console.log(fileList);
     },
-    hadelOpenFile(file){
-        window.open(file.url);
+    hadelOpenFile(file) {
+      window.open(file.url);
     },
     handleRemove(file, fileList) {
-      return
+      return;
       //this.fileList = fileList;
     },
     submitUpload() {
       this.$refs.upload.submit();
     },
-    /** 查询采购订单列表 */
+    /** 查询入库单列表 */
     getList() {
       this.loading = true;
-      shListPurchaseOrder(this.queryParams).then((response) => {
-        this.purchaseOrderList = response.rows;
+      shListPickingDelivery(this.queryParams).then((response) => {
+        this.pickingDeliveryList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -576,13 +481,16 @@ export default {
       this.form = {
         id: undefined,
         djNumber: undefined,
-        djTime: undefined,
         status: "0",
-        type: undefined,
-        khCode: undefined,
-        khName: undefined,
         projectCode: undefined,
         projectName: undefined,
+        projectJpersonCode: undefined,
+        projectJpersonName: undefined,
+        projectYpersonCode: undefined,
+        projectYpersonName: undefined,
+        projectBpersonCode: undefined,
+        projectBpersonName: undefined,
+        contractMoney: undefined,
         flowNo: undefined,
         nodeNo: undefined,
         createBy: undefined,
@@ -590,19 +498,10 @@ export default {
         updateBy: undefined,
         updateTime: undefined,
         remark: undefined,
-        isSp: 0,
-        djType:0,
       };
       this.resetForm("form");
       this.resetForm("shForm");
       this.resetForm("projectForm");
-    },
-    handleEdit(index,row){
-        if(row.goodsSpPrice!=''&&row.goodsSpPrice!==undefined){
-           row.goodsMoney=parseFloat(row.goodsSpPrice)*parseFloat(row.goodsNum)
-        }else{
-          // this.msgError("检查明细必填项!");
-        }
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -617,14 +516,13 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.djNumber);
-      this.idList = selection.map((item) => item.id);
       this.nodeNos = selection.map((item) => item.nodeNo);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
     handleSelectFlow(row) {
       this.stepsActive = parseInt(row.nodeNo) - 1;
-      djFlowList(row.djNumber,0).then((response) => {
+      djFlowList(row.djNumber, 0).then((response) => {
         this.stepsData = response.rows;
         //判断是否为空
         for (let i = 0; i < this.stepsData.length; i++) {
@@ -634,9 +532,9 @@ export default {
         }
         console.log(this.stepsData);
       });
-      djFlowList(row.djNumber,-1).then((response) => {
+      djFlowList(row.djNumber, -1).then((response) => {
         this.stepsDataHistory = response.rows;
-        this.stepsHistoryActive=this.stepsDataHistory.length;
+        this.stepsHistoryActive = this.stepsDataHistory.length;
         //判断是否为空
         for (let i = 0; i < this.stepsDataHistory.length; i++) {
           if (this.stepsDataHistory[i].auditTime == null) {
@@ -644,7 +542,7 @@ export default {
           }
         }
       });
-      
+
       this.openSh = true;
     },
     handleEffect(row) {
@@ -655,39 +553,18 @@ export default {
     },
     /** 详情按钮操作 */
     handleUpdate(row) {
-      this.activeName="first"
       this.reset();
       const id = row.id;
-      getPurchaseOrder(id).then((response) => {
+      getPickingDelivery(id).then((response) => {
         this.form = response.data;
         systemFileList(this.form.djNumber).then((response) => {
           this.fileList = response.rows;
         });
-        listPurchaseOrderChild(this.form.djNumber).then((response) => {
+        listPickingDeliveryChild(this.form.djNumber).then((response) => {
           this.tableData = response.rows;
         });
-        this.isReply = false;
         this.open = true;
-        this.title = "采购订单详情";
-      });
-    },
-
-    /** 批复按钮操作 */
-    handleUpdateByReply() {
-      this.activeName="first"
-      this.reset();
-      const id = this.idList;
-      getPurchaseOrder(id).then((response) => {
-        this.form = response.data;
-        systemFileList(this.form.djNumber).then((response) => {
-          this.fileList = response.rows;
-        });
-        listPurchaseOrderChild(this.form.djNumber).then((response) => {
-          this.tableData = response.rows;
-        });
-        this.isReply = true;
-        this.open = true;
-        this.title = "采购订单批复";
+        this.title = "入库单详情";
       });
     },
     /** 取消按钮操作 */
@@ -700,26 +577,7 @@ export default {
         type: "warning",
       })
         .then(function () {
-          return cancelAuditPurchaseOrder(ids, nodeNos);
-        })
-        .then(() => {
-          this.getList();
-          this.msgSuccess("取消成功");
-        })
-        .catch(function () {});
-    },
-
-    /** 取消批复操作 */
-    handleCancelReply(row) {
-      const ids = row.id || this.ids;
-      const nodeNos = row.nodeNos || this.nodeNos;
-      this.$confirm("是否确认取消选择的数据项?", "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(function () {
-          return cancelReplyAuditPurchaseOrder(ids, nodeNos);
+          return cancelAuditPickingDelivery(ids, nodeNos);
         })
         .then(() => {
           this.getList();
@@ -732,7 +590,7 @@ export default {
       console.log(this.shForm);
       this.$refs["shForm"].validate((valid) => {
         if (valid) {
-          examinePurchaseOrder(this.shForm).then((response) => {
+          examinePickingDelivery(this.shForm).then((response) => {
             if (response.code === 200) {
               this.msgSuccess("审核成功");
               this.openLcsh = false;
@@ -744,48 +602,6 @@ export default {
         }
       });
     },
-
-     /** 提交按钮 */
-    submitFormOrder: function() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if(this.tableData.length==0){
-                  this.msgError("检查明细必填项!");
-                  return;
-          }else{
-                for (let i = 0; i < this.tableData.length; i++) {
-                  if (
-                    this.tableData[i].goodsPrice == "" ||
-                    this.tableData[i].goodsNum == ""
-                  ) {
-                    this.msgError("检查明细必填项!");
-                    return;
-                  }
-               }
-          }
-          this.form.rows = JSON.stringify(this.tableData);
-          if (this.form.id != undefined) {
-            updatePurchaseOrderBySh(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess("修改成功");
-                this.open = false;
-                this.getList();
-              } else {
-                this.msgError(response.msg);
-              }
-            });
-          }else{
-             this.msgError("操作失败!");
-          }
-        }
-      });
-    },
   },
 };
 </script>
-<style >
-table th.star div::after {
-  content: "*";
-  color: red;
-}
-</style>

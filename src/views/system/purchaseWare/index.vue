@@ -277,9 +277,8 @@
                 <el-input
                   size="small"
                   v-model="scope.row.goodsNum"
-                  :readonly="DingDan"
+                  :readonly="true"
                   placeholder="请输入数量"
-                  @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
                 <!-- <span>{{ scope.row.goodsNum }}</span> -->
               </template>
@@ -296,7 +295,7 @@
                 <!-- <span>{{ scope.row.goodsNum }}</span> -->
               </template>
             </el-table-column>
-             <!-- <el-table-column prop="goodsPrice" label="价格" width="120">
+             <el-table-column prop="goodsPrice" label="价格" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
@@ -306,18 +305,18 @@
                 ></el-input>
                
               </template>
-            </el-table-column> -->
-              <!-- <el-table-column prop="goodsMoney" label="金额" width="120">
+            </el-table-column>
+              <el-table-column prop="goodsMoney" label="金额" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
+                  :readonly="true"
                   v-model="scope.row.goodsMoney"
                   placeholder="请输入金额"
-                  @change="handleEdit(scope.$index, scope.row)"
                 ></el-input>
                
               </template>
-            </el-table-column> -->
+            </el-table-column>
             <el-table-column prop="goodsGg" label="规格" width="120">
               <template scope="scope">
                 <el-input
@@ -666,10 +665,14 @@ export default {
         this.$refs.selectSupplier.visible1 = true;
       });
     },
-    // 供货商产地数据
+    // 供货商数据
     selectDataSupplie(row) {
       console.log(row);
       this.$nextTick(() => {
+        //判断是否改变供应商
+        if( this.form.khCode != row.khCode){
+          this.tableData=[];
+        }
         this.form.khCode = row.khCode;
         this.form.khName = row.khName;
         this.$refs.selectSupplier.visible1 = false;
@@ -694,6 +697,12 @@ export default {
     },
     selectchild(row) {
       this.$nextTick(() => {
+        for(let i=0;i<this.tableData.length;i++){
+          if(row.id==this.tableData[i].orderId){
+            this.msgError("重复选择!");
+            return
+          }
+        }
         let goodsInfo = new Object();
         goodsInfo.orderId = row.id;
         goodsInfo.orderDjNumber = row.djNumber;
@@ -701,12 +710,14 @@ export default {
         goodsInfo.goodsCode = row.goodsCode;
         goodsInfo.goodsDw = row.goodsDw;
         goodsInfo.goodsGg = row.goodsGg;
-        goodsInfo.goodsPrice = row.goodsPrice;
+        goodsInfo.goodsPrice = row.goodsSpPrice;
         // 订单数量
-        goodsInfo.goodsNum = row.surplusNum;
+        goodsInfo.goodsNum = row.goodsNum;
         // 到货数量
-        goodsInfo.goodsDhNum = row.surplusNum;
-        goodsInfo.goodsMoney = row.goodsMoney;
+        goodsInfo.goodsDhNum = parseInt(row.surplusNum);
+        goodsInfo.goodsMoney = (
+          parseFloat(row.surplusNum) * parseFloat(row.goodsPrice)
+        ).toFixed(2);
         this.tableData.push(goodsInfo);
         if (row.djType == "0") {
           this.DingDan = true;
@@ -726,7 +737,7 @@ export default {
         row.goodsDhNum = "";
         row.goodsMoney='';
       }
-      if(!/^[0-9]*$/.test(row.goodsPrice)){
+      if(!/^[0-9]+.?[0-9]*$/.test(row.goodsPrice)){
         this.msgError("请输入数字!");
         row.goodsPrice = "";
         row.goodsMoney='';
@@ -747,6 +758,12 @@ export default {
       this.$nextTick(() => {
         for (let i = 0; i < rows.length; i++) {
           let row = rows[i];
+          for(let i=0;i<this.tableData.length;i++){
+            if(row.id==this.tableData[i].orderId){
+              this.msgError("重复选择!");
+              continue;
+            }
+          }
           let info = new Object();
           info.orderId = row.id;
           info.orderDjNumber = row.djNumber;
@@ -755,11 +772,13 @@ export default {
           info.goodsDw = row.goodsDw;
           info.goodsGg = row.goodsGg;
           // 订单数量
-          info.goodsNum = row.surplusNum;
+          info.goodsNum = row.goodsNum;
           // 到货数量
-          info.goodsDhNum = row.goodsNum;
-          info.goodsPrice = row.goodsPrice;
-          info.goodsMoney = row.goodsMoney;
+          info.goodsDhNum = parseInt(row.surplusNum);
+          info.goodsPrice = row.goodsSpPrice;
+          info.goodsMoney = (
+          parseFloat(row.surplusNum) * parseFloat(row.goodsPrice)
+        ).toFixed(2);
           if (row.djType == "0") {
             this.DingDan = true;
             this.DaoHuo = false;
@@ -780,6 +799,7 @@ export default {
         this.msgError("请先选择供应商!");
         return;
       }
+      console.log(this.tableData);
       this.selectGoodsDialogchild = true;
       this.$nextTick(() => {
         this.$refs.selectchild.getList();
@@ -788,6 +808,14 @@ export default {
     },
     // 删除字表信息
     handleChildDelete(index, row) {
+      if(this.form.status>0){
+        this.msgError("该状态禁止删除!")
+        return
+      }
+      if(this.tableData.length==1){
+        this.msgError("明细不能为空!")
+        return
+      }
       if (row.id != "" && row.id != undefined && row.id != null) {
         delPurchaseWareChild(row.id);
         this.tableData.splice(index, 1);
@@ -917,7 +945,9 @@ export default {
         obj.columnIndex === 0 ||
         obj.columnIndex === 1 ||
         obj.columnIndex === 2 ||
-        obj.columnIndex === 3
+        obj.columnIndex === 3 ||
+        obj.columnIndex === 4 ||
+        obj.columnIndex === 5
       ) {
         return "star";
       }

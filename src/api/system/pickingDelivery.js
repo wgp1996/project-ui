@@ -8,6 +8,49 @@ export function listPickingDelivery(query) {
     params: query
   })
 }
+ 
+
+// 查询采购入库审核列表
+export function shListPickingDelivery(query) {
+  return request({
+    url: '/system/pickingDelivery/shList',
+    method: 'get',
+    params: query
+  })
+}
+
+
+// 采购入库审核
+export function examinePickingDelivery(data) {
+  return request({
+    url: '/system/pickingDelivery/examine',
+    method: 'put',
+    data: data
+  })
+}
+
+// 采购入库取消审核
+export function cancelAuditPickingDelivery(id,nodeNo) {
+  return request({
+    url: '/system/pickingDelivery/cancelAudit/' + id+"/"+nodeNo,
+    method: 'delete'
+  })
+}
+
+// 提交采购入库
+export function effectPickingDelivery(id) {
+  return request({
+    url: '/system/pickingDelivery/effect/' + id,
+    method: 'delete'
+  })
+}
+// 取消提交采购入库
+export function cancelPickingDelivery(id) {
+  return request({
+    url: '/system/pickingDelivery/cancel/' + id,
+    method: 'delete'
+  })
+}
 
 // 查询领料出库单详细
 export function getPickingDelivery(id) {

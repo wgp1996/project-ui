@@ -916,6 +916,10 @@ export default {
         if (this.form.status > 0) {
           return;
         }
+        if(this.tableData.length==1){
+          this.msgError("明细不能为空!")
+          return
+        }
         delProjectReportChild(row.id);
         this.tableData.splice(index, 1);
       } else {

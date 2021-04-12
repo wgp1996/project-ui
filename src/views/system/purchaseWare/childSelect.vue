@@ -63,7 +63,7 @@
           <el-table-column label="物资名称" align="center" prop="goodsName" />
           <el-table-column label="规格" align="center" prop="goodsGg" />
           <el-table-column label="单位" align="center" prop="goodsDw" />
-          <el-table-column label="单价" align="center" prop="goodsPrice" />
+          <el-table-column label="单价" align="center" prop="goodsSpPrice" />
           <el-table-column label="订单数量" align="center" prop="goodsNum" />
           <el-table-column label="剩余数量" align="center" prop="surplusNum" />
           <el-table-column label="金额" align="center" prop="goodsMoney" />
