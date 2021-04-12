@@ -17,6 +17,51 @@ export function getPickingReturn(id) {
   })
 }
 
+
+
+
+// 查询借用归还审核列表
+export function shListPickingReturn(query) {
+  return request({
+    url: '/system/pickingReturn/shList',
+    method: 'get',
+    params: query
+  })
+}
+
+
+// 借用归还审核
+export function examinePickingReturn(data) {
+  return request({
+    url: '/system/pickingReturn/examine',
+    method: 'put',
+    data: data
+  })
+}
+ 
+// 借用归还取消审核
+export function cancelAuditPickingReturn(id,nodeNo) {
+  return request({
+    url: '/system/pickingReturn/cancelAudit/' + id+"/"+nodeNo,
+    method: 'delete'
+  })
+}
+
+// 提交借用归还
+export function effectPickingReturn(id) {
+  return request({
+    url: '/system/pickingReturn/effect/' + id,
+    method: 'delete'
+  })
+}
+// 取消提交借用归还
+export function cancelPickingReturn(id) {
+  return request({
+    url: '/system/pickingReturn/cancel/' + id,
+    method: 'delete'
+  })
+}
+
 // 新增借用归还单
 export function addPickingReturn(data) {
   return request({
