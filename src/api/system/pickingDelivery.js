@@ -8,6 +8,16 @@ export function listPickingDelivery(query) {
     params: query
   })
 }
+
+// 借还单查询出库列表
+export function returnSelectList(query) {
+  return request({
+    url: '/system/pickingDelivery/returnSelectList',
+    method: 'get',
+    params: query
+  })
+}
+
  
 
 // 查询采购入库审核列表
