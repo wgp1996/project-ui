@@ -114,11 +114,11 @@
       <el-table-column label="单号" align="center" prop="djNumber" />
       <el-table-column label="状态" align="center" prop="statusName" />
       <el-table-column label="单据日期" align="center" prop="djTime" />
-      <el-table-column label="领料类型" align="center" prop="packType" />
       <el-table-column label="项目编码" align="center" prop="projectCode" />
       <el-table-column label="项目名称" align="center" prop="projectName" />
       <el-table-column label="班组名称" align="center" prop="khName" />
       <el-table-column label="归还仓库名称" align="center" prop="storeName" />
+      <el-table-column label="制单人" align="center" prop="createBy" />
       <el-table-column
         label="操作"
         align="center"
@@ -554,7 +554,7 @@ export default {
         nodeNo: undefined,
         isSp: undefined,
         storeCode: undefined,
-        storeName: "0",
+        storeName: "",
       },
       // 表单参数
       form: {
@@ -709,7 +709,6 @@ export default {
         if (this.personList[i].dictValue == data) {
           this.form.storeName = this.personList[i].dictLabel;
           this.form.storeCode = this.personList[i].dictValue;
-          this.parameter.storeCode = this.personList[i].dictValue;
           break;
         }
       }
@@ -791,11 +790,6 @@ export default {
             } else {
               this.pickingReturnList[i].packType = "耗用型";
             }
-            if (this.pickingReturnList[i].storeName == 0) {
-              this.pickingReturnList[i].storeName = "项目库";
-            } else {
-              this.pickingReturnList[i].storeName = "出场库";
-            }
           }
         }
         this.total = response.total;
@@ -830,8 +824,8 @@ export default {
         updateTime: undefined,
         remark: undefined,
         isSp: 0,
-        storeCode: "0",
-        storeName: "0",
+        storeCode: "",
+        storeName: "",
         packType: 0,
       };
       this.tableData = [];

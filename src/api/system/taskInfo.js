@@ -18,6 +18,22 @@ export function sendListTaskInfo(query) {
   })
 }
 
+export function sendAllList(query) {
+  return request({
+    url: '/system/taskInfo/sendAllList',
+    method: 'get',
+    params: query
+  })
+}
+
+//查询首页待审核菜单列表
+export function selectShMenuList() {
+  return request({
+    url: '/system/taskInfo/selectShMenuList',
+    method: 'get',
+  })
+}
+
 // 查询我安排的任务管理详细
 export function getTaskInfo(id) {
   return request({

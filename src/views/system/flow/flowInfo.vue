@@ -194,7 +194,7 @@
     />
 
     <!-- 添加或修改流程表对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="700px">
+    <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-tabs v-model="activeName">
         <el-tab-pane label="基础信息" name="first">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
@@ -246,11 +246,11 @@
             highlight-current-row
             :header-cell-class-name="starAdd"
           >
-            <el-table-column label="是否角色" width="150">
+            <el-table-column label="是否角色" width="120">
               <template scope="scope">
                 <el-select
                   v-model="scope.row.isRole"
-                  placeholder="请选择是否角色"
+                  placeholder="请选择"
                   style="width: 100%"
                   @change="choose(scope.$index, scope.row)"
                 >
@@ -264,7 +264,7 @@
                 <!-- <span>{{scope.row.isRoleName}}</span> -->
               </template>
             </el-table-column>
-            <el-table-column label="选择角色" width="200">
+            <el-table-column label="选择角色" width="200" v-if="showRole">
               <template scope="scope">
                 <el-select
                   v-model="scope.row.prId"
@@ -282,7 +282,7 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column label="选择人员" width="120">
+            <el-table-column label="选择人员" width="200"  v-if="showPerson">
               <template scope="scope">
                 <!-- <el-input
                   :disabled="true"
@@ -306,22 +306,11 @@
                 </el-select>
               </template>
             </el-table-column>
-
-            <el-table-column label="备注说明" width="120">
-              <template scope="scope">
-                <el-input
-                  size="small"
-                  v-model="scope.row.remark"
-                  placeholder="请输入备注"
-                ></el-input>
-              </template>
-            </el-table-column>
-            <!-- :onkeyup="scope.row.isEnd=scope.row.isEnd.replace(/[^\d.]/g,'')" -->
-            <el-table-column label="是否允许结束" width="120">
+            <el-table-column label="是否允许结束" width="150">
               <template scope="scope">
                 <el-select
                   v-model="scope.row.isEnd"
-                  placeholder="请选择是否允许结束"
+                  placeholder="是否允许结束"
                   style="width: 100%"
                 >
                   <el-option
@@ -333,6 +322,17 @@
                 </el-select>
               </template>
             </el-table-column>
+            <el-table-column label="备注说明" width="200">
+              <template scope="scope">
+                <el-input
+                  size="small"
+                  v-model="scope.row.remark"
+                  placeholder="请输入备注"
+                ></el-input>
+              </template>
+            </el-table-column>
+            <!-- :onkeyup="scope.row.isEnd=scope.row.isEnd.replace(/[^\d.]/g,'')" -->
+            
 
             <el-table-column label="操作">
               <template scope="scope">
@@ -406,6 +406,8 @@ export default {
       flowNopptions: [],
       one: false,
       two: false,
+      showRole:true,
+      showPerson:true,
       //  是否明细
       dwOptions: [
         {
@@ -500,15 +502,21 @@ export default {
       });
     },
     choose(index, row) {
+      row.prId="";
+      row.prName="";
       for (let i = 0; i < this.dwOptions.length; i++) {
         console.log(row);
         console.log(this.dwOptions[i]);
         if ((this.dwOptions[i].value == row.isRole) == "1") {
           row.one = false;
           row.two = true;
+          this.showPerson = false;
+          this. showRole = true;
         } else if ((this.dwOptions[i].value == row.isRole) == "0") {
           row.one = true;
           row.two = false;
+          this.showPerson = true;
+          this.showRole = false;
         }
       }
     },
