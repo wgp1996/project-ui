@@ -129,7 +129,7 @@
         prop="projectStartTime"
       />
       <!-- <el-table-column label="完工日期" align="center" prop="projectEndTime" /> -->
-      <el-table-column label="启用预算" align="center" prop="ysStatus" />
+      <!-- <el-table-column label="启用预算" align="center" prop="ysStatus" /> -->
       <el-table-column label="创建人" align="center" prop="createBy" />
       <el-table-column label="创建日期" align="center" prop="createTime" />
 

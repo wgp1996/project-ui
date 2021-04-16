@@ -208,9 +208,10 @@
       <el-table-column label="领料类型" align="center" prop="packType" />
       <el-table-column label="项目编码" align="center" prop="projectCode" />
       <el-table-column label="项目名称" align="center" prop="projectName" />
-      <el-table-column label="班组编码" align="center" prop="khCode" />
+      <!-- <el-table-column label="班组编码" align="center" prop="khCode" /> -->
       <el-table-column label="班组名称" align="center" prop="khName" />
       <el-table-column label="仓库名称" align="center" prop="storeName" />
+      <el-table-column label="制单人" align="center" prop="createBy" />
       <el-table-column
         label="操作"
         align="center"

@@ -15,24 +15,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="项目名称" prop="projectName">
-        <el-input
-          v-model="queryParams.projectName"
-          placeholder="请输入项目名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="班组名称" prop="khName">
-        <el-input
-          v-model="queryParams.khName"
-          placeholder="请输入班组名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item>
         <el-button
           type="primary"
@@ -56,7 +38,7 @@
           size="mini"
           :disabled="single"
           @click="handleEffect"
-          v-hasPermi="['system:pickingDelivery:examine']"
+          v-hasPermi="['system:feeApplyInfo:examine']"
           >审核</el-button
         >
       </el-col>
@@ -67,7 +49,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleCancel"
-          v-hasPermi="['system:pickingDelivery:cancelAudit']"
+          v-hasPermi="['system:feeApplyInfo:cancelAudit']"
           >取消审核</el-button
         > 
       </el-col>
@@ -78,21 +60,16 @@
     </el-tabs>
     <el-table
       v-loading="loading"
-      :data="pickingDeliveryList"
+      :data="feeApplyInfoList"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="单号" align="center" prop="djNumber" />
-      <el-table-column label="状态" align="center" prop="statusName" />
+     <el-table-column label="单号" align="center" prop="djNumber" />
+      <el-table-column label="单据状态" align="center" prop="statusName" />
       <el-table-column label="单据日期" align="center" prop="djTime" />
-      <!-- <el-table-column label="领料类型" align="center" prop="packType" /> -->
-      <el-table-column label="项目编码" align="center" prop="projectCode" />
-      <el-table-column label="项目名称" align="center" prop="projectName" />
-      <!-- <el-table-column label="班组编码" align="center" prop="khCode" /> -->
-      <el-table-column label="班组名称" align="center" prop="khName" />
+      <el-table-column label="报销事由" align="center" prop="applyContent" />
       <el-table-column label="制单人" align="center" prop="createBy" />
       <el-table-column label="制单日期" align="center" prop="createTime" />
-      <!-- <el-table-column label="仓库名称" align="center" prop="storeName" /> -->
       <el-table-column
         label="操作"
         align="center"
@@ -185,11 +162,11 @@
         <el-button @click="cancel" type="danger">关 闭</el-button>
       </div>
     </el-dialog>
-    <!-- 添加或修改入库单对话框 -->
+    <!-- 添加或修改费用报销单对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-tabs v-model="activeName">
          <el-tab-pane label="基本信息" name="first">
-          <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+          <el-form ref="form" :model="form" label-width="80px">
             <el-form-item label="单号" prop="djNumber">
               <el-input
                 v-model="form.djNumber"
@@ -197,124 +174,87 @@
                 :disabled="true"
               />
             </el-form-item>
-            <el-form-item label="领用班组" prop="khName">
-              <el-input
-                v-model="form.khName"
-                placeholder="请选择领用班组"
-                :disabled="true"
-              />
-            </el-form-item>
-            <el-form-item label="隶属项目" prop="projectName">
-              <el-input
-                v-model="form.projectName"
-                placeholder="请选择隶属项目"
-                :disabled="true"
-              />
-            </el-form-item>
-            <el-form-item label="单据日期" prop="djTime">
-              <!-- <el-input v-model="form.djTime" placeholder="请输入单据日期" /> -->
-              <el-date-picker
-                style="width: 100%"
-                :readonly="true"
-                v-model="form.djTime"
-                type="date"
-                placeholder="单据日期"
-                format="yyyy 年 MM 月 dd 日"
-                value-format="yyyy-MM-dd"
-              ></el-date-picker>
-            </el-form-item>
-            <el-form-item label="领料类型" prop="packType">
-              <el-radio-group v-model="form.packType">
-                <el-radio :label="0">借用型</el-radio>
-                <el-radio :label="1">耗用型</el-radio>
+           <el-form-item label="类型" prop="djType">
+              <el-radio-group v-model="form.djType">
+                <el-radio :label="0">代控类</el-radio>
+                <el-radio :label="1">非代控类</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="仓库" prop="storeName">
+             <el-form-item label="启用审批" prop="isSp">
+              <el-radio-group v-model="form.isSp">
+                <el-radio :label="0">不启用</el-radio>
+                <el-radio :label="1">启用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="报销事由" prop="applyContent">
               <el-input
-                v-model="form.storeName"
-                placeholder="仓库"
-                :disabled="true"
+                type="textarea"
+                v-model="form.applyContent"
+                placeholder="请输入报销事由"
               />
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="领用明细" name="second">
+        <el-tab-pane label="报销明细" name="second">
           <el-table
             :data="tableData"
             class="tb-edit"
             style="width: 100%"
             highlight-current-row
           >
-            <el-table-column prop="goodsCode" label="物料编码" width="120">
+              <el-table-column prop="feeCode" label="费用项目编码" width="120">
               <template scope="scope">
                 <el-input
                   :disabled="true"
                   size="small"
-                  v-model="scope.row.goodsCode"
-                  placeholder="物资编码"
+                  v-model="scope.row.feeCode"
+                  placeholder="费用项目编码"
                 ></el-input>
               </template>
             </el-table-column>
-
-            <el-table-column prop="goodsName" label="物料名称" width="120">
+            <el-table-column prop="feeName" label="费用项目名称" width="120">
               <template scope="scope">
                 <el-input
                   :disabled="true"
                   size="small"
-                  v-model="scope.row.goodsName"
-                  :readonly="true"
-                  placeholder="请输入物资名称"
+                  v-model="scope.row.feeName"
+                  placeholder="费用项目名称"
                 ></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="goodsNum" label="数量" width="120">
+            <el-table-column prop="feeMoney" label="金额" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
-                  v-model="scope.row.goodsNum"
-                  :readonly="true"
-                  placeholder="请输入数量"
+                  v-model="scope.row.feeMoney"
+                  placeholder="金额"
                 ></el-input>
               </template>
             </el-table-column>
-
-            <el-table-column prop="goodsPrice" label="价格" width="120">
+            <el-table-column prop="feeNum" label="凭证张数" width="120">
               <template scope="scope">
                 <el-input
                   size="small"
-                  v-model="scope.row.goodsPrice"
-                  :readonly="true"
-                  placeholder="请输入价格"
+                  v-model="scope.row.feeNum"
+                  placeholder="凭证张数"
                 ></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="goodsMoney" label="金额" width="120">
+            <el-table-column prop="projectCode" label="项目" width="180">
               <template scope="scope">
                 <el-input
                   size="small"
-                  v-model="scope.row.goodsMoney"
-                  placeholder="请输入金额"
-                  :readonly="true"
+                  v-model="scope.row.projectCode"
+                  placeholder="项目"
                 ></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="goodsGg" label="规格" width="120">
+            <el-table-column prop="applyContent" label="报销事由" width="150">
               <template scope="scope">
                 <el-input
                   size="small"
-                  v-model="scope.row.goodsGg"
-                  placeholder="金额信息"
-                  :readonly="true"
-                ></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column prop="goodsDw" label="单位" width="120">
-              <template scope="scope">
-                <el-input
-                  size="small"
-                  v-model="scope.row.goodsDw"
-                  placeholder="单位"
-                  :readonly="true"
+                  v-model="scope.row.applyContent"
+                  placeholder="报销事由"
                 ></el-input>
               </template>
             </el-table-column>
@@ -356,16 +296,16 @@
 
 <script>
 import {
-  shListPickingDelivery,
-  getPickingDelivery,
-  examinePickingDelivery,
-  cancelAuditPickingDelivery,
-} from "@/api/system/pickingDelivery";
-import { listPickingDeliveryChild } from "@/api/system/pickingDeliveryChild";
+  shListFeeApplyInfo,
+  getFeeApplyInfo,
+  examineFeeApplyInfo,
+  cancelAuditFeeApplyInfo,
+} from "@/api/system/feeApplyInfo";
+import { listFeeApplyInfoChild } from "@/api/system/feeApplyInfoChild";
 import { systemFileList } from "@/api/system/projectInfo";
 import { djFlowList } from "@/api/system/flowInfo";
 export default {
-  name: "PickingDelivery",
+  name: "FeeApplyInfo",
   data() {
     return {
       tableData: [],
@@ -392,8 +332,8 @@ export default {
       // 总条数
       total: 0,
       personList: [],
-      // 入库单表格数据
-      pickingDeliveryList: [],
+      // 费用报销单表格数据
+      feeApplyInfoList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -461,11 +401,11 @@ export default {
     submitUpload() {
       this.$refs.upload.submit();
     },
-    /** 查询入库单列表 */
+    /** 查询费用报销单列表 */
     getList() {
       this.loading = true;
-      shListPickingDelivery(this.queryParams).then((response) => {
-        this.pickingDeliveryList = response.rows;
+      shListFeeApplyInfo(this.queryParams).then((response) => {
+        this.feeApplyInfoList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -556,16 +496,16 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id;
-      getPickingDelivery(id).then((response) => {
+      getFeeApplyInfo(id).then((response) => {
         this.form = response.data;
         systemFileList(this.form.djNumber).then((response) => {
           this.fileList = response.rows;
         });
-        listPickingDeliveryChild(this.form.djNumber).then((response) => {
+        listFeeApplyInfoChild(this.form.djNumber).then((response) => {
           this.tableData = response.rows;
         });
         this.open = true;
-        this.title = "入库单详情";
+        this.title = "费用报销单详情";
       });
     },
     /** 取消按钮操作 */
@@ -578,7 +518,7 @@ export default {
         type: "warning",
       })
         .then(function () {
-          return cancelAuditPickingDelivery(ids, nodeNos);
+          return cancelAuditFeeApplyInfo(ids, nodeNos);
         })
         .then(() => {
           this.getList();
@@ -591,7 +531,7 @@ export default {
       console.log(this.shForm);
       this.$refs["shForm"].validate((valid) => {
         if (valid) {
-          examinePickingDelivery(this.shForm).then((response) => {
+          examineFeeApplyInfo(this.shForm).then((response) => {
             if (response.code === 200) {
               this.msgSuccess("审核成功");
               this.openLcsh = false;
