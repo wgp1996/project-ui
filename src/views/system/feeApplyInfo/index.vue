@@ -231,6 +231,7 @@
                   size="small"
                   v-model="scope.row.feeMoney"
                   placeholder="金额"
+                  @change="handleEditfeeMoney(scope.$index, scope.row)"
                 ></el-input>
               </template>
             </el-table-column>
@@ -240,6 +241,7 @@
                   size="small"
                   v-model="scope.row.feeNum"
                   placeholder="凭证张数"
+                  @change="handleEditfeeNum(scope.$index, scope.row)"
                 ></el-input>
               </template>
             </el-table-column>
@@ -482,6 +484,22 @@ export default {
         return "star";
       }
     },
+    // 修改张数
+    handleEditfeeNum(index, row) {
+      if (!/^[0-9]*$/.test(row.feeNum)) {
+        this.msgError("请输入整数!");
+        row.feeNum = "";
+       }
+   },
+      // 修改金额
+    handleEditfeeMoney(index, row) {
+     if(!/^[0-9]+.?[0-9]*$/.test(row.feeMoney)){
+        this.msgError("请输入数字!");
+        row.feeMoney = "";
+     
+      }
+   },
+
     //查看审批信息
     handleSelectFlow(row) {
       this.stepsActive = parseInt(row.nodeNo) - 1;
@@ -507,6 +525,47 @@ export default {
       });
 
       this.openSh = true;
+    },
+        editTime(i) {
+      if (i < 10) {
+        i = "0" + i;
+      }
+      return i;
+    },
+    getTime() {
+      var date = new Date();
+      var year = date.getFullYear(); //得到当前年份
+      var month = this.editTime(date.getMonth() + 1); //得到当前月份
+      var day = this.editTime(date.getDate()); //得到当前几号
+      var hour = this.editTime(date.getHours()); //得到当前小时
+      var min = this.editTime(date.getMinutes()); //得到当前分钟
+      var seconds = this.editTime(date.getSeconds()); //得到当前秒
+      var weeks = date.getDay();
+      var week;
+      switch (weeks) {
+        case 0:
+          week = "星期日";
+          break;
+        case 1:
+          week = "星期一";
+          break;
+        case 2:
+          week = "星期二";
+          break;
+        case 3:
+          week = "星期三";
+          break;
+        case 4:
+          week = "星期四";
+          break;
+        case 5:
+          week = "星期五";
+          break;
+        case 6:
+          week = "星期六";
+          break;
+      }
+      return year + "-" + month + "-" + day;
     },
     handleSuccess(res, file, fileList) {
       this.fileList = fileList;
@@ -581,7 +640,7 @@ export default {
       this.form = {
         id: undefined,
         djNumber: undefined,
-        djTime: undefined,
+        djTime: this.getTime(),
         status: "0",
         djType: undefined,
         flowNo: undefined,
