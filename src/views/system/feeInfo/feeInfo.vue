@@ -1,6 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      label-width="100px"
+    >
       <el-form-item label="费用项目名称" prop="feeName">
         <el-input
           v-model="queryParams.feeName"
@@ -38,8 +43,16 @@
         />
       </el-form-item> -->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -51,7 +64,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:feeInfo:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -61,7 +75,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:feeInfo:edit']"
-        >修改</el-button>
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -71,7 +86,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:feeInfo:remove']"
-        >删除</el-button>
+          >删除</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -80,18 +96,27 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:feeInfo:export']"
-        >导出</el-button>
+          >导出</el-button
+        >
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="feeInfoList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="feeInfoList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
-      <!-- <el-table-column label="ID" align="center" prop="id" /> -->
       <el-table-column label="费用项目名称" align="center" prop="feeName" />
       <el-table-column label="费用项目编码" align="center" prop="feeCode" />
-      <!-- <el-table-column label="分类编码" align="center" prop="feeTypeCode" /> -->
-      <el-table-column label="分类名称" align="center" prop="feeTypeName" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="制单人" align="center" prop="createBy" />
+      <el-table-column label="制单日期" align="center" prop="createTime" />
+      <el-table-column label="备注说明" align="center" prop="remark" />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -99,20 +124,22 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:feeInfo:edit']"
-          >修改</el-button>
+            >修改</el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:feeInfo:remove']"
-          >删除</el-button>
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -122,21 +149,31 @@
     <!-- 添加或修改费用项目对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="费用项目编码" prop="feeCode">
+          <el-input
+            v-model="form.feeCode"
+            placeholder="费用项目编码自动生成"
+            :readonly="true"
+          />
+        </el-form-item>
         <el-form-item label="费用项目名称" prop="feeName">
           <el-input v-model="form.feeName" placeholder="请输入费用项目名称" />
         </el-form-item>
-        <el-form-item label="费用项目编码" prop="feeCode">
-          <el-input v-model="form.feeCode" placeholder="费用项目编码自动生成"  />
-        </el-form-item>
+
         <!-- <el-form-item label="分类" prop="feeTypeCode"> -->
-          <!-- <el-input v-model="form.feeTypeCode" placeholder="请输入分类编码" /> -->
-       <!-- </el-form-item> -->
-          <el-form-item label="所属分类" prop="feeTypeCode">
-          <treeselect v-model="form.feeTypeCode" :options="feeTypeOptions" :normalizer="normalizer" placeholder="请选择所属分类" />
+        <!-- <el-input v-model="form.feeTypeCode" placeholder="请输入分类编码" /> -->
+        <!-- </el-form-item> -->
+        <el-form-item label="所属分类" prop="feeTypeCode">
+          <treeselect
+            v-model="form.feeTypeCode"
+            :options="feeTypeOptions"
+            :normalizer="normalizer"
+            placeholder="请选择所属分类"
+          />
         </el-form-item>
-        <!-- <el-form-item label="分类名称" prop="feeTypeName">
-          <el-input v-model="form.feeTypeName" placeholder="请输入分类名称" />
-        </el-form-item> -->
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" placeholder="请输入备注" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -147,10 +184,17 @@
 </template>
 
 <script>
-import { listFeeInfo, getFeeInfo, delFeeInfo, addFeeInfo, updateFeeInfo, exportFeeInfo } from "@/api/system/feeInfo";
+import {
+  listFeeInfo,
+  getFeeInfo,
+  delFeeInfo,
+  addFeeInfo,
+  updateFeeInfo,
+  exportFeeInfo,
+} from "@/api/system/feeInfo";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import { listFeeType} from "@/api/system/feeType";
+import { listFeeType } from "@/api/system/feeType";
 export default {
   name: "FeeInfo",
   components: { Treeselect },
@@ -181,15 +225,19 @@ export default {
         feeName: undefined,
         feeCode: undefined,
         feeTypeCode: undefined,
-        feeTypeName: undefined
+        feeTypeName: undefined,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-         feeName:[{required: true,message: "费用项目名称不能为空",trigger: "blur",}],
-         feeCode:[{required: true,message: "费用项目编码不能为空",trigger: "blur",}],
-      }
+        feeName: [
+          { required: true, message: "费用项目名称不能为空", trigger: "blur" },
+        ],
+        // feeCode: [
+        //   { required: true, message: "费用项目编码不能为空", trigger: "blur" },
+        // ],
+      },
     };
   },
   created() {
@@ -199,13 +247,13 @@ export default {
     /** 查询费用项目列表 */
     getList() {
       this.loading = true;
-      listFeeInfo(this.queryParams).then(response => {
+      listFeeInfo(this.queryParams).then((response) => {
         this.feeInfoList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
     },
-       /** 转换费用项目分类数据结构 */
+    /** 转换费用项目分类数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
         delete node.children;
@@ -213,18 +261,22 @@ export default {
       return {
         id: node.feeTypeId,
         label: node.feeTypeName,
-        children: node.children
+        children: node.children,
       };
     },
-	/** 查询部门下拉树结构 */
+    /** 查询部门下拉树结构 */
     getTreeselect() {
-      listFeeType().then(response => {
+      listFeeType().then((response) => {
         this.feeTypeOptions = [];
-        const data = { feeTypeId: 0, feeTypeName: '顶级节点', children: [] };
-        console.log(response.data)
-        data.children = this.handleTree(response.data, "feeTypeId", "feeTypeCode");
+        const data = { feeTypeId: 0, feeTypeName: "顶级节点", children: [] };
+        console.log(response.data);
+        data.children = this.handleTree(
+          response.data,
+          "feeTypeId",
+          "feeTypePid"
+        );
         this.feeTypeOptions.push(data);
-        console.log( this.feeTypeOptions)
+        console.log(this.feeTypeOptions);
       });
     },
     // 取消按钮
@@ -243,7 +295,7 @@ export default {
         createTime: undefined,
         updateBy: undefined,
         updateTime: undefined,
-        feeTypeName: undefined
+        feeTypeName: undefined,
       };
       this.resetForm("form");
     },
@@ -259,9 +311,9 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!=1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.id);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -277,19 +329,19 @@ export default {
       if (row != undefined) {
         this.form.feeTypeCode = row.feeTypeId;
       }
-      const id = row.id || this.ids
-      getFeeInfo(id).then(response => {
+      const id = row.id || this.ids;
+      getFeeInfo(id).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改费用项目";
       });
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != undefined) {
-            updateFeeInfo(this.form).then(response => {
+            updateFeeInfo(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -299,7 +351,7 @@ export default {
               }
             });
           } else {
-            addFeeInfo(this.form).then(response => {
+            addFeeInfo(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -315,30 +367,40 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$confirm('是否确认删除费用项目编号为"' + ids + '"的数据项?', "警告", {
+      this.$confirm(
+        '是否确认删除费用项目编号为"' + ids + '"的数据项?',
+        "警告",
+        {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+          type: "warning",
+        }
+      )
+        .then(function () {
           return delFeeInfo(ids);
-        }).then(() => {
+        })
+        .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        })
+        .catch(function () {});
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有费用项目数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+      this.$confirm("是否确认导出所有费用项目数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
           return exportFeeInfo(queryParams);
-        }).then(response => {
+        })
+        .then((response) => {
           this.download(response.msg);
-        }).catch(function() {});
-    }
-  }
+        })
+        .catch(function () {});
+    },
+  },
 };
 </script>

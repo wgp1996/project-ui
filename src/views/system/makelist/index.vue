@@ -30,7 +30,7 @@
         <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
         </el-form>
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="分享清单" name="first">
+          <el-tab-pane label="分项清单" name="first">
             <el-form ref="form" :model="form" :rules="rules" label-width="120px">
               <el-row :gutter="0">
                 <el-col :span="8">

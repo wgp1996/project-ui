@@ -26,6 +26,16 @@ export function sendAllList(query) {
   })
 }
 
+//查询首页数量
+
+export function selectIndexCount() {
+  return request({
+    url: '/system/taskInfo/selectIndexCount',
+    method: 'get',
+  })
+}
+
+
 //查询首页待审核菜单列表
 export function selectShMenuList() {
   return request({

@@ -483,7 +483,7 @@
             </el-form-item>
           </el-tab-pane>
           <!-- 第四个 -->
-          <el-tab-pane label="总包合同" name="fourth">
+          <!-- <el-tab-pane label="总包合同" name="fourth">
             <el-form-item
               label="有无总包"
               prop="isZb"
@@ -547,10 +547,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <!-- <el-form-item label="备注" prop="postCode" style="float:left;width:50%;">
-                         <el-input v-model="form.postCode" placeholder="备注" type="textarea" />
-                </el-form-item> -->
-          </el-tab-pane>
+          </el-tab-pane> -->
           <el-tab-pane label="附件" name="fivth">
             <el-row :gutter="15" class="mb8">
               <el-col :span="1.5">

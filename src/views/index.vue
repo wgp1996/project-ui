@@ -40,7 +40,12 @@
             <!-- <el-button style="float: right; padding: 3px 0" type="text"
               >操作按钮</el-button> -->
           </div>
-          <div v-for="item in taskInfoList" :key="item" class="text item" @click="openTaskUrl">
+          <div
+            v-for="item in taskInfoList"
+            :key="item"
+            class="text item"
+            @click="openTaskUrl"
+          >
             <div
               style="
                 width: 20%;
@@ -204,8 +209,8 @@ export default {
         this.menuNum = menuNum;
       });
     },
-    openTaskUrl(){
-       // this.$router.push({ path: "/project/mission" });
+    openTaskUrl() {
+      // this.$router.push({ path: "/project/mission" });
     },
     openUrl(item) {
       //采购订单
@@ -243,6 +248,10 @@ export default {
       //产值提报单
       if (item.taskCode == "CZTB") {
         this.$router.push({ path: "/examine/projectReport" });
+      }
+      //产值提报单
+      if (item.taskCode == "FYBX") {
+        this.$router.push({ path: "/examine/feeApplyInfoSh" });
       }
     },
     changeStatus(data) {
